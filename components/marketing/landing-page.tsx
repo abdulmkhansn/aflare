@@ -54,10 +54,14 @@ export function LandingPage() {
     <div className="flex min-h-full w-full min-w-0 flex-col bg-surface-page text-fg">
       {/* Header */}
       <header className="w-full border-b border-border-subtle">
-        <div className={`${LANDING_CONTAINER} flex items-center justify-between gap-4 py-5`}>
-          <AflareWordmark href="/" variant="nav" />
+        <div className={`${LANDING_CONTAINER} flex items-center justify-between gap-6 py-4 sm:py-5`}>
+          <AflareWordmark
+            href="/"
+            variant="nav"
+            className="shrink-0 text-2xl font-medium sm:text-[1.875rem]"
+          />
 
-          <nav className="flex items-center gap-3 sm:gap-4" aria-label="Marketing">
+          <nav className="flex shrink-0 items-center gap-3 sm:gap-4" aria-label="Account">
             <Link href="/login" className={`text-sm text-fg-muted hover:text-fg ${focusRingClassName}`}>
               Sign in
             </Link>
@@ -153,7 +157,10 @@ export function LandingPage() {
         </section>
 
         {/* Who it's for */}
-        <section className={`w-full border-t border-border-subtle bg-surface-card ${SECTION_PADDING}`}>
+        <section
+          id="who-its-for"
+          className={`w-full border-t border-border-subtle bg-surface-card ${SECTION_PADDING}`}
+        >
           <div className={LANDING_CONTAINER}>
             <h2 className="text-2xl font-medium tracking-[-0.02em]">Who it&apos;s for</h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-fg-muted sm:text-base">
