@@ -22,6 +22,28 @@ export function IconFeed({ className = "h-5 w-5" }: IconProps) {
   );
 }
 
+export function IconFlarespace({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M12 3c1.2 2.8 3 4.2 3 6.8a3 3 0 1 1 -6 0c0 -2.6 1.8 -4 3 -6.8" />
+      <path d="M12 11v10" />
+      <path d="M9 6l3 -3 3 3" />
+      <path d="M8 4l1 1" />
+      <path d="M16 4l-1 1" />
+    </svg>
+  );
+}
+
 export function IconBlockers({ className = "h-5 w-5" }: IconProps) {
   return (
     <svg

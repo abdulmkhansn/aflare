@@ -7,7 +7,10 @@ import { MessageButton } from "@/components/message-button";
 import { SafetyMenu } from "@/components/safety-menu";
 import { Avatar } from "@/components/avatar";
 import { ProjectStageBadge } from "@/components/project-stage-badge";
+import { ContributionFacets } from "@/components/recognition/contribution-facets";
+import { ProfileMoments } from "@/components/recognition/profile-moments";
 import { pageTitle } from "@/lib/app/brand";
+import { getProfileRecognition } from "@/lib/recognition/get-profile-recognition";
 import { formatTagLabel } from "@/lib/tags/format-tag-label";
 import { hasBlockedUser, isBlockedBetween } from "@/lib/messages/blocks";
 import {
@@ -60,7 +63,7 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
   const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select(
-      "id, display_name, bio, avatar_url, verified_builder, reputation_score, github_username"
+      "id, display_name, bio, avatar_url, verified_builder, github_username"
     )
     .eq("id", id)
     .maybeSingle();
@@ -69,7 +72,7 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
     notFound();
   }
 
-  const [{ data: profileTags }, { data: projects }, { data: followRow }, blockedBetween, hasBlocked] =
+  const [{ data: profileTags }, { data: projects }, { data: followRow }, blockedBetween, hasBlocked, recognition] =
     await Promise.all([
     supabase
       .from("profile_tags")
@@ -90,6 +93,7 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
           .maybeSingle(),
     isOwnProfile ? Promise.resolve(false) : isBlockedBetween(auth.userId, id),
     isOwnProfile ? Promise.resolve(false) : hasBlockedUser(auth.userId, id),
+    getProfileRecognition(id),
   ]);
 
   const brings =
@@ -134,14 +138,6 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
               {profile.bio ? (
                 <p className="mt-2 text-sm leading-relaxed text-fg-muted">{profile.bio}</p>
               ) : null}
-              <div className="mt-3">
-                <p className="text-sm font-medium text-fg">
-                  Reputation {profile.reputation_score ?? 0}
-                </p>
-                <p className="mt-1 text-xs leading-relaxed text-fg-muted">
-                  From people marking this builder&apos;s replies and articles helpful.
-                </p>
-              </div>
             </div>
           </div>
 
@@ -203,6 +199,10 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
           </div>
         )}
       </header>
+
+      <ContributionFacets facets={recognition.facets} />
+
+      <ProfileMoments moments={recognition.moments} />
 
       <section className="space-y-4">
         <h2 className={sectionTitleClassName}>Projects</h2>

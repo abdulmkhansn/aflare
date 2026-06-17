@@ -14,6 +14,7 @@ import {
   parseHelpfulError,
 } from "@/lib/comments/parse-comment-params";
 import { FEED_POST_SELECT, type FeedPost } from "@/lib/feed/types";
+import { getPostReactionsForPosts } from "@/lib/reactions/get-post-reactions";
 import { formatTagLabel } from "@/lib/tags/format-tag-label";
 import {
   cardClassName,
@@ -94,10 +95,12 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
       .order("created_at", { ascending: false }),
   ]);
 
-  const { commentsByPostId, markedCommentIds } = await getCommentsForPosts(
-    posts?.map((post) => post.id) ?? [],
-    auth.userId
-  );
+  const postIds = posts?.map((post) => post.id) ?? [];
+
+  const [{ commentsByPostId, markedCommentIds }, reactionsContext] = await Promise.all([
+    getCommentsForPosts(postIds, auth.userId),
+    getPostReactionsForPosts(postIds, auth.userId),
+  ]);
 
   const statusMessage = query.created
     ? "Project created."
@@ -193,6 +196,7 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
                 markedCommentIds={markedCommentIds}
                 currentUserId={auth.userId}
                 redirectTo={redirectTo}
+                reactionsContext={reactionsContext}
                 commentPosted={commentStatus.commentPosted}
                 commentError={commentStatus.commentError}
               />

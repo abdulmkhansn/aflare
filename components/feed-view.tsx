@@ -2,6 +2,7 @@ import { Suspense } from "react";
 
 import { FeedComposeForm } from "@/components/feed-compose-form";
 import { FeedFilterBar } from "@/components/feed-filter-bar";
+import { FlareFeedCard } from "@/components/flare-feed-card";
 import { PageHeader } from "@/components/page-header";
 import { PostWithComments } from "@/components/post-with-comments";
 import { ShowMoreButton } from "@/components/show-more-button";
@@ -15,6 +16,7 @@ import {
 import { FALLBACK_FEED_NOTE } from "@/lib/feed/constants";
 import { parseFeedFilter, FEED_FILTER_LABELS } from "@/lib/feed/feed-filters";
 import { getFeedPosts } from "@/lib/feed/get-feed-posts";
+import { getPostReactionsForPosts } from "@/lib/reactions/get-post-reactions";
 import {
   emptyStateClassName,
   errorTextClassName,
@@ -38,15 +40,19 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
   const helpfulError = parseHelpfulError(params);
   const batchLimit = parseBatchLimit(params.limit);
 
-  const [{ posts, usedFallback, hasMore }, { data: ownedProjects }] = await Promise.all([
+  const [{ items, usedFallback, hasMore }, { data: ownedProjects }] = await Promise.all([
     getFeedPosts(userId, { limit: batchLimit, offset: 0, filter }),
     supabase.from("projects").select("id, name").eq("owner_id", userId).order("name"),
   ]);
 
-  const { commentsByPostId, markedCommentIds } = await getCommentsForPosts(
-    posts.map((post) => post.id),
-    userId
-  );
+  const postIds = items
+    .filter((item) => item.kind === "post")
+    .map((item) => item.post.id);
+
+  const [{ commentsByPostId, markedCommentIds }, reactionsContext] = await Promise.all([
+    getCommentsForPosts(postIds, userId),
+    getPostReactionsForPosts(postIds, userId),
+  ]);
 
   const showMoreHref = buildShowMoreHref("/", batchLimit, {
     posted: params.posted,
@@ -63,7 +69,7 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
     <div className="space-y-6">
       <PageHeader
         title="Feed"
-        description="Build updates, shares, blockers, and posts from people you follow."
+        description="Build updates, shares, flares, and posts from people you follow."
       />
 
       <FeedComposeForm
@@ -82,7 +88,7 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
         </p>
       ) : null}
 
-      {posts.length === 0 ? (
+      {items.length === 0 ? (
         <div className={emptyStateClassName}>
           {filter === "all" ? (
             <>
@@ -91,7 +97,7 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
           ) : filter === "following" ? (
             <>No posts from people you follow yet. Follow builders to see their updates here.</>
           ) : filter === "blockers" ? (
-            <>No blockers in your feed right now. Check Blockers for the full list.</>
+            <>No flares in your feed right now. Check Flarespace or send one up if you are stuck.</>
           ) : (
             <>No shipped updates in your feed right now. Post a win when you ship something.</>
           )}
@@ -104,17 +110,22 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
           {filter !== "all" ? (
             <p className="text-xs text-fg-muted">Showing {FEED_FILTER_LABELS[filter].toLowerCase()}.</p>
           ) : null}
-          {posts.map((post) => {
-            const commentStatus = parseCommentStatusForPost(params, post.id);
+          {items.map((item) => {
+            if (item.kind === "flare") {
+              return <FlareFeedCard key={`flare-${item.id}`} flare={item.flare} />;
+            }
+
+            const commentStatus = parseCommentStatusForPost(params, item.post.id);
 
             return (
               <PostWithComments
-                key={post.id}
-                post={post}
-                comments={commentsByPostId.get(post.id) ?? []}
+                key={item.id}
+                post={item.post}
+                comments={commentsByPostId.get(item.post.id) ?? []}
                 markedCommentIds={markedCommentIds}
                 currentUserId={userId}
                 redirectTo="/"
+                reactionsContext={reactionsContext}
                 commentPosted={commentStatus.commentPosted}
                 commentError={commentStatus.commentError}
               />

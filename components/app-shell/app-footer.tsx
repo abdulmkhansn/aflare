@@ -18,8 +18,8 @@ export function AppFooter({ userId }: AppFooterProps) {
         className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-fg-muted"
         aria-label="Footer"
       >
-        <Link href="/blockers" className={`cursor-pointer hover:text-fg ${focusRingClassName}`}>
-          Blockers
+        <Link href="/flarespace" className={`cursor-pointer hover:text-fg ${focusRingClassName}`}>
+          Flarespace
         </Link>
         <Link
           href={`/u/${userId}`}

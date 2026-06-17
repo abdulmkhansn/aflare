@@ -1,4 +1,5 @@
 import type { FeedArticleSummary } from "@/lib/articles/types";
+import type { FlareListItem } from "@/lib/flares/types";
 import type { PostStructuredFields } from "@/lib/posts/structured-fields";
 
 export type FeedPost = {
@@ -71,6 +72,33 @@ export function dedupeAndSortPosts(posts: FeedPost[]): FeedPost[] {
   }
 
   return [...byId.values()].sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+}
+
+export type FeedFlare = FlareListItem;
+
+export type FeedItem =
+  | { kind: "post"; id: string; created_at: string; post: FeedPost }
+  | { kind: "flare"; id: string; created_at: string; flare: FeedFlare };
+
+export function mergeFeedItems(posts: FeedPost[], flares: FeedFlare[]): FeedItem[] {
+  const items: FeedItem[] = [
+    ...posts.map((post) => ({
+      kind: "post" as const,
+      id: post.id,
+      created_at: post.created_at,
+      post,
+    })),
+    ...flares.map((flare) => ({
+      kind: "flare" as const,
+      id: flare.id,
+      created_at: flare.created_at,
+      flare,
+    })),
+  ];
+
+  return items.sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 }

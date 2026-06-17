@@ -55,6 +55,7 @@ export async function createComment(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/blockers");
+  revalidatePath("/flarespace");
   revalidatePath(`/projects/${post.project_id}`);
 
   const separator = redirectTo.includes("?") ? "&" : "?";

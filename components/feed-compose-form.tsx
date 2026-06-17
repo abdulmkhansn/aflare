@@ -6,8 +6,9 @@ import { IconFileText, IconLink, IconPhoto, IconVideo } from "@tabler/icons-reac
 import { useEffect, useRef, useState } from "react";
 
 import { createFeedPost } from "@/app/(app)/actions/posts";
+import { FLARE_SEND_EXPLAINER } from "@/lib/flares/constants";
 import { DEFAULT_COMPOSE_PROMPT, pickComposePrompt } from "@/lib/posts/composer-prompts";
-import { POST_TYPES, getPostTypeLabel } from "@/lib/posts/post-types";
+import { POST_TYPES, BLOCKER_POST_TYPES, getPostTypeLabel } from "@/lib/posts/post-types";
 import { POST_IMAGE_MAX_BYTES } from "@/lib/storage/post-images";
 import { POST_VIDEO_MAX_BYTES, POST_VIDEO_MAX_SECONDS } from "@/lib/storage/post-videos";
 import { uploadPostVideoWithProgress } from "@/lib/upload/direct-storage-upload";
@@ -278,6 +279,10 @@ export function FeedComposeForm({ projects, posted, error }: FeedComposeFormProp
       (media?.kind === "video" && media.url) ||
       media?.kind === "link");
 
+  const isBlockerPath =
+    addToProject &&
+    BLOCKER_POST_TYPES.includes(postType as (typeof BLOCKER_POST_TYPES)[number]);
+
   return (
     <div className={cardClassName}>
       {error ? (
@@ -502,13 +507,41 @@ export function FeedComposeForm({ projects, posted, error }: FeedComposeFormProp
         </div>
 
         <div className="border-t border-border-subtle pt-4">
-          <button
-            type="button"
-            onClick={() => setAddToProject((value) => !value)}
-            className={`text-sm text-fg-muted hover:text-fg ${focusRingClassName}`}
-          >
-            {addToProject ? "Share to feed instead" : "Add to a project"}
-          </button>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => setAddToProject((value) => !value)}
+              className={`text-sm text-fg-muted hover:text-fg ${focusRingClassName}`}
+            >
+              {addToProject ? "Share to feed instead" : "Add to a project"}
+            </button>
+
+            {!addToProject ? (
+              <Link
+                href="/flarespace#send-flare"
+                className={`text-sm text-fg-muted hover:text-fg ${focusRingClassName}`}
+              >
+                Stuck? Send up a flare
+              </Link>
+            ) : null}
+          </div>
+
+          {!addToProject ? (
+            <p className="mt-2 text-xs text-fg-muted">{FLARE_SEND_EXPLAINER}</p>
+          ) : null}
+
+          {isBlockerPath ? (
+            <div className="mt-3 rounded-md border border-border-subtle bg-[var(--hover-subtle)] px-3 py-2.5">
+              <p className="text-sm text-fg-muted">
+                For getting unstuck with the room,{" "}
+                <Link href="/flarespace#send-flare" className="text-fg underline underline-offset-2">
+                  send up a flare
+                </Link>{" "}
+                in Flarespace instead.
+              </p>
+              <p className="mt-1 text-xs text-fg-muted">{FLARE_SEND_EXPLAINER}</p>
+            </div>
+          ) : null}
 
           {addToProject ? (
             <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-end">

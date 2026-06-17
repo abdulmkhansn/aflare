@@ -1,5 +1,9 @@
-import { BLOCKER_POST_TYPES } from "@/lib/posts/post-types";
-import { FEED_POST_SELECT, resolveFeedPostRelations } from "@/lib/feed/types";
+import {
+  FLARE_SELECT,
+  flareExcerpt,
+  resolveFlareAuthor,
+  type FlareRow,
+} from "@/lib/flares/types";
 import { createClient } from "@/utils/supabase/server";
 
 export type ShellUser = {
@@ -13,8 +17,6 @@ export type ShellUser = {
 export type SidebarBlocker = {
   id: string;
   excerpt: string;
-  projectId: string;
-  projectName: string;
   authorId: string;
   authorName: string | null;
 };
@@ -29,16 +31,6 @@ export type ShellSidebarData = {
   blockers: SidebarBlocker[];
   suggestedBuilders: SuggestedBuilder[];
 };
-
-function truncateExcerpt(body: string, maxLength = 72): string {
-  const trimmed = body.trim().replace(/\s+/g, " ");
-
-  if (trimmed.length <= maxLength) {
-    return trimmed;
-  }
-
-  return `${trimmed.slice(0, maxLength - 1).trimEnd()}…`;
-}
 
 export async function getShellUser(userId: string): Promise<ShellUser> {
   const supabase = await createClient();
@@ -69,9 +61,9 @@ export async function getSidebarBlockers(
   const supabase = await createClient();
 
   const { data, error } = await supabase
-    .from("posts")
-    .select(FEED_POST_SELECT)
-    .in("type", [...BLOCKER_POST_TYPES])
+    .from("flares")
+    .select(FLARE_SELECT)
+    .neq("status", "resolved")
     .neq("author_id", userId)
     .order("created_at", { ascending: false })
     .limit(limit);
@@ -80,15 +72,14 @@ export async function getSidebarBlockers(
     throw new Error(error.message);
   }
 
-  return (data ?? []).map((post) => {
-    const { profile, project } = resolveFeedPostRelations(post);
+  return (data ?? []).map((row) => {
+    const flare = row as FlareRow;
+    const profile = resolveFlareAuthor(flare);
 
     return {
-      id: post.id,
-      excerpt: truncateExcerpt(post.body),
-      projectId: project?.id ?? post.project_id,
-      projectName: project?.name ?? "Unknown project",
-      authorId: post.author_id,
+      id: flare.id,
+      excerpt: flareExcerpt(flare),
+      authorId: flare.author_id,
       authorName: profile?.display_name ?? null,
     };
   });

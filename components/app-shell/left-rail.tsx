@@ -38,9 +38,6 @@ export function LeftRail({ user, unreadMessageCount = 0 }: LeftRailProps) {
                   </span>
                 ) : null}
               </div>
-              <p className="mt-1 text-xs text-fg-muted">
-                Reputation <span className="font-medium text-teal">{user.reputationScore}</span>
-              </p>
             </div>
           </div>
 

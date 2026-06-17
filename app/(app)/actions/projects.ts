@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { isProjectStage, type ProjectStage } from "@/lib/projects/stages";
+import { recordMilestone, withCelebrationParam } from "@/lib/milestones/record-milestone";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
 
@@ -78,9 +79,13 @@ export async function createProject(formData: FormData) {
     projectFormErrorRedirect("/projects/new", error?.message ?? "Could not create project.");
   }
 
+  const { isNew } = await recordMilestone(supabase, auth.userId, "first_project");
+
   revalidatePath("/");
   revalidatePath(`/u/${auth.userId}`);
-  redirect(`/projects/${data.id}?created=1`);
+  redirect(
+    withCelebrationParam(`/projects/${data.id}?created=1`, isNew, "first_project")
+  );
 }
 
 export async function updateProject(formData: FormData) {
@@ -100,7 +105,7 @@ export async function updateProject(formData: FormData) {
 
   const { data: project, error: loadError } = await supabase
     .from("projects")
-    .select("owner_id")
+    .select("owner_id, stage")
     .eq("id", projectId)
     .maybeSingle();
 
@@ -126,8 +131,15 @@ export async function updateProject(formData: FormData) {
     projectFormErrorRedirect(`/projects/${projectId}/edit`, updateError.message);
   }
 
+  let celebratePath = `/projects/${projectId}?updated=1`;
+
+  if (fields.stage === "shipped" && project.stage !== "shipped") {
+    const { isNew } = await recordMilestone(supabase, auth.userId, "first_ship");
+    celebratePath = withCelebrationParam(celebratePath, isNew, "first_ship");
+  }
+
   revalidatePath("/");
   revalidatePath(`/projects/${projectId}`);
   revalidatePath(`/u/${auth.userId}`);
-  redirect(`/projects/${projectId}?updated=1`);
+  redirect(celebratePath);
 }

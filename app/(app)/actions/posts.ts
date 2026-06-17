@@ -8,6 +8,7 @@ import {
   hasStructuredMedia,
   type PostStructuredFields,
 } from "@/lib/posts/structured-fields";
+import { recordMilestone, withCelebrationParam } from "@/lib/milestones/record-milestone";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
 
@@ -115,14 +116,29 @@ export async function createFeedPost(formData: FormData) {
     redirectWithPostError(redirectTo, insertError.message);
   }
 
+  let nextRedirect = redirectTo;
+  const postType = isShare ? "update" : typeRaw;
+
+  if (postType === "shipped") {
+    const { isNew } = await recordMilestone(supabase, auth.userId, "first_ship");
+    const separator = redirectTo.includes("?") ? "&" : "?";
+    nextRedirect = withCelebrationParam(
+      `${redirectTo}${separator}posted=1`,
+      isNew,
+      "first_ship"
+    );
+  } else {
+    const separator = redirectTo.includes("?") ? "&" : "?";
+    nextRedirect = `${redirectTo}${separator}posted=1`;
+  }
+
   revalidatePath("/");
 
   if (projectId) {
     revalidatePath(`/projects/${projectId}`);
   }
 
-  const separator = redirectTo.includes("?") ? "&" : "?";
-  redirect(`${redirectTo}${separator}posted=1`);
+  redirect(nextRedirect);
 }
 
 export async function createPost(formData: FormData) {
@@ -174,9 +190,23 @@ export async function createPost(formData: FormData) {
     redirectWithPostError(redirectTo, insertError.message);
   }
 
+  let nextRedirect = redirectTo;
+
+  if (typeRaw === "shipped") {
+    const { isNew } = await recordMilestone(supabase, auth.userId, "first_ship");
+    const separator = redirectTo.includes("?") ? "&" : "?";
+    nextRedirect = withCelebrationParam(
+      `${redirectTo}${separator}posted=1`,
+      isNew,
+      "first_ship"
+    );
+  } else {
+    const separator = redirectTo.includes("?") ? "&" : "?";
+    nextRedirect = `${redirectTo}${separator}posted=1`;
+  }
+
   revalidatePath("/");
   revalidatePath(`/projects/${projectId}`);
 
-  const separator = redirectTo.includes("?") ? "&" : "?";
-  redirect(`${redirectTo}${separator}posted=1`);
+  redirect(nextRedirect);
 }

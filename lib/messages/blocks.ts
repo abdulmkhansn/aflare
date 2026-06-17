@@ -5,7 +5,7 @@ export async function isBlockedBetween(userId: string, otherUserId: string): Pro
 
   const { data, error } = await supabase
     .from("blocks")
-    .select("id")
+    .select("blocker_id")
     .or(
       `and(blocker_id.eq.${userId},blocked_id.eq.${otherUserId}),and(blocker_id.eq.${otherUserId},blocked_id.eq.${userId})`
     )
@@ -23,7 +23,7 @@ export async function hasBlockedUser(blockerId: string, blockedId: string): Prom
 
   const { data, error } = await supabase
     .from("blocks")
-    .select("id")
+    .select("blocker_id")
     .eq("blocker_id", blockerId)
     .eq("blocked_id", blockedId)
     .maybeSingle();

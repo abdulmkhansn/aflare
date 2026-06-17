@@ -13,27 +13,25 @@ export function RightRail({ sidebar }: RightRailProps) {
     <aside className="hidden w-[240px] shrink-0 self-start xl:block xl:w-[280px]">
       <div className="sticky top-14 space-y-6 px-3 py-6 lg:px-4">
         <section className="rounded-lg border border-border-subtle bg-surface-rail p-4">
-          <h2 className={sectionTitleClassName}>Blockers you could help with</h2>
+          <h2 className={sectionTitleClassName}>Flares you might help with</h2>
 
           {sidebar.blockers.length === 0 ? (
             <p className="mt-3 text-sm text-fg-muted">
-              No open blockers right now. Check Blockers for new posts.
+              No open flares right now. Check Flarespace for new ones.
             </p>
           ) : (
             <ul className="mt-3 space-y-3">
-              {sidebar.blockers.map((blocker) => {
-                const author = blocker.authorName?.trim() || "Unknown builder";
+              {sidebar.blockers.map((flare) => {
+                const author = flare.authorName?.trim() || "Unknown builder";
 
                 return (
-                  <li key={blocker.id}>
+                  <li key={flare.id}>
                     <Link
-                      href={`/projects/${blocker.projectId}`}
+                      href={`/flarespace/${flare.id}`}
                       className={`block cursor-pointer rounded-md p-2 -mx-2 transition-colors hover:bg-[var(--hover-subtle)] ${focusRingClassName}`}
                     >
-                      <p className="line-clamp-2 text-sm leading-snug text-fg">{blocker.excerpt}</p>
-                      <p className="mt-1 text-xs text-fg-muted">
-                        {author} · {blocker.projectName}
-                      </p>
+                      <p className="line-clamp-2 text-sm leading-snug text-fg">{flare.excerpt}</p>
+                      <p className="mt-1 text-xs text-fg-muted">{author}</p>
                     </Link>
                   </li>
                 );
@@ -42,10 +40,10 @@ export function RightRail({ sidebar }: RightRailProps) {
           )}
 
           <Link
-            href="/blockers"
+            href="/flarespace"
             className={`mt-3 inline-block cursor-pointer text-xs text-fg-muted hover:text-fg ${focusRingClassName}`}
           >
-            View all blockers
+            View Flarespace
           </Link>
         </section>
 

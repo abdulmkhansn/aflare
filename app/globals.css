@@ -191,3 +191,51 @@ button:disabled,
 .article-prose em {
   font-style: italic;
 }
+
+@keyframes toast-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+}
+
+@keyframes toast-flare-glow {
+  0%,
+  100% {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  }
+  50% {
+    box-shadow:
+      0 4px 14px rgba(0, 0, 0, 0.12),
+      0 0 20px color-mix(in srgb, var(--ember) 35%, transparent);
+  }
+}
+
+.toast-fade-in {
+  animation: toast-fade-in 0.25s ease-out forwards;
+}
+
+.toast-fade-out {
+  animation: toast-fade-out 0.3s ease-in forwards;
+}
+
+.toast-flare {
+  animation:
+    toast-fade-in 0.25s ease-out forwards,
+    toast-flare-glow 1.2s ease-in-out 0.15s;
+}

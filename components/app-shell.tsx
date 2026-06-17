@@ -1,20 +1,30 @@
 import type { ReactNode } from "react";
+import { Suspense } from "react";
 
 import { AppFooter } from "@/components/app-shell/app-footer";
 import { AppHeader } from "@/components/app-shell/app-header";
 import { LeftRail } from "@/components/app-shell/left-rail";
-import { MobileNav } from "@/components/app-shell/nav";
+import { MobileNav } from "@/components/app-shell/mobile-nav";
 import { RightRail } from "@/components/app-shell/right-rail";
+import { TransientUrlToast } from "@/components/transient-url-toast";
 import type { ShellSidebarData, ShellUser } from "@/lib/app/get-shell-data";
+import type { UserMilestone } from "@/lib/milestones/types";
 
 type AppShellProps = {
   user: ShellUser;
   sidebar: ShellSidebarData;
   unreadMessageCount?: number;
+  pendingMilestones?: UserMilestone[];
   children: ReactNode;
 };
 
-export function AppShell({ user, sidebar, unreadMessageCount = 0, children }: AppShellProps) {
+export function AppShell({
+  user,
+  sidebar,
+  unreadMessageCount = 0,
+  pendingMilestones = [],
+  children,
+}: AppShellProps) {
   return (
     <div className="flex min-h-dvh flex-col bg-surface-page">
       <AppHeader
@@ -22,6 +32,10 @@ export function AppShell({ user, sidebar, unreadMessageCount = 0, children }: Ap
         avatarUrl={user.avatarUrl}
         displayName={user.displayName}
       />
+
+      <Suspense fallback={null}>
+        <TransientUrlToast pendingMilestones={pendingMilestones} />
+      </Suspense>
 
       <div className="mx-auto flex w-full max-w-[1280px] justify-center gap-0 xl:gap-8">
         <LeftRail user={user} unreadMessageCount={unreadMessageCount} />
