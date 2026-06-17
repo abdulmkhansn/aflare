@@ -3,8 +3,8 @@ import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
 import { FeedView } from "@/components/feed-view";
-import { LandingPage } from "@/components/marketing/landing-page";
-import { DESCRIPTOR, PLATFORM_NAME, pageTitle } from "@/lib/app/brand";
+import { LandingPage, LANDING_SUBHEAD, LANDING_TAGLINE } from "@/components/marketing/landing-page";
+import { PLATFORM_NAME, pageTitle } from "@/lib/app/brand";
 import { getShellData } from "@/lib/app/get-shell-data";
 import { getUnreadMessageCount } from "@/lib/messages/get-inbox";
 import { getAuthState } from "@/utils/auth/session";
@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
   if (auth.status === "logged_out") {
     return {
       title: PLATFORM_NAME,
-      description: DESCRIPTOR,
+      description: `${LANDING_TAGLINE} ${LANDING_SUBHEAD}`,
     };
   }
 

@@ -1,175 +1,211 @@
 import Link from "next/link";
 
 import { AflareWordmark } from "@/components/aflare-wordmark";
-import { DESCRIPTOR, TAGLINE } from "@/lib/app/brand";
+import {
+  focusRingClassName,
+  primaryButtonClassName,
+  secondaryButtonClassName,
+  tagPillClassName,
+} from "@/lib/ui/classes";
 
-const heroFocusRing =
-  "outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal";
+export const LANDING_TAGLINE = "Build out loud. Together.";
 
-const lightFocusRing =
-  "outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-warmwhite";
+export const LANDING_SUBHEAD =
+  "Whatever you're building and however you started, you're in the right room. People here help. They don't judge.";
 
-const STEPS = [
+const HOW_IT_WORKS = [
   {
-    title: "Keep a build log",
-    body: "Write what you are building as you go. Your project page holds the story, not a slide deck.",
+    title: "Share what you're building",
+    body: "Progress, wins, what you learned, even the rough middle. Show the work as it happens.",
   },
   {
-    title: "Post where you are stuck",
-    body: "Share updates, blockers, and when you need testers. Say what is actually blocking you.",
+    title: "Show where you're stuck",
+    body: "Blockers are normal here, not failures. Say what's blocking you and ask for a hand.",
   },
   {
-    title: "Get found through your tags",
-    body: "People with overlapping skills find you through tags. They reply on your posts.",
+    title: "Help and get helped",
+    body: "One tap to say this helped. Reputation is earned by helping, never by ranking others.",
   },
   {
-    title: "Mark what actually helped",
-    body: "When a reply moves you forward, say so. That builds reputation you can point to.",
+    title: "Build in good company",
+    body: "Follow builders, find your people, and keep moving alongside others who get it.",
   },
-];
+] as const;
+
+const WHO_ITS_FOR = [
+  "First-time builders shipping with AI tools",
+  "People new to building apps",
+  "Seasoned builders here to help and stay current",
+  "People building small things just to share",
+] as const;
+
+const STANCE_PILLS = [
+  "No gatekeeping.",
+  "No question too basic.",
+  "No win too small.",
+] as const;
 
 export function LandingPage() {
   return (
-    <div className="flex min-h-full flex-col bg-warmwhite">
-      {/* Hero */}
-      <header className="bg-charcoal text-warmwhite">
-        <div className="mx-auto max-w-5xl px-6 py-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <AflareWordmark href="/" variant="light" />
+    <div className="flex min-h-full flex-col bg-surface-page text-fg">
+      {/* Header */}
+      <header className="border-b border-border-subtle">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-6 py-5">
+          <AflareWordmark href="/" variant="nav" />
 
-            <nav
-              className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm"
-              aria-label="Marketing"
-            >
-              <a href="#how-it-works" className={`text-warmwhite/80 hover:text-warmwhite ${heroFocusRing}`}>
-                How it works
-              </a>
-              <a href="#trust" className={`text-warmwhite/80 hover:text-warmwhite ${heroFocusRing}`}>
-                Trust
-              </a>
-              <Link
-                href="/login"
-                className={`rounded-md bg-ember px-4 py-2 font-medium text-warmwhite hover:opacity-90 ${heroFocusRing}`}
-              >
-                Start building
-              </Link>
-            </nav>
-          </div>
-        </div>
-
-        <div className="mx-auto max-w-5xl px-6 pb-16 pt-6 sm:pb-24 sm:pt-10">
-          <p className="text-sm font-medium text-warmwhite/80">{TAGLINE}</p>
-
-          <h1 className="mt-4 max-w-2xl text-3xl font-medium leading-tight tracking-[-0.02em] sm:text-4xl sm:leading-tight">
-            Build in the open. Show where you&apos;re stuck.
-          </h1>
-
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-warmwhite/75 sm:text-lg">
-            {DESCRIPTOR}
-          </p>
-
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <Link
-              href="/login"
-              className={`rounded-md bg-ember px-5 py-2.5 text-center text-sm font-medium text-warmwhite hover:opacity-90 ${heroFocusRing}`}
-            >
-              Start your build log
-            </Link>
-            <Link
-              href="/login"
-              className={`rounded-md border border-warmwhite/30 px-5 py-2.5 text-center text-sm font-medium text-warmwhite hover:bg-warmwhite/5 ${heroFocusRing}`}
-            >
+          <nav className="flex items-center gap-3 sm:gap-4" aria-label="Marketing">
+            <Link href="/login" className={`text-sm text-fg-muted hover:text-fg ${focusRingClassName}`}>
               Sign in
             </Link>
-          </div>
+            <Link href="/login" className={primaryButtonClassName}>
+              Get started
+            </Link>
+          </nav>
         </div>
       </header>
 
+      {/* Hero */}
+      <section className="mx-auto w-full max-w-5xl px-6 py-16 sm:py-24">
+        <AflareWordmark variant="nav" className="text-4xl sm:text-[2.75rem]" />
+
+        <h1 className="mt-8 max-w-2xl text-3xl font-medium leading-tight tracking-[-0.02em] sm:text-4xl sm:leading-tight">
+          {LANDING_TAGLINE}
+        </h1>
+
+        <p className="mt-5 max-w-xl text-base leading-relaxed text-fg-muted sm:text-lg">
+          {LANDING_SUBHEAD}
+        </p>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Link href="/login" className={`${primaryButtonClassName} text-center`}>
+            Start building
+          </Link>
+          <a href="#how-it-works" className={`${secondaryButtonClassName} text-center`}>
+            See how it works
+          </a>
+        </div>
+      </section>
+
+      {/* Stance */}
+      <section
+        id="stance"
+        className="border-y border-border-subtle bg-surface-card py-20 sm:py-28"
+      >
+        <div className="mx-auto max-w-3xl px-6">
+          <h2 className="text-3xl font-medium leading-tight tracking-[-0.02em] sm:text-4xl">
+            Everyone started somewhere.
+          </h2>
+
+          <div className="mt-8 space-y-4 text-base leading-relaxed text-fg-muted sm:text-lg">
+            <p>
+              Some people here have shipped for twenty years. Some shipped their first thing last
+              week and shared a localhost link. Both belong, and honestly, we&apos;re all a few
+              steps ahead on some things and a couple behind on others. That&apos;s the whole
+              point.
+            </p>
+            <p>
+              The experienced help the new. The new keep everyone current. Nobody gets talked down
+              to for learning in public.
+            </p>
+          </div>
+
+          <ul className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            {STANCE_PILLS.map((pill) => (
+              <li key={pill}>
+                <span className={`inline-block ${tagPillClassName} px-4 py-2 text-sm`}>{pill}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {/* How it works */}
-      <section id="how-it-works" className="bg-warmwhite py-16 sm:py-20">
+      <section id="how-it-works" className="py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-6">
-          <h2 className="text-2xl font-medium tracking-[-0.02em] text-charcoal">How it works</h2>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-charcoal/70">
-            Post the work as you go. Help each other move forward.
+          <h2 className="text-2xl font-medium tracking-[-0.02em]">How it works</h2>
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-fg-muted">
+            Plain steps. Nothing to perform, nothing to prove before you show up.
           </p>
 
-          <ol className="mt-10 grid gap-8 sm:grid-cols-2">
-            {STEPS.map((step, index) => (
+          <ol className="mt-12 grid gap-10 sm:grid-cols-2">
+            {HOW_IT_WORKS.map((step, index) => (
               <li key={step.title} className="space-y-2">
-                <p className="text-xs font-medium text-charcoal/50">Step {index + 1}</p>
-                <h3 className="text-lg font-medium text-charcoal">{step.title}</h3>
-                <p className="text-sm leading-relaxed text-charcoal/70">{step.body}</p>
+                <p className="text-xs font-medium text-fg-muted">Step {index + 1}</p>
+                <h3 className="text-lg font-medium">{step.title}</h3>
+                <p className="text-sm leading-relaxed text-fg-muted">{step.body}</p>
               </li>
             ))}
           </ol>
         </div>
       </section>
 
+      {/* Who it's for */}
+      <section className="border-t border-border-subtle bg-surface-card py-16 sm:py-20">
+        <div className="mx-auto max-w-3xl px-6">
+          <h2 className="text-2xl font-medium tracking-[-0.02em]">Who it&apos;s for</h2>
+          <p className="mt-3 text-sm leading-relaxed text-fg-muted sm:text-base">
+            If you build and want to build in the open, you belong here.
+          </p>
+
+          <ul className="mt-8 space-y-3">
+            {WHO_ITS_FOR.map((item) => (
+              <li key={item} className="flex gap-3 text-sm leading-relaxed text-fg-muted sm:text-base">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ember" aria-hidden="true" />
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {/* Trust */}
-      <section id="trust" className="border-t border-charcoal/10 bg-warmwhite py-16 sm:py-20">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="max-w-2xl">
-            <h2 className="text-2xl font-medium tracking-[-0.02em] text-charcoal">
-              Trust is the point
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-charcoal/70">
-              Aflare is built so help and credit are visible. You can see who builds, what they
-              said, and what moved someone forward.
-            </p>
-          </div>
+      <section className="py-14 sm:py-16">
+        <div className="mx-auto max-w-2xl px-6 text-center">
+          <p className="text-base leading-relaxed text-teal sm:text-lg">
+            We verify that people really build, without ever touching your code.
+          </p>
+        </div>
+      </section>
 
-          <div className="mt-10 grid gap-6 sm:grid-cols-2">
-            <div className="rounded-lg border border-teal/25 bg-teal/5 p-5">
-              <div className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-teal" aria-hidden="true" />
-                <h3 className="text-sm font-medium text-charcoal">Verified builder</h3>
-              </div>
-              <p className="mt-2 text-sm leading-relaxed text-charcoal/80">
-                Connect GitHub to show commit activity and languages. We read activity and languages,
-                never your code. Proof you build, not a badge for show.
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-charcoal/10 bg-white p-5">
-              <h3 className="text-sm font-medium text-charcoal">Timestamped posts</h3>
-              <p className="mt-2 text-sm leading-relaxed text-charcoal/70">
-                Your updates stay on the record. What you shipped, when you were stuck, and who
-                replied is all there. Provenance you can point to.
-              </p>
-            </div>
-
-            <div className="rounded-lg border border-teal/25 bg-teal/5 p-5 sm:col-span-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-teal" aria-hidden="true" />
-                <h3 className="text-sm font-medium text-charcoal">Reputation from helpful replies</h3>
-              </div>
-              <p className="mt-2 text-sm leading-relaxed text-charcoal/80">
-                When someone marks your reply as helpful, your reputation grows. No algorithm, no
-                gamified badges. A record that you showed up and helped.
-              </p>
-            </div>
+      {/* Final CTA */}
+      <section className="border-t border-border-subtle bg-surface-card py-16 sm:py-20">
+        <div className="mx-auto max-w-2xl px-6 text-center">
+          <h2 className="text-2xl font-medium tracking-[-0.02em] sm:text-3xl">{LANDING_TAGLINE}</h2>
+          <p className="mt-4 text-sm leading-relaxed text-fg-muted sm:text-base">
+            {LANDING_SUBHEAD}
+          </p>
+          <div className="mt-8">
+            <Link href="/login" className={primaryButtonClassName}>
+              Get started
+            </Link>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="mt-auto border-t border-charcoal/10 bg-warmwhite py-10">
-        <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 sm:flex-row sm:items-end sm:justify-between">
+      <footer className="mt-auto border-t border-border-subtle py-10">
+        <div className="mx-auto flex max-w-5xl flex-col gap-8 px-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <AflareWordmark variant="dark" className="text-charcoal" />
-            <p className="mt-2 text-sm font-medium text-charcoal">{TAGLINE}</p>
+            <AflareWordmark variant="nav" />
+            <p className="mt-2 text-sm font-medium text-fg-muted">{LANDING_TAGLINE}</p>
           </div>
 
-          <nav className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-charcoal/70" aria-label="Footer">
-            <a href="#how-it-works" className={`hover:text-charcoal ${lightFocusRing}`}>
+          <nav
+            className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-fg-muted"
+            aria-label="Footer"
+          >
+            <a href="#how-it-works" className={`hover:text-fg ${focusRingClassName}`}>
               How it works
             </a>
-            <a href="#trust" className={`hover:text-charcoal ${lightFocusRing}`}>
-              Trust
-            </a>
-            <Link href="/login" className={`hover:text-charcoal ${lightFocusRing}`}>
+            <Link href="/login" className={`hover:text-fg ${focusRingClassName}`}>
               Sign in
             </Link>
+            <a href="#" className={`hover:text-fg ${focusRingClassName}`}>
+              Terms
+            </a>
+            <a href="#" className={`hover:text-fg ${focusRingClassName}`}>
+              Privacy
+            </a>
           </nav>
         </div>
       </footer>
