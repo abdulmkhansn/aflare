@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { AuthorLink } from "@/components/avatar";
+import { ContentTimestamp } from "@/components/content-timestamp";
+import { EditableFlareAsk } from "@/components/editable-flare-ask";
 import { FlareCommentsSection } from "@/components/flare-comments-section";
 import { FlareHelpersSection } from "@/components/flare-helpers-section";
 import { FlareResolveActions } from "@/components/flare-resolve-actions";
@@ -11,7 +13,6 @@ import type { FlareDetail } from "@/lib/flares/get-flare-detail";
 import { resolveFlareAuthor, resolveFlareTags } from "@/lib/flares/types";
 import { parseStructuredFields } from "@/lib/posts/structured-fields";
 import { formatTagLabel } from "@/lib/tags/format-tag-label";
-import { formatRelativeTime } from "@/lib/time/relative-time";
 import {
   cardClassName,
   errorTextClassName,
@@ -59,20 +60,22 @@ export function FlareDetailView({
               displayName={author?.display_name ?? null}
               avatarUrl={author?.avatar_url ?? null}
             />
-            <time className="mt-1 block text-xs text-fg-muted" dateTime={flare.created_at}>
-              {formatRelativeTime(flare.created_at)}
-            </time>
+            <ContentTimestamp
+              createdAt={flare.created_at}
+              editedAt={flare.edited_at}
+              className="mt-1 block text-xs text-fg-muted"
+            />
           </div>
           <FlareStatusBadge status={flare.status} />
         </div>
 
-        {flare.title?.trim() ? (
-          <h1 className="mt-4 text-lg font-medium text-fg">{flare.title.trim()}</h1>
-        ) : null}
-
-        {flare.body ? (
-          <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-fg">{flare.body}</p>
-        ) : null}
+        <EditableFlareAsk
+          flareId={flare.id}
+          title={flare.title}
+          body={flare.body}
+          isAuthor={isAuthor}
+          redirectTo={redirectTo}
+        />
 
         <PostMedia fields={fields} />
 

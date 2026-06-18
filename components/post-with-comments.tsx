@@ -42,7 +42,7 @@ export function PostWithComments({
 
   const inner = (
     <>
-      <PostCard post={post} embedded />
+      <PostCard post={post} embedded currentUserId={currentUserId} redirectTo={redirectTo} />
       <PostReactionBar
         postId={post.id}
         currentUserId={currentUserId}

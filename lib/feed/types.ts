@@ -8,6 +8,7 @@ export type FeedPost = {
   kind: string | null;
   body: string;
   created_at: string;
+  edited_at: string | null;
   author_id: string;
   project_id: string | null;
   article_id: string | null;
@@ -48,6 +49,7 @@ export const FEED_POST_SELECT = `
   kind,
   body,
   created_at,
+  edited_at,
   author_id,
   project_id,
   article_id,

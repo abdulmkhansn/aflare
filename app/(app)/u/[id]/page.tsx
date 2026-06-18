@@ -23,6 +23,7 @@ import {
   tagPillClassName,
   verifiedBadgeClassName,
   statusTextClassName,
+  secondaryButtonClassName,
 } from "@/lib/ui/classes";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
@@ -151,7 +152,11 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
                 redirectTo={`/u/${id}`}
               />
             </div>
-          ) : null}
+          ) : (
+            <Link href={`/u/${id}/edit`} className={secondaryButtonClassName}>
+              Edit profile
+            </Link>
+          )}
         </div>
 
         {statusMessage ? (

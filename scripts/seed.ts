@@ -10,6 +10,7 @@ import { randomBytes } from "node:crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import type { PostStructuredFields } from "../lib/posts/structured-fields";
+import { flareBodyRedundantWithTitle } from "../lib/flares/types";
 import { orderedUserPair } from "../lib/messages/types";
 
 import { diceBearAvatarUrl } from "./seed-avatars";
@@ -355,6 +356,23 @@ async function seedArticles(
   }
 
   return count;
+}
+
+function validateSeedFlares() {
+  for (const flare of SEED_FLARES) {
+    const title = flare.title?.trim() ?? "";
+    const body = flare.body?.trim() ?? "";
+
+    if (!body) {
+      throw new Error(`Seed flare "${title || "(untitled)"}" is missing a body description.`);
+    }
+
+    if (title && flareBodyRedundantWithTitle(title, body)) {
+      throw new Error(
+        `Seed flare "${title}" repeats the title in the body — body should be the longer description.`
+      );
+    }
+  }
 }
 
 async function seedFlares(
@@ -712,6 +730,8 @@ async function main() {
   const supabase = createClient(url, serviceRoleKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
+
+  validateSeedFlares();
 
   await assertNoSeedUsers(supabase);
   const tags = await loadTags(supabase);

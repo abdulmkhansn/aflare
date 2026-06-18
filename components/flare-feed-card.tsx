@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AuthorLink } from "@/components/avatar";
 import { FlareStatusBadge } from "@/components/flare-status-badge";
 import {
+  flareCardBodyExcerpt,
   flareExcerpt,
   resolveFlareAuthor,
   resolveFlareHelpers,
@@ -19,7 +20,7 @@ export function FlareFeedCard({ flare }: FlareFeedCardProps) {
   const author = resolveFlareAuthor(flare);
   const helpers = resolveFlareHelpers(flare);
   const title = flare.title?.trim();
-  const excerpt = flareExcerpt(flare, 240);
+  const bodyExcerpt = title ? flareCardBodyExcerpt(flare, 240) : flareExcerpt(flare);
 
   return (
     <article className={`${cardClassName} border-ember/20`}>
@@ -40,7 +41,9 @@ export function FlareFeedCard({ flare }: FlareFeedCardProps) {
       <div className="mt-3">
         <p className="text-xs font-medium uppercase tracking-wide text-ember">Flare</p>
         {title ? <h3 className="mt-1 text-sm font-medium text-fg">{title}</h3> : null}
-        <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-fg">{excerpt}</p>
+        {bodyExcerpt ? (
+          <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-fg">{bodyExcerpt}</p>
+        ) : null}
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-3">

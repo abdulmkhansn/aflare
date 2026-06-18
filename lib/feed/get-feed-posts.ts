@@ -46,7 +46,7 @@ function applyPostFilter(
   followingIds: string[]
 ): FeedPost[] {
   switch (filter) {
-    case "blockers":
+    case "flares":
       return [];
     case "shipped":
       return posts.filter((post) => post.type === "shipped");
@@ -59,7 +59,7 @@ function applyPostFilter(
 
 function applyFlareFilter(flares: FeedFlare[], filter: FeedFilter, followingIds: string[]): FeedFlare[] {
   switch (filter) {
-    case "blockers":
+    case "flares":
       return flares;
     case "shipped":
       return [];
@@ -129,7 +129,7 @@ export async function getFeedPosts(
       if (posts) collected.push(...(posts as FeedPost[]));
       if (flares) collectedFlares.push(...(flares as FeedFlare[]));
     }
-  } else if (filter === "blockers") {
+  } else if (filter === "flares") {
     const { data: flares } = await supabase
       .from("flares")
       .select(FLARE_SELECT)

@@ -96,7 +96,7 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
             </>
           ) : filter === "following" ? (
             <>No posts from people you follow yet. Follow builders to see their updates here.</>
-          ) : filter === "blockers" ? (
+          ) : filter === "flares" ? (
             <>No flares in your feed right now. Check Flarespace or send one up if you are stuck.</>
           ) : (
             <>No shipped updates in your feed right now. Post a win when you ship something.</>

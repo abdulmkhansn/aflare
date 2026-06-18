@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Avatar } from "@/components/avatar";
 import { FlareStatusBadge } from "@/components/flare-status-badge";
 import {
+  flareCardBodyExcerpt,
   flareExcerpt,
   resolveFlareAuthor,
   resolveFlareHelpers,
@@ -23,7 +24,7 @@ export function FlareCard({ flare }: FlareCardProps) {
   const tags = resolveFlareTags(flare);
   const displayName = author?.display_name?.trim() || "Unknown builder";
   const title = flare.title?.trim();
-  const excerpt = flareExcerpt(flare);
+  const bodyExcerpt = title ? flareCardBodyExcerpt(flare) : flareExcerpt(flare);
 
   return (
     <Link
@@ -35,7 +36,9 @@ export function FlareCard({ flare }: FlareCardProps) {
           {title ? (
             <h3 className="text-sm font-medium text-fg">{title}</h3>
           ) : null}
-          <p className={`text-sm leading-relaxed text-fg ${title ? "mt-1" : ""}`}>{excerpt}</p>
+          {bodyExcerpt ? (
+            <p className={`text-sm leading-relaxed text-fg ${title ? "mt-1" : ""}`}>{bodyExcerpt}</p>
+          ) : null}
         </div>
         <FlareStatusBadge status={flare.status} />
       </div>

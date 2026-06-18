@@ -41,6 +41,7 @@ export type FlareRow = {
   structured_fields: PostStructuredFields | Record<string, unknown> | null;
   created_at: string;
   updated_at: string;
+  edited_at: string | null;
   resolved_at: string | null;
   profiles: FlareAuthorProfile | FlareAuthorProfile[] | null;
   flare_tags: FlareTag[] | null;
@@ -61,6 +62,7 @@ export type FlareComment = {
   body: string;
   helpful_count: number;
   created_at: string;
+  edited_at: string | null;
   profiles: FlareCommentProfile | FlareCommentProfile[] | null;
 };
 
@@ -77,6 +79,7 @@ export const FLARE_SELECT = `
   structured_fields,
   created_at,
   updated_at,
+  edited_at,
   resolved_at,
   profiles:author_id ( display_name, avatar_url ),
   flare_tags ( tag_id, tags ( id, label ) ),
@@ -90,6 +93,7 @@ export const FLARE_COMMENT_SELECT = `
   body,
   helpful_count,
   created_at,
+  edited_at,
   profiles:author_id ( display_name, avatar_url )
 `;
 
@@ -112,13 +116,83 @@ export function resolveFlareCommentProfile(comment: FlareComment) {
   return Array.isArray(comment.profiles) ? comment.profiles[0] : comment.profiles;
 }
 
-export function flareExcerpt(flare: FlareRow, maxLength = 140): string {
-  const source = flare.title?.trim() || flare.body.trim();
-  const normalized = source.replace(/\s+/g, " ");
+function normalizeFlareText(text: string): string {
+  return text
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase()
+    .replace(/[.?!…]+$/g, "");
+}
+
+function truncateFlareText(text: string, maxLength: number): string {
+  const normalized = text.replace(/\s+/g, " ");
 
   if (normalized.length <= maxLength) {
     return normalized;
   }
 
   return `${normalized.slice(0, maxLength - 1).trimEnd()}…`;
+}
+
+/** True when body is empty or repeats the title without adding detail. */
+export function flareBodyRedundantWithTitle(
+  title: string | null | undefined,
+  body: string | null | undefined
+): boolean {
+  const bodyTrimmed = body?.trim() ?? "";
+  if (!bodyTrimmed) {
+    return true;
+  }
+
+  const titleTrimmed = title?.trim() ?? "";
+  if (!titleTrimmed) {
+    return false;
+  }
+
+  const normTitle = normalizeFlareText(titleTrimmed);
+  const normBody = normalizeFlareText(bodyTrimmed);
+
+  if (normTitle === normBody) {
+    return true;
+  }
+
+  if (normBody.startsWith(normTitle)) {
+    const remainder = normBody.slice(normTitle.length).replace(/[^\w\s]/g, "").trim();
+    if (!remainder) {
+      return true;
+    }
+  }
+
+  if (normTitle.startsWith(normBody)) {
+    const remainder = normTitle.slice(normBody.length).replace(/[^\w\s]/g, "").trim();
+    if (!remainder) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/** One-line preview when only a single line is shown (e.g. sidebar). */
+export function flareExcerpt(flare: FlareRow, maxLength = 140): string {
+  const title = flare.title?.trim();
+  const body = flare.body?.trim() ?? "";
+  const source = title || body;
+
+  return truncateFlareText(source, maxLength);
+}
+
+/**
+ * Body preview for cards that already show the title.
+ * Returns null when the body is empty or repeats the title.
+ */
+export function flareCardBodyExcerpt(flare: FlareRow, maxLength = 140): string | null {
+  const title = flare.title?.trim();
+  const body = flare.body?.trim() ?? "";
+
+  if (!body || flareBodyRedundantWithTitle(title, body)) {
+    return null;
+  }
+
+  return truncateFlareText(body, maxLength);
 }

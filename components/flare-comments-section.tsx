@@ -1,14 +1,18 @@
+"use client";
+
 import Link from "next/link";
 
+import { deleteFlareComment, updateFlareComment } from "@/app/(app)/actions/content";
 import { toggleFlareCommentHelpful } from "@/app/(app)/actions/helpful-marks";
 import { createFlareComment } from "@/app/(app)/actions/flares";
 import { Avatar } from "@/components/avatar";
+import { ContentTimestamp } from "@/components/content-timestamp";
+import { EditableContentBody } from "@/components/editable-content-body";
 import { HELPFUL_ACTION_LABEL } from "@/lib/helpful/constants";
 import {
   resolveFlareCommentProfile,
   type FlareComment,
 } from "@/lib/flares/types";
-import { formatRelativeTime } from "@/lib/time/relative-time";
 import {
   errorTextClassName,
   fieldClassName,
@@ -55,12 +59,23 @@ function FlareCommentItem({
           >
             {displayName}
           </Link>
-          <time className="text-xs text-fg-muted" dateTime={comment.created_at}>
-            {formatRelativeTime(comment.created_at)}
-          </time>
+          <ContentTimestamp createdAt={comment.created_at} editedAt={comment.edited_at} />
         </div>
 
-        <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-fg">{comment.body}</p>
+        <div className="mt-1">
+          <EditableContentBody
+            body={comment.body}
+            isAuthor={isOwnComment}
+            editAction={updateFlareComment}
+            deleteAction={deleteFlareComment}
+            hiddenFields={{
+              comment_id: comment.id,
+              redirect_to: redirectTo,
+            }}
+            deleteTitle="Delete this reply?"
+            deleteDescription="It'll be gone for good. Helpful marks adjust automatically."
+          />
+        </div>
 
         {canMarkHelpful && !isOwnComment ? (
           <form action={toggleFlareCommentHelpful} className="mt-2">

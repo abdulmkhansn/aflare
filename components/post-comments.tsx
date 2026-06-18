@@ -1,11 +1,15 @@
+"use client";
+
 import Link from "next/link";
 
+import { deleteComment, updateComment } from "@/app/(app)/actions/content";
 import { createComment } from "@/app/(app)/actions/comments";
 import { Avatar } from "@/components/avatar";
+import { ContentTimestamp } from "@/components/content-timestamp";
+import { EditableContentBody } from "@/components/editable-content-body";
 import { ThisHelpedButton } from "@/components/this-helped-button";
 import type { Comment } from "@/lib/comments/types";
 import { resolveCommentProfile } from "@/lib/comments/types";
-import { formatRelativeTime } from "@/lib/time/relative-time";
 import {
   errorTextClassName,
   fieldClassName,
@@ -21,7 +25,7 @@ type CommentItemProps = {
   isMarked: boolean;
 };
 
-export function CommentItem({
+function CommentItem({
   comment,
   currentUserId,
   redirectTo,
@@ -49,12 +53,23 @@ export function CommentItem({
           >
             {displayName}
           </Link>
-          <time className="text-xs text-fg-muted" dateTime={comment.created_at}>
-            {formatRelativeTime(comment.created_at)}
-          </time>
+          <ContentTimestamp createdAt={comment.created_at} editedAt={comment.edited_at} />
         </div>
 
-        <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-fg">{comment.body}</p>
+        <div className="mt-1">
+          <EditableContentBody
+            body={comment.body}
+            isAuthor={isOwnComment}
+            editAction={updateComment}
+            deleteAction={deleteComment}
+            hiddenFields={{
+              comment_id: comment.id,
+              redirect_to: redirectTo,
+            }}
+            deleteTitle="Delete this comment?"
+            deleteDescription="It'll be gone for good. Reputation from helpful marks adjusts automatically."
+          />
+        </div>
 
         {!isOwnComment ? (
           <div className="mt-2">
@@ -78,7 +93,7 @@ type AddCommentFormProps = {
   error?: string;
 };
 
-export function AddCommentForm({ postId, redirectTo, posted, error }: AddCommentFormProps) {
+function AddCommentForm({ postId, redirectTo, posted, error }: AddCommentFormProps) {
   return (
     <div className="border-t border-border-subtle pt-3">
       {posted ? (

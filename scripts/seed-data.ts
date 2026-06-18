@@ -189,6 +189,9 @@ export const SEED_BUILDERS: SeedBuilder[] = [
           link_label: "Stripe Connect docs — still the bible",
         },
       },
+      {
+        body: "Saw three 'first deploy' posts today. That's the feed I want — veterans and day-one builders in the same room.",
+      },
     ],
   },
   {
@@ -228,6 +231,9 @@ export const SEED_BUILDERS: SeedBuilder[] = [
       },
       {
         body: "Question for builders: what's the smallest UI decision that blocked you last week? Trying to collect real examples for a post.",
+      },
+      {
+        body: "To the people posting localhost links this week: that's the whole point of this place. Keep going.",
       },
     ],
   },
@@ -626,6 +632,205 @@ export const SEED_BUILDERS: SeedBuilder[] = [
       },
     ],
   },
+  {
+    fullName: "Mia Santos",
+    emailLocal: "mia.santos",
+    displayName: "Mia Santos",
+    bio: "Left retail management six months ago to learn to build. First real project, lots of tabs open, no fake confidence — just showing up and asking the questions.",
+    brings: ["feedback"],
+    openTo: ["co-founder", "frontend"],
+    projects: [
+      {
+        name: "CornerList",
+        oneLiner: "A simple inventory tracker for tiny shops that outgrew spreadsheets.",
+        abstractDescription:
+          "Built for the kind of store I used to run — low SKU count, high chaos, one person doing everything.",
+        stage: "building",
+        projectTags: ["frontend", "design"],
+        posts: [
+          {
+            type: "update",
+            body: "Left retail six months ago to learn to code. Here's my first real project — still rough, but it's mine.",
+          },
+          {
+            type: "learning",
+            body: "Three months in, I finally understand what an API is. Felt silly not knowing. Feels good knowing.",
+          },
+          {
+            type: "stuck",
+            body: "Database part works locally. Deploying is a different language entirely. Stuck between 'almost done' and 'nobody can see it yet.'",
+          },
+        ],
+      },
+    ],
+    sharePosts: [
+      {
+        body: "Sharing my localhost link for the first time. Terrifying. Here goes anyway — feedback welcome, gentle preferred but honest is fine too.",
+      },
+      {
+        body: "Is it normal to feel like I have no idea what I'm doing? Some days I ship something and feel great. Same hour I can't explain how it works.",
+      },
+    ],
+  },
+  {
+    fullName: "Alex Kim",
+    emailLocal: "alex.kim.hobby",
+    displayName: "Alex Kim",
+    bio: "Accountant by day. Builds small joyful things on weekends — plant trackers, dice rollers, stuff my friends actually use. Not trying to be a startup.",
+    brings: ["feedback"],
+    openTo: ["feedback"],
+    projects: [
+      {
+        name: "ThirstyLeaves",
+        oneLiner: "Track when your houseplants were last watered.",
+        abstractDescription: "One screen, push reminders, no social features, no growth hacks. Just my plants.",
+        stage: "shipped",
+        projectTags: ["frontend", "design"],
+        posts: [
+          {
+            type: "shipped",
+            body: "Built a little app to track my houseplants' watering schedule. My first finished thing ever — ugly icon, works fine.",
+          },
+          {
+            type: "update",
+            body: "Three friends asked for it after I demoed at game night. Added a second plant profile. That's the whole roadmap.",
+          },
+        ],
+      },
+      {
+        name: "RollForSnacks",
+        oneLiner: "A dice roller for my D&D group with inside-joke crit messages.",
+        abstractDescription: "Weekend toy — animated rolls, custom sound on nat 20, zero monetization plan.",
+        stage: "shipped",
+        projectTags: ["frontend", "design"],
+        posts: [
+          {
+            type: "shipped",
+            body: "Made a dice roller for my D&D group. They roast the UI every session and still use it. Success metric achieved.",
+          },
+        ],
+      },
+    ],
+    sharePosts: [
+      {
+        body: "Weekend project: a tool that reminds me to call my mum. She approved the feature request in one text.",
+      },
+      {
+        body: "Anyone else build things just because they're fun? No pitch deck, no TAM slide, just vibes and a working button.",
+      },
+    ],
+  },
+  {
+    fullName: "Sam O'Brien",
+    emailLocal: "sam.obrien",
+    displayName: "Sam O'Brien",
+    bio: "Self-taught, month four. Building a neighborhood events board because the Facebook group drives me nuts. Asks basic questions without apologizing for them.",
+    brings: ["feedback"],
+    openTo: ["backend", "design"],
+    projects: [
+      {
+        name: "BlockBoard",
+        oneLiner: "What's happening on my block this week — yard sales, lost cats, block parties.",
+        abstractDescription: "Hyperlocal bulletin board for people who don't want another Facebook group.",
+        stage: "building",
+        projectTags: ["frontend", "feedback"],
+        posts: [
+          {
+            type: "update",
+            body: "Got posts showing on a page. No login yet. Progress is progress.",
+          },
+          {
+            type: "learning",
+            body: "TIL 'flexbox' is not a insult — it's how you center things. Took longer than I'd like to admit.",
+          },
+          {
+            type: "need_users",
+            body: "Looking for two neighbors willing to try a janky events board before I add auth. Must tolerate rough edges.",
+          },
+        ],
+      },
+    ],
+    sharePosts: [
+      {
+        body: "Centered a div on the first try today. Small for most people. Feels incredible for me.",
+      },
+      {
+        body: "Shipped my first thing ever. It's rough, it's live, and my neighbor actually used it. That's enough for this week.",
+      },
+    ],
+  },
+  {
+    fullName: "Renata Flores",
+    emailLocal: "renata.flores",
+    displayName: "Renata Flores",
+    bio: "Marketing background, learning to build the thing instead of only writing about it. Cares about copy, pricing, and whether normal humans understand the button.",
+    brings: ["design", "distribution"],
+    openTo: ["backend", "feedback"],
+    projects: [
+      {
+        name: "PriceTag",
+        oneLiner: "Plain-language pricing page feedback for solo founders.",
+        abstractDescription: "Upload your pricing page, get notes on clarity — not aesthetics scores, just 'would I know what to click?'",
+        stage: "building",
+        projectTags: ["design", "feedback"],
+        posts: [
+          {
+            type: "update",
+            body: "First version is literally a form and a checklist I wrote in Notion. Testing whether the questions help before I automate anything.",
+          },
+          {
+            type: "stuck",
+            body: "Need someone to explain hosting options like I'm smart but new — Vercel vs Netlify vs 'just put it somewhere.' Less jargon, more 'pick this if...'",
+          },
+          {
+            type: "learning",
+            body: "TIL most early pricing pages fail on verbs, not design. 'Get started' tells me nothing. 'Start free trial' tells me plenty.",
+          },
+        ],
+      },
+    ],
+    sharePosts: [
+      {
+        body: "Hot take from a non-engineer: if your landing page needs a FAQ to explain the product, the page isn't done yet.",
+      },
+    ],
+  },
+  {
+    fullName: "Greg Walsh",
+    emailLocal: "greg.walsh",
+    displayName: "Greg Walsh",
+    bio: "Built PHP sites in the late 2000s, then life happened. Getting back into it with modern tools — slower than I expected, less embarrassed than I thought I'd be.",
+    brings: ["backend", "feedback"],
+    openTo: ["frontend", "design"],
+    projects: [
+      {
+        name: "GarageSaleMap",
+        oneLiner: "Map of weekend garage sales in my county.",
+        abstractDescription: "Nostalgic project — I used to run a forum for this. Rebuilding simpler with things I don't fully understand yet.",
+        stage: "building",
+        projectTags: ["frontend", "backend"],
+        posts: [
+          {
+            type: "update",
+            body: "React is not jQuery. Took me a week to stop fighting that mentally. Making peace with components.",
+          },
+          {
+            type: "learning",
+            body: "TIL git branches aren't scary if you name them like temp folders. feature/garage-pins-v1 energy.",
+          },
+          {
+            type: "stuck",
+            body: "Map pins work. Mobile layout doesn't. Feels like I'm one CSS breakthrough away and one week away at the same time.",
+          },
+        ],
+      },
+    ],
+    sharePosts: [
+      {
+        body: "Returning after years away: the tools changed, the impostor feeling didn't. Nice to find a room where 'I'm rusty' isn't an apology.",
+      },
+    ],
+  },
 ];
 
 export const SEED_ARTICLES: SeedArticle[] = [
@@ -785,6 +990,148 @@ export const SEED_FLARES: SeedFlare[] = [
       },
     ],
   },
+  {
+    authorIndex: 15,
+    title: "First time deploying and I'm completely lost",
+    body: "CornerList works on my laptop. That's the whole status.\n\nI don't know where to put it so other people can see it. Vercel? Railway? Something else? Every tutorial assumes a different starting point.\n\nWhere do I even start?",
+    status: "being_helped",
+    tags: ["frontend", "feedback"],
+    helperIndices: [5, 14, 7],
+    comments: [
+      {
+        authorIndex: 7,
+        body: "Totally normal. Pick one host (Vercel is fine for Next/React) and follow their 'first deploy' doc end to end — don't optimize yet.",
+        markHelpfulByAuthor: true,
+      },
+      {
+        authorIndex: 14,
+        body: "I was here last month. Deploying something ugly that works beats waiting until you understand everything. Been there.",
+      },
+      {
+        authorIndex: 5,
+        body: "If it's a static-ish frontend: connect repo → set env vars → deploy. Send the repo stack if you want a 10-minute sanity check.",
+      },
+      {
+        authorIndex: 15,
+        body: "This helps more than you know. Going to try Vercel tonight and report back like a student.",
+      },
+    ],
+  },
+  {
+    authorIndex: 18,
+    title: "How do I make my site actually go live?",
+    body: "PriceTag is a single-page form. Works locally. I understand the words 'DNS' and 'domain' separately but not together.\n\nWhat's the boring checklist from localhost to a URL I can text my friend?",
+    status: "being_helped",
+    tags: ["design", "frontend"],
+    helperIndices: [2, 7],
+    comments: [
+      {
+        authorIndex: 2,
+        body: "Boring checklist: deploy to host → get a .vercel.app URL first → buy domain later if you want. Test on the free URL until copy feels right.",
+        markHelpfulByAuthor: true,
+      },
+      {
+        authorIndex: 7,
+        body: "You don't need DNS on day one. Ship on the default subdomain, share that link, fix copy based on real reactions.",
+      },
+    ],
+  },
+  {
+    authorIndex: 17,
+    title: "My CSS won't center this div and I've tried everything",
+    body: "BlockBoard header should be centered. It's left-aligned like it has opinions.\n\nTried margin auto, tried flexbox from a blog post, tried asking ChatGPT which gave me four conflicting answers.\n\nWhat am I missing? Happy to share a screenshot.",
+    status: "being_helped",
+    tags: ["frontend", "design"],
+    helperIndices: [2, 7],
+    comments: [
+      {
+        authorIndex: 2,
+        body: "Flex on the parent: display flex, justify-content center, align-items center. Parent needs a defined width or it'll look 'off' in ways that feel mystical.",
+        markHelpfulByAuthor: true,
+      },
+      {
+        authorIndex: 7,
+        body: "Also check if something else is setting text-align on a wrapper. DevTools → inspect → see what's actually winning. Not dumb — CSS is famously petty.",
+      },
+      {
+        authorIndex: 14,
+        body: "The flexbox click moment is real. I celebrated mine like a holiday.",
+      },
+    ],
+  },
+  {
+    authorIndex: 17,
+    title: "Is it normal to feel like I have no idea what I'm doing?",
+    body: "Some hours I feel like a builder. Same day I can't explain why my fix worked.\n\nIs this just part of month four or am I missing something everyone else learned in secret?",
+    status: "open",
+    tags: ["feedback"],
+    comments: [
+      {
+        authorIndex: 6,
+        body: "Normal. Twenty years in and I still have days like that. The difference is I trust the cycle now — confusion → question → small win → repeat.",
+      },
+      {
+        authorIndex: 1,
+        body: "Secret learning club doesn't exist. Public build logs just make the mess visible. You're doing it right.",
+      },
+      {
+        authorIndex: 13,
+        body: "Document the wins when they happen. Future you on a bad day needs proof you weren't always lost.",
+      },
+    ],
+  },
+  {
+    authorIndex: 16,
+    title: "Built a plant tracker — anyone want it?",
+    body: "ThirstyLeaves works for me and three friends. Not trying to scale it.\n\nIf you want the link to fork or copy the idea, happy to share. Might be useful if you also kill plants by accident.",
+    status: "open",
+    tags: ["design", "frontend"],
+    comments: [
+      {
+        authorIndex: 15,
+        body: "This is the kind of project I want to see more of. Yes please — my succulents are living on luck.",
+      },
+      {
+        authorIndex: 19,
+        body: "Love a useful weekend build. Drop the link when you're ready — no pressure to productize it.",
+      },
+    ],
+  },
+  {
+    authorIndex: 17,
+    title: "How do I add a login without building it all myself?",
+    body: "BlockBoard needs accounts before I let strangers post events.\n\nI don't want to write auth from scratch — I've read that's a bad idea. Supabase? Clerk? Something else for a tiny app?\n\nWhat would you pick for 'small and simple'?",
+    status: "open",
+    tags: ["backend", "frontend"],
+    comments: [
+      {
+        authorIndex: 5,
+        body: "Supabase Auth or Clerk both fine at your size. Pick whichever tutorial you'll actually finish — finished beats perfect.",
+      },
+      {
+        authorIndex: 14,
+        body: "I used Supabase on my first app. Docs are okay if you follow one path and ignore the advanced tabs for now.",
+        markHelpfulByAuthor: true,
+      },
+    ],
+  },
+  {
+    authorIndex: 19,
+    title: "What's the modern equivalent of LAMP stack?",
+    body: "Last time I shipped, it was PHP + MySQL + shared hosting.\n\nNow there's Next.js, Supabase, edge functions, twelve package managers. What's a sane default stack for a simple map app in 2026?",
+    status: "open",
+    tags: ["backend", "frontend"],
+    comments: [
+      {
+        authorIndex: 5,
+        body: "Next.js + Supabase + Vercel is the boring friendly default now. LAMP energy, less cPanel.",
+      },
+      {
+        authorIndex: 1,
+        body: "Pick boring tools, ship, swap later if you outgrow them. Map app doesn't need microservices theater.",
+      },
+    ],
+  },
 ];
 
 export const SEED_CONVERSATIONS: SeedConversation[] = [
@@ -834,6 +1181,34 @@ export const SEED_CONVERSATIONS: SeedConversation[] = [
       },
     ],
   },
+  {
+    participantA: 15,
+    participantB: 14,
+    messages: [
+      {
+        senderIndex: 15,
+        body: "Your deploy comment on my flare got me unstuck. CornerList is on a real URL now — ugly, live, mine.",
+      },
+      {
+        senderIndex: 14,
+        body: "That's the whole game. Ugly and live beats perfect and localhost every time.",
+      },
+    ],
+  },
+  {
+    participantA: 16,
+    participantB: 17,
+    messages: [
+      {
+        senderIndex: 16,
+        body: "Want to try each other's weekend projects? I'll test BlockBoard if you roast ThirstyLeaves honestly.",
+      },
+      {
+        senderIndex: 17,
+        body: "Deal. Fair warning: my events board has one working button and infinite personality.",
+      },
+    ],
+  },
 ];
 
 export const SEED_EXTRA_FOLLOWS: [number, number][] = [
@@ -850,10 +1225,21 @@ export const SEED_EXTRA_FOLLOWS: [number, number][] = [
   [14, 0],
   [4, 14],
   [7, 2],
+  [15, 14],
+  [16, 15],
+  [17, 5],
+  [18, 2],
+  [19, 1],
+  [5, 17],
+  [2, 16],
+  [7, 15],
+  [1, 17],
+  [14, 16],
+  [19, 15],
 ];
 
-export const SEED_FOLLOW_ME_INDICES = [0, 1, 2, 4, 6, 8, 11, 14];
-export const MY_FOLLOW_SEED_INDICES = [1, 4, 9, 13];
+export const SEED_FOLLOW_ME_INDICES = [0, 1, 2, 4, 6, 8, 11, 14, 15, 16, 17, 18, 19];
+export const MY_FOLLOW_SEED_INDICES = [1, 4, 9, 13, 15, 17];
 
 export const SEED_MILESTONES: SeedMilestone[] = [
   { userIndex: 1, milestone: "first_ship", celebrated: true },
@@ -866,6 +1252,15 @@ export const SEED_MILESTONES: SeedMilestone[] = [
   { userIndex: 7, milestone: "first_ship", celebrated: true },
   { userIndex: 9, milestone: "first_flare", celebrated: true },
   { userIndex: 2, milestone: "first_flare_reply", celebrated: false },
+  { userIndex: 15, milestone: "first_project", celebrated: false },
+  { userIndex: 15, milestone: "first_flare", celebrated: false },
+  { userIndex: 16, milestone: "first_ship", celebrated: true },
+  { userIndex: 17, milestone: "first_flare", celebrated: true },
+  { userIndex: 17, milestone: "first_ship", celebrated: false },
+  { userIndex: 18, milestone: "first_project", celebrated: true },
+  { userIndex: 19, milestone: "first_project", celebrated: false },
+  { userIndex: 14, milestone: "first_help_given", celebrated: true },
+  { userIndex: 2, milestone: "first_help_given", celebrated: true },
 ];
 
 export const MY_PROJECTS: MyProjectSpec[] = [
@@ -957,6 +1352,12 @@ export const SEED_REACTION_PLANS: ReactionPlan[] = [
   { owner: 13, projectIndex: 0, postIndex: 2, userIndex: 1, reaction: "respect" },
   { owner: "my", projectIndex: 1, postIndex: 2, userIndex: 1, reaction: "curious" },
   { owner: "my", projectIndex: 1, postIndex: 2, userIndex: 5, reaction: "been_there" },
+  { owner: 17, projectIndex: 0, postIndex: 1, userIndex: 14, reaction: "shipped" },
+  { owner: 17, projectIndex: 0, postIndex: 1, userIndex: 2, reaction: "been_there" },
+  { owner: 16, projectIndex: 0, postIndex: 0, userIndex: 15, reaction: "shipped" },
+  { owner: 16, projectIndex: 1, postIndex: 0, userIndex: 17, reaction: "respect" },
+  { owner: 15, projectIndex: 0, postIndex: 1, userIndex: 1, reaction: "been_there" },
+  { owner: 15, projectIndex: 0, postIndex: 0, userIndex: 6, reaction: "respect" },
 ];
 
 export type HelpfulPostPlan = {
@@ -971,6 +1372,9 @@ export const SEED_HELPFUL_POST_PLANS: HelpfulPostPlan[] = [
   { owner: 14, projectIndex: 0, postIndex: 1, markerIndex: 5 },
   { owner: 0, projectIndex: 0, postIndex: 1, markerIndex: 4 },
   { owner: "my", projectIndex: 1, postIndex: 2, markerIndex: 1 },
+  { owner: 17, projectIndex: 0, postIndex: 1, markerIndex: 14 },
+  { owner: 16, projectIndex: 0, postIndex: 0, markerIndex: 2 },
+  { owner: 15, projectIndex: 0, postIndex: 0, markerIndex: 7 },
 ];
 
 export type CommentPlan = {
@@ -1028,5 +1432,21 @@ export const SEED_COMMENT_PLANS: CommentPlan[] = [
     postIndex: 1,
     authorIndex: 5,
     body: "I can help wire auth if you want a short pairing session on Supabase RLS.",
+  },
+  {
+    owner: 17,
+    projectIndex: 0,
+    postIndex: 2,
+    authorIndex: 5,
+    body: "For a tiny board, Supabase auth is enough. Happy to point you at the smallest tutorial that worked for me.",
+    markHelpfulByPostAuthor: true,
+  },
+  {
+    owner: 15,
+    projectIndex: 0,
+    postIndex: 2,
+    authorIndex: 7,
+    body: "Deploy checklist: push to GitHub → import to Vercel → add env vars → share the preview URL. You can refine later.",
+    markHelpfulByPostAuthor: true,
   },
 ];

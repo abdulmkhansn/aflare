@@ -10,6 +10,7 @@ export type Comment = {
   body: string;
   helpful_count: number;
   created_at: string;
+  edited_at: string | null;
   profiles: CommentProfile | CommentProfile[] | null;
 };
 
@@ -24,5 +25,6 @@ export const COMMENT_SELECT = `
   body,
   helpful_count,
   created_at,
+  edited_at,
   profiles:author_id ( display_name, avatar_url )
 `;
