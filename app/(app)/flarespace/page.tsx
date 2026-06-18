@@ -55,6 +55,7 @@ export default async function FlarespacePage({ searchParams }: FlarespacePagePro
   const [
     { openFlares, yourFlares, helpingFlares, activeTagId, hasMoreOpen },
     { data: tags, error: tagsError },
+    { data: ownedProjects },
   ] = await Promise.all([
     getFlarespaceLists(auth.userId, {
       limit: batchLimit,
@@ -64,6 +65,7 @@ export default async function FlarespacePage({ searchParams }: FlarespacePagePro
       sort,
     }),
     supabase.from("tags").select("id, label").order("label"),
+    supabase.from("projects").select("id, name").eq("owner_id", auth.userId).order("name"),
   ]);
 
   const flareTags = filterFlareTags(tags ?? []);
@@ -105,7 +107,7 @@ export default async function FlarespacePage({ searchParams }: FlarespacePagePro
         description="Where people get unstuck together."
       />
 
-      <FlareComposeForm tags={flareTags} error={params.error} />
+      <FlareComposeForm tags={flareTags} projects={ownedProjects ?? []} error={params.error} />
 
       <div className="border-t border-border-subtle pt-6">
         {helpfulError ? (

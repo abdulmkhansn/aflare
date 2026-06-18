@@ -4,6 +4,7 @@ import { IconLink, IconPhoto, IconVideo } from "@tabler/icons-react";
 import { useRef, useState } from "react";
 
 import { createFlare } from "@/app/(app)/actions/flares";
+import { MentionTextarea } from "@/components/mentions/mention-textarea";
 import {
   FLARE_COMPOSE_HINT,
   FLARE_COMPOSE_PLACEHOLDER,
@@ -31,8 +32,14 @@ type MediaState =
   | { kind: "link"; url: string; label: string }
   | null;
 
+type ProjectOption = {
+  id: string;
+  name: string;
+};
+
 type FlareComposeFormProps = {
   tags: TagOption[];
+  projects?: ProjectOption[];
   redirectTo?: string;
   error?: string;
 };
@@ -75,6 +82,7 @@ function ComposeIconButton({
 
 export function FlareComposeForm({
   tags,
+  projects = [],
   redirectTo = "/flarespace",
   error,
 }: FlareComposeFormProps) {
@@ -270,11 +278,11 @@ export function FlareComposeForm({
           <input key={tagId} type="hidden" name="tag_ids" value={tagId} />
         ))}
 
-        <textarea
+        <MentionTextarea
           id="flare_body"
           name="body"
           value={body}
-          onChange={(event) => handleBodyChange(event.target.value)}
+          onChange={handleBodyChange}
           onFocus={handleBodyFocus}
           rows={3}
           placeholder={FLARE_COMPOSE_PLACEHOLDER}
@@ -311,6 +319,27 @@ export function FlareComposeForm({
                 placeholder="Title (optional)"
               />
             </div>
+
+            {projects.length > 0 ? (
+              <div>
+                <label htmlFor="flare_project_id" className="text-xs text-fg-muted">
+                  About a project <span className="text-fg-muted/70">(optional)</span>
+                </label>
+                <select
+                  id="flare_project_id"
+                  name="project_id"
+                  defaultValue=""
+                  className={`mt-1 ${fieldClassName}`}
+                >
+                  <option value="">Not tied to a project</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
 
             {tags.length > 0 ? (
               <div className="space-y-2">

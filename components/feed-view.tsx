@@ -28,6 +28,8 @@ type FeedViewProps = {
   searchParams: CommentSearchParams & {
     posted?: string;
     error?: string;
+    reposted?: string;
+    repostError?: string;
     limit?: string;
     filter?: string;
   };
@@ -38,6 +40,7 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
   const filter = parseFeedFilter(params.filter);
   const supabase = await createClient();
   const helpfulError = parseHelpfulError(params);
+  const repostError = params.repostError?.trim();
   const batchLimit = parseBatchLimit(params.limit);
 
   const [{ items, usedFallback, hasMore }, { data: ownedProjects }] = await Promise.all([
@@ -60,6 +63,8 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
     commentPosted: params.commentPosted,
     commentError: params.commentError,
     helpfulError: params.helpfulError,
+    reposted: params.reposted,
+    repostError: params.repostError,
     filter: filter === "all" ? undefined : filter,
   });
 
@@ -81,6 +86,18 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
       <Suspense fallback={<div className="h-9" />}>
         <FeedFilterBar />
       </Suspense>
+
+      {params.reposted === "1" ? (
+        <p className="text-sm text-teal" role="status" aria-live="polite">
+          Reposted to your followers.
+        </p>
+      ) : null}
+
+      {repostError ? (
+        <p className={errorTextClassName} role="alert">
+          {repostError}
+        </p>
+      ) : null}
 
       {helpfulError ? (
         <p className={errorTextClassName} role="alert">

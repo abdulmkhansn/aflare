@@ -4,6 +4,8 @@ import { useRef, useState, useTransition } from "react";
 
 import { updateFlare, deleteFlare } from "@/app/(app)/actions/content";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { MentionBody } from "@/components/mentions/mention-body";
+import { MentionTextarea } from "@/components/mentions/mention-textarea";
 import { fieldClassName, focusRingClassName, primaryButtonClassName, secondaryButtonClassName } from "@/lib/ui/classes";
 import { flareBodyRedundantWithTitle } from "@/lib/flares/types";
 
@@ -38,7 +40,7 @@ export function EditableFlareAsk({
           <h1 className="mt-4 text-lg font-medium text-fg">{title.trim()}</h1>
         ) : null}
         {showBody ? (
-          <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-fg">{body}</p>
+          <MentionBody body={body} className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-fg" />
         ) : null}
       </>
     );
@@ -64,10 +66,10 @@ export function EditableFlareAsk({
           <label htmlFor={`flare-body-${flareId}`} className="text-xs font-medium text-fg-muted">
             What you need help with
           </label>
-          <textarea
+          <MentionTextarea
             id={`flare-body-${flareId}`}
             value={bodyDraft}
-            onChange={(event) => setBodyDraft(event.target.value)}
+            onChange={setBodyDraft}
             rows={6}
             className={`mt-1 ${fieldClassName}`}
             disabled={isPending}
@@ -117,11 +119,10 @@ export function EditableFlareAsk({
             <h1 className="text-lg font-medium text-fg">{title.trim()}</h1>
           ) : null}
           {showBody ? (
-            <p
+            <MentionBody
+              body={body}
               className={`whitespace-pre-wrap text-sm leading-relaxed text-fg ${title?.trim() ? "mt-4" : ""}`}
-            >
-              {body}
-            </p>
+            />
           ) : null}
         </div>
         <div className="flex shrink-0 gap-1">

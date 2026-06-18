@@ -1,5 +1,9 @@
 import { HELPFUL_TARGET } from "@/lib/helpful/target-types";
 import {
+  getFlareCommentReactionsForComments,
+} from "@/lib/reactions/get-flare-comment-reactions";
+import type { FlareCommentReactionsContext } from "@/lib/reactions/get-flare-comment-reaction-bar-props";
+import {
   FLARE_COMMENT_SELECT,
   FLARE_SELECT,
   type FlareComment,
@@ -11,6 +15,7 @@ export type FlareDetail = {
   flare: FlareRow;
   comments: FlareComment[];
   markedCommentIds: Set<string>;
+  reactionsContext: FlareCommentReactionsContext;
   helperUserIds: Set<string>;
   isAuthor: boolean;
   isHelper: boolean;
@@ -50,21 +55,24 @@ export async function getFlareDetail(
   const commentIds = commentList.map((comment) => comment.id);
   const markedCommentIds = new Set<string>();
 
-  if (commentIds.length > 0) {
-    const { data: marks, error: marksError } = await supabase
-      .from("helpful_marks")
-      .select("target_id")
-      .eq("target_type", HELPFUL_TARGET.flare_comment)
-      .eq("marker_id", currentUserId)
-      .in("target_id", commentIds);
+  const [reactionsContext, marksResult] = await Promise.all([
+    getFlareCommentReactionsForComments(commentIds, currentUserId),
+    commentIds.length > 0
+      ? supabase
+          .from("helpful_marks")
+          .select("target_id")
+          .eq("target_type", HELPFUL_TARGET.flare_comment)
+          .eq("marker_id", currentUserId)
+          .in("target_id", commentIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
 
-    if (marksError && marksError.code !== "22P02") {
-      throw new Error(marksError.message);
-    }
+  if (marksResult.error && marksResult.error.code !== "22P02") {
+    throw new Error(marksResult.error.message);
+  }
 
-    for (const mark of marks ?? []) {
-      markedCommentIds.add(mark.target_id);
-    }
+  for (const mark of marksResult.data ?? []) {
+    markedCommentIds.add(mark.target_id);
   }
 
   const helperUserIds = new Set(
@@ -75,6 +83,7 @@ export async function getFlareDetail(
     flare: flare as FlareRow,
     comments: commentList,
     markedCommentIds,
+    reactionsContext,
     helperUserIds,
     isAuthor: flare.author_id === currentUserId,
     isHelper: helperUserIds.has(currentUserId),

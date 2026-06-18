@@ -28,6 +28,12 @@ export type SeedSharePost = {
   structuredFields?: PostStructuredFields | null;
 };
 
+export type SeedTexturePost = {
+  authorIndex: number;
+  body: string;
+  structuredFields?: PostStructuredFields | null;
+};
+
 export type SeedBuilder = {
   fullName: string;
   emailLocal: string;
@@ -1449,4 +1455,264 @@ export const SEED_COMMENT_PLANS: CommentPlan[] = [
     body: "Deploy checklist: push to GitHub → import to Vercel → add env vars → share the preview URL. You can refine later.",
     markHelpfulByPostAuthor: true,
   },
+];
+
+/** Standalone share posts — human texture for the feed (lessons, opinions, questions, warmth). */
+export const SEED_TEXTURE_POSTS: SeedTexturePost[] = [
+  {
+    authorIndex: 5,
+    body: "TIL you can't trust client-side validation for anything that matters. Learned the hard way.",
+  },
+  {
+    authorIndex: 14,
+    body: "Spent 3 hours on a bug that was a missing await. Every time.",
+  },
+  {
+    authorIndex: 11,
+    body: "TIL informed consent and 'easy to read' are different species. Back to the rewrite.",
+  },
+  {
+    authorIndex: 13,
+    body: "Spent a morning on a redirect loop. The typo was in an env var named almost correctly.",
+  },
+  {
+    authorIndex: 0,
+    body: "TIL audit logs need UTC timestamps and labels a human can grep. Obvious after you fail the question.",
+  },
+  {
+    authorIndex: 1,
+    body: "Hot take: most apps don't need a state management library.",
+  },
+  {
+    authorIndex: 8,
+    body: "I think 'move fast and break things' ages badly once you have users who depend on you showing up.",
+  },
+  {
+    authorIndex: 18,
+    body: "Hot take from a non-engineer: if your pricing page needs a FAQ to explain the product, the page isn't done yet.",
+  },
+  {
+    authorIndex: 13,
+    body: "Unpopular opinion: a README beats a Notion doc nobody opens.",
+  },
+  {
+    authorIndex: 6,
+    body: "Most pitch decks would work better as a one-page experiment list. Less theater, more proof.",
+  },
+  {
+    authorIndex: 15,
+    body: "How do you all decide when something's done enough to ship?",
+  },
+  {
+    authorIndex: 17,
+    body: "What's your move when you've been staring at the same bug for an hour?",
+  },
+  {
+    authorIndex: 16,
+    body: "Anyone else build best at 1am or is that just me?",
+  },
+  {
+    authorIndex: 9,
+    body: "For people who've run betas: how many check-in emails is too many? Genuinely trying not to annoy people.",
+  },
+  {
+    authorIndex: 3,
+    body: "How do you explain technical tradeoffs to a co-founder who isn't technical — without sounding condescending?",
+  },
+  {
+    authorIndex: 19,
+    body: "Rusty returners: do you rebuild fundamentals first or learn by shipping and fixing?",
+  },
+  {
+    authorIndex: 15,
+    body: "Six months ago I couldn't read a stack trace. Today I fixed one without googling. Small wins.",
+  },
+  {
+    authorIndex: 10,
+    body: "Quit my side contract to build full-time. Terrifying and the best thing I've done this year.",
+  },
+  {
+    authorIndex: 19,
+    body: "Built PHP sites in 2008. Stepped away. Came back this year. The impostor feeling is real but smaller than I feared.",
+  },
+  {
+    authorIndex: 14,
+    body: "First time a stranger used something I built. Not an investor. Not a friend. Just a person. Weirdly emotional.",
+  },
+  {
+    authorIndex: 4,
+    body: "Compliance work taught me patience. Startup work taught me impatience. Still negotiating between the two.",
+  },
+  {
+    authorIndex: 2,
+    body: "Reminder that the person whose code you admire also has a folder called 'final_final_v2'.",
+  },
+  {
+    authorIndex: 1,
+    body: "If you shipped anything this week, even tiny, that counts.",
+  },
+  {
+    authorIndex: 7,
+    body: "To everyone who posted a localhost link this month: that took guts. It's also how every shipped thing started.",
+  },
+  {
+    authorIndex: 16,
+    body: "You don't need a business model to build something fun on a Sunday. The skill still transfers.",
+  },
+  {
+    authorIndex: 8,
+    body: "Asking 'obvious' questions in public is how you stop repeating everyone else's old mistakes.",
+  },
+  {
+    authorIndex: 13,
+    body: "Naming things is still the hardest part of this whole job.",
+  },
+  {
+    authorIndex: 12,
+    body: "Comments on someone's flare reply made my whole day. Didn't even need to be my flare.",
+  },
+  {
+    authorIndex: 7,
+    body: "Every perf audit this month: the hero image is 4MB and named final2.png. Every time.",
+  },
+  {
+    authorIndex: 4,
+    body: "Half the 'AI product' pitches I see are workflow tools with a chat box. The box isn't the product.",
+  },
+  {
+    authorIndex: 2,
+    body: "I learn faster when I post a dumb question here than when I read another tutorial in silence.",
+  },
+];
+
+export type TextureCommentPlan = {
+  textureIndex: number;
+  authorIndex: number;
+  body: string;
+  markHelpfulByPostAuthor?: boolean;
+};
+
+export const SEED_TEXTURE_COMMENT_PLANS: TextureCommentPlan[] = [
+  {
+    textureIndex: 10,
+    authorIndex: 1,
+    body: "Ship when a real person can do the job, even ugly. Polish is a second pass.",
+    markHelpfulByPostAuthor: true,
+  },
+  {
+    textureIndex: 10,
+    authorIndex: 8,
+    body: "I set a calendar event called 'good enough demo.' Sounds silly. Works.",
+  },
+  {
+    textureIndex: 10,
+    authorIndex: 18,
+    body: "Same struggle. My rule now: one user, one flow, then stop touching copy.",
+  },
+  {
+    textureIndex: 11,
+    authorIndex: 8,
+    body: "Walk. Literally walk. Come back and grep for the last thing you changed.",
+    markHelpfulByPostAuthor: true,
+  },
+  {
+    textureIndex: 11,
+    authorIndex: 14,
+    body: "Rubber duck it out loud. My dog is unhelpful but talking helps.",
+  },
+  {
+    textureIndex: 12,
+    authorIndex: 13,
+    body: "1am builder checking in. Momentum is real. Sleep debt is also real.",
+    markHelpfulByPostAuthor: true,
+  },
+  {
+    textureIndex: 12,
+    authorIndex: 7,
+    body: "Night shift here for perf fixes. Quiet hours are underrated.",
+  },
+  {
+    textureIndex: 15,
+    authorIndex: 19,
+    body: "Ship messy, refactor when you understand the domain. Worked for my garage map.",
+    markHelpfulByPostAuthor: true,
+  },
+  {
+    textureIndex: 15,
+    authorIndex: 1,
+    body: "Both. One small shipped thing per week so rust doesn't become fear.",
+  },
+  {
+    textureIndex: 1,
+    authorIndex: 15,
+    body: "Three hours on a missing await is a rite of passage. Welcome to the club.",
+  },
+  {
+    textureIndex: 1,
+    authorIndex: 1,
+    body: "Async bugs lie. Check the network tab before the seventh coffee.",
+    markHelpfulByPostAuthor: true,
+  },
+  {
+    textureIndex: 23,
+    authorIndex: 17,
+    body: "Shipped a janky events board. My neighbor used it. Counting that.",
+  },
+  {
+    textureIndex: 22,
+    authorIndex: 14,
+    body: "Needed this. Almost didn't post my localhost link yesterday.",
+    markHelpfulByPostAuthor: true,
+  },
+  {
+    textureIndex: 21,
+    authorIndex: 9,
+    body: "My beta template folder is literally called final_final_v2. You're not alone.",
+  },
+  {
+    textureIndex: 19,
+    authorIndex: 2,
+    body: "First stranger user is a milestone. That's real. Congrats.",
+    markHelpfulByPostAuthor: true,
+  },
+  {
+    textureIndex: 13,
+    authorIndex: 6,
+    body: "Two emails max in week one, then ask if they want more. Opt-in beats surprise.",
+    markHelpfulByPostAuthor: true,
+  },
+  {
+    textureIndex: 14,
+    authorIndex: 5,
+    body: "Analogies first, jargon second. I draw boxes on a napkin before I open Figma.",
+  },
+];
+
+export type TextureReactionPlan = {
+  textureIndex: number;
+  userIndex: number;
+  reaction: PostReactionType;
+};
+
+export const SEED_TEXTURE_REACTION_PLANS: TextureReactionPlan[] = [
+  { textureIndex: 10, userIndex: 2, reaction: "curious" },
+  { textureIndex: 10, userIndex: 14, reaction: "been_there" },
+  { textureIndex: 10, userIndex: 18, reaction: "respect" },
+  { textureIndex: 11, userIndex: 5, reaction: "been_there" },
+  { textureIndex: 11, userIndex: 17, reaction: "been_there" },
+  { textureIndex: 12, userIndex: 7, reaction: "curious" },
+  { textureIndex: 12, userIndex: 16, reaction: "curious" },
+  { textureIndex: 21, userIndex: 15, reaction: "shipped" },
+  { textureIndex: 22, userIndex: 16, reaction: "respect" },
+  { textureIndex: 23, userIndex: 14, reaction: "shipped" },
+  { textureIndex: 22, userIndex: 1, reaction: "shipped" },
+  { textureIndex: 16, userIndex: 1, reaction: "respect" },
+  { textureIndex: 17, userIndex: 6, reaction: "respect" },
+  { textureIndex: 5, userIndex: 13, reaction: "respect" },
+  { textureIndex: 6, userIndex: 3, reaction: "respect" },
+  { textureIndex: 26, userIndex: 8, reaction: "been_there" },
+  { textureIndex: 0, userIndex: 4, reaction: "been_there" },
+  { textureIndex: 2, userIndex: 11, reaction: "curious" },
+  { textureIndex: 19, userIndex: 8, reaction: "shipped" },
+  { textureIndex: 25, userIndex: 9, reaction: "respect" },
 ];

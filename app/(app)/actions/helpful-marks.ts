@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { HELPFUL_TARGET } from "@/lib/helpful/target-types";
 import { recordHelpGivenMilestone } from "@/lib/milestones/record-help-given";
+import { isRepostPost } from "@/lib/posts/repost";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
 
@@ -160,7 +161,7 @@ export async function togglePostHelpful(formData: FormData) {
 
   const { data: post, error: postError } = await supabase
     .from("posts")
-    .select("id, author_id, project_id")
+    .select("id, author_id, project_id, reposted_post_id, structured_fields")
     .eq("id", postId)
     .maybeSingle();
 
@@ -170,6 +171,10 @@ export async function togglePostHelpful(formData: FormData) {
 
   if (post.author_id === auth.userId) {
     helpfulErrorRedirect(redirectTo, "You cannot mark your own post as helpful.");
+  }
+
+  if (isRepostPost(post)) {
+    helpfulErrorRedirect(redirectTo, "Reposts are amplification — mark the original if it helped.");
   }
 
   if (isMarked) {

@@ -1,4 +1,5 @@
 import type { PostStructuredFields } from "@/lib/posts/structured-fields";
+import { mentionPlainText } from "@/lib/mentions/parse-mentions";
 
 export const FLARE_STATUSES = ["open", "being_helped", "resolved"] as const;
 
@@ -176,7 +177,7 @@ export function flareBodyRedundantWithTitle(
 /** One-line preview when only a single line is shown (e.g. sidebar). */
 export function flareExcerpt(flare: FlareRow, maxLength = 140): string {
   const title = flare.title?.trim();
-  const body = flare.body?.trim() ?? "";
+  const body = mentionPlainText(flare.body?.trim() ?? "");
   const source = title || body;
 
   return truncateFlareText(source, maxLength);
@@ -188,7 +189,7 @@ export function flareExcerpt(flare: FlareRow, maxLength = 140): string {
  */
 export function flareCardBodyExcerpt(flare: FlareRow, maxLength = 140): string | null {
   const title = flare.title?.trim();
-  const body = flare.body?.trim() ?? "";
+  const body = mentionPlainText(flare.body?.trim() ?? "");
 
   if (!body || flareBodyRedundantWithTitle(title, body)) {
     return null;

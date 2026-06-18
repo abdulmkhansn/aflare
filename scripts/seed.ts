@@ -28,6 +28,9 @@ import {
   SEED_HELPFUL_POST_PLANS,
   SEED_MILESTONES,
   SEED_REACTION_PLANS,
+  SEED_TEXTURE_COMMENT_PLANS,
+  SEED_TEXTURE_POSTS,
+  SEED_TEXTURE_REACTION_PLANS,
   type SeedBuildPost,
   type SeedBuilder,
 } from "./seed-data";
@@ -183,6 +186,60 @@ async function insertSharePost(
   return { id: data.id, authorId };
 }
 
+async function insertRepostPost(
+  supabase: SupabaseClient,
+  authorId: string,
+  originalPostId: string,
+  quote = ""
+): Promise<PostRecord> {
+  const { data, error } = await supabase
+    .from("posts")
+    .insert({
+      project_id: null,
+      author_id: authorId,
+      kind: "share",
+      type: "update",
+      body: quote,
+      reposted_post_id: originalPostId,
+      structured_fields: { repost: true },
+      article_id: null,
+    })
+    .select("id")
+    .single();
+
+  if (error || !data) throw new Error(`repost: ${error?.message}`);
+  return { id: data.id, authorId };
+}
+
+async function seedReposts(
+  supabase: SupabaseClient,
+  users: CreatedUser[],
+  texturePostLookup: Map<number, PostRecord>
+): Promise<number> {
+  const originalPlain = texturePostLookup.get(1);
+  const originalQuote = texturePostLookup.get(4);
+  const originalUnavailable = texturePostLookup.get(30);
+
+  if (!originalPlain || !originalQuote || !users[2] || !users[3] || !users[7]) {
+    return 0;
+  }
+
+  await insertRepostPost(supabase, users[2].id, originalPlain.id);
+  await insertRepostPost(
+    supabase,
+    users[3].id,
+    originalQuote.id,
+    "This is the whole stack in one thread — worth keeping in view."
+  );
+
+  if (originalUnavailable) {
+    await insertRepostPost(supabase, users[7].id, originalUnavailable.id);
+    await supabase.from("posts").delete().eq("id", originalUnavailable.id);
+  }
+
+  return originalUnavailable ? 3 : 2;
+}
+
 async function createSeedUser(
   supabase: SupabaseClient,
   builder: SeedBuilder,
@@ -263,6 +320,29 @@ async function seedBuilderContent(
 
   for (const share of builder.sharePosts) {
     await insertSharePost(supabase, userId, share.body, share.structuredFields);
+  }
+}
+
+async function seedTexturePosts(
+  supabase: SupabaseClient,
+  users: CreatedUser[],
+  texturePostLookup: Map<number, PostRecord>
+) {
+  for (let textureIndex = 0; textureIndex < SEED_TEXTURE_POSTS.length; textureIndex += 1) {
+    const spec = SEED_TEXTURE_POSTS[textureIndex];
+    const author = users[spec.authorIndex];
+
+    if (!author) {
+      continue;
+    }
+
+    const post = await insertSharePost(
+      supabase,
+      author.id,
+      spec.body,
+      spec.structuredFields
+    );
+    texturePostLookup.set(textureIndex, post);
   }
 }
 
@@ -554,7 +634,8 @@ async function seedCommentsAndHelpful(
   supabase: SupabaseClient,
   users: CreatedUser[],
   myUserId: string | null,
-  postLookup: Map<PostLookupKey, PostRecord>
+  postLookup: Map<PostLookupKey, PostRecord>,
+  texturePostLookup: Map<number, PostRecord>
 ) {
   let commentCount = 0;
   let helpfulCount = 0;
@@ -610,13 +691,43 @@ async function seedCommentsAndHelpful(
     helpfulCount += 1;
   }
 
+  for (const plan of SEED_TEXTURE_COMMENT_PLANS) {
+    const post = texturePostLookup.get(plan.textureIndex);
+    if (!post) continue;
+
+    const authorId = users[plan.authorIndex]?.id;
+    if (!authorId || authorId === post.authorId) continue;
+
+    const { data: comment, error } = await supabase
+      .from("comments")
+      .insert({ post_id: post.id, author_id: authorId, body: plan.body })
+      .select("id")
+      .single();
+
+    if (error || !comment) throw new Error(`texture comment: ${error?.message}`);
+    commentCount += 1;
+
+    if (plan.markHelpfulByPostAuthor) {
+      const { error: markError } = await supabase.from("helpful_marks").insert({
+        target_type: "comment",
+        target_id: comment.id,
+        marker_id: post.authorId,
+      });
+      if (markError && markError.code !== "23505") {
+        throw new Error(`texture comment helpful: ${markError.message}`);
+      }
+      helpfulCount += 1;
+    }
+  }
+
   return { commentCount, helpfulCount };
 }
 
 async function seedReactions(
   supabase: SupabaseClient,
   users: CreatedUser[],
-  postLookup: Map<PostLookupKey, PostRecord>
+  postLookup: Map<PostLookupKey, PostRecord>,
+  texturePostLookup: Map<number, PostRecord>
 ) {
   let count = 0;
 
@@ -635,6 +746,24 @@ async function seedReactions(
     );
 
     if (error) throw new Error(`post_reaction: ${error.message}`);
+    count += 1;
+  }
+
+  for (const plan of SEED_TEXTURE_REACTION_PLANS) {
+    const post = texturePostLookup.get(plan.textureIndex);
+    const user = users[plan.userIndex];
+    if (!post || !user || user.id === post.authorId) continue;
+
+    const { error } = await supabase.from("post_reactions").upsert(
+      {
+        post_id: post.id,
+        user_id: user.id,
+        reaction: plan.reaction,
+      },
+      { onConflict: "post_id,user_id" }
+    );
+
+    if (error) throw new Error(`texture post_reaction: ${error.message}`);
     count += 1;
   }
 
@@ -736,6 +865,7 @@ async function main() {
   await assertNoSeedUsers(supabase);
   const tags = await loadTags(supabase);
   const postLookup = new Map<PostLookupKey, PostRecord>();
+  const texturePostLookup = new Map<number, PostRecord>();
 
   console.log("Creating seed users (DiceBear avatars)...\n");
 
@@ -748,6 +878,9 @@ async function main() {
     await seedBuilderContent(supabase, index, builder, user.id, tags, postLookup);
     console.log(`  ${builder.displayName} (${seedEmail(builder.emailLocal)})`);
   }
+
+  console.log("\nSeeding texture share posts...");
+  await seedTexturePosts(supabase, users, texturePostLookup);
 
   let myUserId: string | null = null;
   let myProjectsCreated = 0;
@@ -774,8 +907,14 @@ async function main() {
   const followCount = await seedFollows(supabase, users, myUserId);
 
   console.log("Seeding comments, helpful marks, and reactions...");
-  const commentStats = await seedCommentsAndHelpful(supabase, users, myUserId, postLookup);
-  const reactionCount = await seedReactions(supabase, users, postLookup);
+  const commentStats = await seedCommentsAndHelpful(
+    supabase,
+    users,
+    myUserId,
+    postLookup,
+    texturePostLookup
+  );
+  const reactionCount = await seedReactions(supabase, users, postLookup, texturePostLookup);
 
   console.log("Seeding milestones...");
   const milestoneCount = await seedMilestones(supabase, users);
@@ -783,21 +922,28 @@ async function main() {
   console.log("Seeding conversations...");
   const messageStats = await seedConversations(supabase, users);
 
+  console.log("Seeding reposts...");
+  const repostCount = await seedReposts(supabase, users, texturePostLookup);
+
   const buildPostCount = postLookup.size;
-  const sharePostCount = SEED_BUILDERS.reduce((sum, b) => sum + b.sharePosts.length, 0);
+  const builderShareCount = SEED_BUILDERS.reduce((sum, b) => sum + b.sharePosts.length, 0);
+  const sharePostCount = builderShareCount + SEED_TEXTURE_POSTS.length;
+  const textureCommentCount = SEED_TEXTURE_COMMENT_PLANS.length;
+  const textureReactionCount = SEED_TEXTURE_REACTION_PLANS.length;
 
   console.log("\n--- Seed summary ---");
   console.log(`Seed users:         ${users.length}`);
   console.log(`Your projects:      ${myProjectsCreated} (skipped if already present)`);
   console.log(`Build posts:        ${buildPostCount}`);
-  console.log(`Share posts:        ${sharePostCount}`);
+  console.log(`Share posts:        ${sharePostCount} (${builderShareCount} per-builder + ${SEED_TEXTURE_POSTS.length} texture)`);
+  console.log(`Reposts:            ${repostCount} (plain, quote, and unavailable original)`);
   console.log(`Articles:           ${articleCount}`);
   console.log(`Flares:             ${flareStats.flareCount}`);
   console.log(`Flare helpers:      ${flareStats.helperCount}`);
   console.log(`Flare comments:     ${flareStats.commentCount}`);
-  console.log(`Post comments:      ${commentStats.commentCount}`);
+  console.log(`Post comments:      ${commentStats.commentCount} (incl. ${textureCommentCount} on texture posts)`);
   console.log(`Helpful marks:      ${commentStats.helpfulCount + flareStats.helpfulCount}`);
-  console.log(`Post reactions:     ${reactionCount}`);
+  console.log(`Post reactions:     ${reactionCount} (incl. ${textureReactionCount} on texture posts)`);
   console.log(`Follows:            ${followCount}`);
   console.log(`Milestones:         ${milestoneCount}`);
   console.log(`Conversations:      ${messageStats.conversationCount}`);

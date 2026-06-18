@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { createMentionNotifications } from "@/lib/mentions/create-mention-notifications";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
 
@@ -43,15 +44,25 @@ export async function createComment(formData: FormData) {
     commentErrorRedirect(redirectTo, postId, "That post was not found.");
   }
 
-  const { error: insertError } = await supabase.from("comments").insert({
-    post_id: postId,
-    author_id: auth.userId,
-    body,
-  });
+  const { data: comment, error: insertError } = await supabase
+    .from("comments")
+    .insert({
+      post_id: postId,
+      author_id: auth.userId,
+      body,
+    })
+    .select("id")
+    .single();
 
-  if (insertError) {
-    commentErrorRedirect(redirectTo, postId, insertError.message);
+  if (insertError || !comment) {
+    commentErrorRedirect(redirectTo, postId, insertError?.message ?? "Could not post that comment.");
   }
+
+  await createMentionNotifications(body, {
+    actorId: auth.userId,
+    postId,
+    commentId: comment.id,
+  });
 
   revalidatePath("/");
   revalidatePath("/blockers");

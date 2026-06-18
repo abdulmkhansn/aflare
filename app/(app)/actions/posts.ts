@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { createMentionNotifications } from "@/lib/mentions/create-mention-notifications";
 import { isPostType } from "@/lib/posts/post-types";
 import {
   hasStructuredMedia,
@@ -102,19 +103,28 @@ export async function createFeedPost(formData: FormData) {
     }
   }
 
-  const { error: insertError } = await supabase.from("posts").insert({
-    project_id: projectId || null,
-    author_id: auth.userId,
-    kind,
-    type: isShare ? "update" : typeRaw,
-    body: body || "",
-    structured_fields: buildStructuredPayload(structuredFields),
-    article_id: null,
-  });
+  const { data: post, error: insertError } = await supabase
+    .from("posts")
+    .insert({
+      project_id: projectId || null,
+      author_id: auth.userId,
+      kind,
+      type: isShare ? "update" : typeRaw,
+      body: body || "",
+      structured_fields: buildStructuredPayload(structuredFields),
+      article_id: null,
+    })
+    .select("id")
+    .single();
 
-  if (insertError) {
-    redirectWithPostError(redirectTo, insertError.message);
+  if (insertError || !post) {
+    redirectWithPostError(redirectTo, insertError?.message ?? "Could not post that update.");
   }
+
+  await createMentionNotifications(body, {
+    actorId: auth.userId,
+    postId: post.id,
+  });
 
   let nextRedirect = redirectTo;
   const postType = isShare ? "update" : typeRaw;
@@ -176,19 +186,28 @@ export async function createPost(formData: FormData) {
     redirectWithPostError(redirectTo, "You can only post to your own projects.");
   }
 
-  const { error: insertError } = await supabase.from("posts").insert({
-    project_id: projectId,
-    author_id: auth.userId,
-    kind: "build",
-    type: typeRaw,
-    body,
-    structured_fields: null,
-    article_id: null,
-  });
+  const { data: post, error: insertError } = await supabase
+    .from("posts")
+    .insert({
+      project_id: projectId,
+      author_id: auth.userId,
+      kind: "build",
+      type: typeRaw,
+      body,
+      structured_fields: null,
+      article_id: null,
+    })
+    .select("id")
+    .single();
 
-  if (insertError) {
-    redirectWithPostError(redirectTo, insertError.message);
+  if (insertError || !post) {
+    redirectWithPostError(redirectTo, insertError?.message ?? "Could not post that update.");
   }
+
+  await createMentionNotifications(body, {
+    actorId: auth.userId,
+    postId: post.id,
+  });
 
   let nextRedirect = redirectTo;
 

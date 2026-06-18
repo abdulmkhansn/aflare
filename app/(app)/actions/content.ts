@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { isRepostPost } from "@/lib/posts/repost";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
 
@@ -21,7 +22,7 @@ async function ensurePostAuthor(
 ) {
   const { data, error } = await supabase
     .from("posts")
-    .select("id, author_id, project_id, kind")
+    .select("id, author_id, project_id, kind, reposted_post_id, structured_fields")
     .eq("id", postId)
     .maybeSingle();
 
@@ -42,8 +43,8 @@ export async function updatePost(formData: FormData) {
   const body = readTrimmed(formData, "body");
   const redirectTo = readTrimmed(formData, "redirect_to") || "/";
 
-  if (!postId || !body) {
-    redirectWithError(redirectTo, "Write something before saving.");
+  if (!postId) {
+    redirectWithError(redirectTo, "That post was not found.");
   }
 
   const supabase = await createClient();
@@ -55,6 +56,12 @@ export async function updatePost(formData: FormData) {
 
   if (post.kind === "article") {
     redirectWithError(redirectTo, "Edit articles from the article page.");
+  }
+
+  const isRepost = isRepostPost(post);
+
+  if (!isRepost && !body) {
+    redirectWithError(redirectTo, "Write something before saving.");
   }
 
   const { error } = await supabase

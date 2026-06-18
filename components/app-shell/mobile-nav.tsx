@@ -20,7 +20,7 @@ export function MobileNav({ userId, unreadMessageCount = 0 }: MobileNavProps) {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border-subtle bg-surface-rail pb-[env(safe-area-inset-bottom)] md:hidden"
       aria-label="Mobile"
     >
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-3">
         {mobileItems.map((item) => {
           const isActive = item.match(pathname);
           const badge = item.label === "Messages" ? unreadMessageCount : 0;

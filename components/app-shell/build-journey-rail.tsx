@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { IconPlus } from "@/components/app-shell/icons";
 import { ProjectStageProgress } from "@/components/app-shell/project-stage-progress";
+import { ProjectOwnerMenu } from "@/components/project/project-owner-menu";
 import type { BuildJourneyData } from "@/lib/app/get-build-journey";
 import {
   BUILD_JOURNEY_PROJECTS_EMPTY_COPY,
@@ -68,7 +69,22 @@ export function BuildJourneyRail({ journey }: BuildJourneyRailProps) {
     <aside className="hidden w-[200px] shrink-0 self-start md:block lg:w-[240px]">
       <div className="sticky top-14 space-y-5 px-3 py-6 lg:px-4">
         <section>
-          <h2 className={sectionTitleClassName}>Your build journey</h2>
+          <div className="flex items-baseline justify-between gap-2">
+            <Link
+              href="/projects"
+              className={`${sectionTitleClassName} hover:text-ember ${focusRingClassName}`}
+            >
+              Your build journey
+            </Link>
+            {projects.length > 0 ? (
+              <Link
+                href="/projects"
+                className={`shrink-0 text-[10px] font-medium text-fg-muted hover:text-fg ${focusRingClassName}`}
+              >
+                View all
+              </Link>
+            ) : null}
+          </div>
 
           {projects.length === 0 ? (
             <div className={`mt-3 p-3 ${panelClassName}`}>
@@ -86,10 +102,10 @@ export function BuildJourneyRail({ journey }: BuildJourneyRailProps) {
           ) : (
             <ul className="mt-3 space-y-3">
               {projects.map((project) => (
-                <li key={project.id}>
+                <li key={project.id} className="relative">
                   <Link
                     href={`/projects/${project.id}`}
-                    className={`block rounded-md border border-transparent px-2 py-2 transition-colors hover:border-border-subtle hover:bg-[var(--hover-subtle)] ${focusRingClassName}`}
+                    className={`block rounded-md border border-transparent px-2 py-2 pr-7 transition-colors hover:border-border-subtle hover:bg-[var(--hover-subtle)] ${focusRingClassName}`}
                   >
                     <span className="block truncate text-sm font-medium text-fg">
                       {project.name}
@@ -104,6 +120,12 @@ export function BuildJourneyRail({ journey }: BuildJourneyRailProps) {
                       </time>
                     ) : null}
                   </Link>
+                  <ProjectOwnerMenu
+                    projectId={project.id}
+                    redirectTo="/projects"
+                    variant="compact"
+                    className="absolute right-1 top-1.5 z-10"
+                  />
                 </li>
               ))}
             </ul>

@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 import { deleteFlareComment, updateFlareComment } from "@/app/(app)/actions/content";
-import { toggleFlareCommentHelpful } from "@/app/(app)/actions/helpful-marks";
 import { createFlareComment } from "@/app/(app)/actions/flares";
 import { Avatar } from "@/components/avatar";
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { EditableContentBody } from "@/components/editable-content-body";
-import { HELPFUL_ACTION_LABEL } from "@/lib/helpful/constants";
+import { FlareCommentReactionBar } from "@/components/flare-comment-reaction-bar";
+import { MentionTextarea } from "@/components/mentions/mention-textarea";
+import { getFlareCommentReactionBarProps } from "@/lib/reactions/get-flare-comment-reaction-bar-props";
+import type { FlareCommentReactionsContext } from "@/lib/reactions/get-flare-comment-reaction-bar-props";
 import {
   resolveFlareCommentProfile,
   type FlareComment,
@@ -28,6 +31,8 @@ type FlareCommentItemProps = {
   isMarked: boolean;
   canMarkHelpful: boolean;
   isOwnComment: boolean;
+  currentUserId: string;
+  reactionsContext: FlareCommentReactionsContext;
 };
 
 function FlareCommentItem({
@@ -37,6 +42,8 @@ function FlareCommentItem({
   isMarked,
   canMarkHelpful,
   isOwnComment,
+  currentUserId,
+  reactionsContext,
 }: FlareCommentItemProps) {
   const profile = resolveFlareCommentProfile(comment);
   const displayName = profile?.display_name?.trim() || "Unknown builder";
@@ -77,32 +84,17 @@ function FlareCommentItem({
           />
         </div>
 
-        {canMarkHelpful && !isOwnComment ? (
-          <form action={toggleFlareCommentHelpful} className="mt-2">
-            <input type="hidden" name="comment_id" value={comment.id} />
-            <input type="hidden" name="flare_id" value={flareId} />
-            <input type="hidden" name="is_marked" value={isMarked ? "1" : "0"} />
-            <input type="hidden" name="redirect_to" value={redirectTo} />
-            <button
-              type="submit"
-              className={[
-                "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors",
-                focusRingClassName,
-                isMarked
-                  ? "bg-teal/15 text-teal"
-                  : "text-fg-muted hover:bg-[var(--hover-subtle)] hover:text-fg",
-              ].join(" ")}
-            >
-              {HELPFUL_ACTION_LABEL}
-              <span aria-hidden="true">·</span>
-              <span>{comment.helpful_count ?? 0}</span>
-            </button>
-          </form>
-        ) : comment.helpful_count > 0 ? (
-          <p className="mt-2 text-xs text-teal">
-            {HELPFUL_ACTION_LABEL} · {comment.helpful_count}
-          </p>
-        ) : null}
+        <FlareCommentReactionBar
+          commentId={comment.id}
+          flareId={flareId}
+          commentAuthorId={comment.author_id}
+          currentUserId={currentUserId}
+          redirectTo={redirectTo}
+          helpfulCount={comment.helpful_count ?? 0}
+          isHelpfulMarked={isMarked}
+          canMarkHelpful={canMarkHelpful}
+          {...getFlareCommentReactionBarProps(comment.id, reactionsContext)}
+        />
       </div>
     </li>
   );
@@ -112,6 +104,7 @@ type FlareCommentsSectionProps = {
   flareId: string;
   comments: FlareComment[];
   markedCommentIds: Set<string>;
+  reactionsContext: FlareCommentReactionsContext;
   flareAuthorId: string;
   currentUserId: string;
   redirectTo: string;
@@ -125,6 +118,7 @@ export function FlareCommentsSection({
   flareId,
   comments,
   markedCommentIds,
+  reactionsContext,
   flareAuthorId,
   currentUserId,
   redirectTo,
@@ -134,6 +128,7 @@ export function FlareCommentsSection({
   embedded = false,
 }: FlareCommentsSectionProps) {
   const canMarkHelpful = currentUserId === flareAuthorId;
+  const [replyBody, setReplyBody] = useState("");
 
   return (
     <section
@@ -163,6 +158,8 @@ export function FlareCommentsSection({
               isMarked={markedCommentIds.has(comment.id)}
               canMarkHelpful={canMarkHelpful}
               isOwnComment={comment.author_id === currentUserId}
+              currentUserId={currentUserId}
+              reactionsContext={reactionsContext}
             />
           ))}
         </ul>
@@ -183,11 +180,13 @@ export function FlareCommentsSection({
             <label htmlFor={`flare-comment-${flareId}`} className="sr-only">
               Reply
             </label>
-            <textarea
+            <MentionTextarea
               id={`flare-comment-${flareId}`}
               name="body"
               rows={3}
               required
+              value={replyBody}
+              onChange={setReplyBody}
               className={fieldClassName}
               placeholder="Reply with something useful."
             />

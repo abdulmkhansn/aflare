@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import { focusRingClassName, primaryButtonClassName, secondaryButtonClassName } from "@/lib/ui/classes";
 
 type ConfirmDialogProps = {
   open: boolean;
   title: string;
-  description: string;
+  description: ReactNode;
   confirmLabel?: string;
+  confirmDisabled?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 };
@@ -18,6 +19,7 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel = "Delete",
+  confirmDisabled = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -53,15 +55,15 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
         aria-describedby="confirm-dialog-description"
-        className="w-full max-w-sm rounded-lg border border-border-subtle bg-surface-card p-5 shadow-lg"
+        className="w-full max-w-md rounded-lg border border-border-subtle bg-surface-card p-5 shadow-lg"
         onClick={(event) => event.stopPropagation()}
       >
         <h2 id="confirm-dialog-title" className="text-base font-medium text-fg">
           {title}
         </h2>
-        <p id="confirm-dialog-description" className="mt-2 text-sm leading-relaxed text-fg-muted">
+        <div id="confirm-dialog-description" className="mt-2 text-sm leading-relaxed text-fg-muted">
           {description}
-        </p>
+        </div>
         <div className="mt-5 flex justify-end gap-2">
           <button
             ref={cancelRef}
@@ -74,7 +76,8 @@ export function ConfirmDialog({
           <button
             type="button"
             onClick={onConfirm}
-            className={`${primaryButtonClassName} !bg-red-600 hover:!opacity-100 hover:!brightness-110 ${focusRingClassName}`}
+            disabled={confirmDisabled}
+            className={`${primaryButtonClassName} !bg-red-600 hover:!opacity-100 hover:!brightness-110 disabled:cursor-not-allowed disabled:opacity-60 ${focusRingClassName}`}
           >
             {confirmLabel}
           </button>

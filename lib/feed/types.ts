@@ -12,6 +12,7 @@ export type FeedPost = {
   author_id: string;
   project_id: string | null;
   article_id: string | null;
+  reposted_post_id: string | null;
   structured_fields: PostStructuredFields | Record<string, unknown> | null;
   profiles:
     | {
@@ -34,7 +35,16 @@ export type FeedPost = {
       }[]
     | null;
   articles: FeedArticleSummary | FeedArticleSummary[] | null;
+  reposted_post?: FeedPost | FeedPost[] | null;
 };
+
+export function resolveRepostedPostRelation(post: FeedPost): FeedPost | null {
+  if (!post.reposted_post) {
+    return null;
+  }
+
+  return Array.isArray(post.reposted_post) ? post.reposted_post[0] : post.reposted_post;
+}
 
 export function resolveFeedPostRelations(post: FeedPost) {
   const profile = Array.isArray(post.profiles) ? post.profiles[0] : post.profiles;
@@ -42,6 +52,30 @@ export function resolveFeedPostRelations(post: FeedPost) {
 
   return { profile, project };
 }
+
+export const REPOSTED_POST_SELECT = `
+  id,
+  type,
+  kind,
+  body,
+  created_at,
+  edited_at,
+  author_id,
+  project_id,
+  article_id,
+  reposted_post_id,
+  structured_fields,
+  profiles:author_id ( display_name, avatar_url ),
+  projects:project_id ( id, name ),
+  articles:article_id (
+    id,
+    title,
+    body,
+    excerpt,
+    cover_image_url,
+    helpful_count
+  )
+`;
 
 export const FEED_POST_SELECT = `
   id,
@@ -53,6 +87,7 @@ export const FEED_POST_SELECT = `
   author_id,
   project_id,
   article_id,
+  reposted_post_id,
   structured_fields,
   profiles:author_id ( display_name, avatar_url ),
   projects:project_id ( id, name ),
@@ -63,6 +98,9 @@ export const FEED_POST_SELECT = `
     excerpt,
     cover_image_url,
     helpful_count
+  ),
+  reposted_post:reposted_post_id (
+    ${REPOSTED_POST_SELECT}
   )
 `;
 

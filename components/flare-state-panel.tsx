@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { updateFlareState } from "@/app/(app)/actions/flares";
+import { MentionBody } from "@/components/mentions/mention-body";
 import {
   fieldClassName,
   focusRingClassName,
@@ -48,7 +49,7 @@ function FlareStateField({
     return (
       <div className={compact ? "text-sm" : undefined}>
         <h3 className="text-xs font-medium text-fg-muted">{label}</h3>
-        <p className="mt-1 whitespace-pre-wrap leading-relaxed text-fg">{value}</p>
+        <MentionBody body={value ?? ""} className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-fg" />
       </div>
     );
   }
@@ -84,7 +85,7 @@ function FlareStateField({
             Edit
           </button>
         </div>
-        <p className="mt-1 whitespace-pre-wrap leading-relaxed text-fg">{value}</p>
+        <MentionBody body={value ?? ""} className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-fg" />
       </div>
     );
   }

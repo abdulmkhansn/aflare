@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 
 import { markMessagesRead, sendMessage } from "@/app/(app)/actions/messages";
+import { MentionBody } from "@/components/mentions/mention-body";
 import { formatRelativeTime } from "@/lib/time/relative-time";
 import type { MessageRow } from "@/lib/messages/types";
 import { errorTextClassName, fieldClassName, primaryButtonClassName } from "@/lib/ui/classes";
@@ -112,7 +113,11 @@ export function ConversationView({
                       : "rounded-bl-md border border-border-subtle bg-surface-card text-fg",
                   ].join(" ")}
                 >
-                  <p>{message.body}</p>
+                  <MentionBody
+                    body={message.body}
+                    inline
+                    className="text-sm leading-relaxed text-fg"
+                  />
                   <time
                     className="mt-1 block text-[11px] text-fg-muted"
                     dateTime={message.created_at}

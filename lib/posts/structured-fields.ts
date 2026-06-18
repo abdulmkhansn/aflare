@@ -4,6 +4,7 @@ export type PostStructuredFields = {
   video_embed_url?: string;
   link_url?: string;
   link_label?: string;
+  repost?: boolean;
 };
 
 export function parseStructuredFields(raw: unknown): PostStructuredFields {
@@ -19,6 +20,7 @@ export function parseStructuredFields(raw: unknown): PostStructuredFields {
     video_embed_url: readString(record.video_embed_url),
     link_url: readString(record.link_url),
     link_label: readString(record.link_label),
+    repost: record.repost === true ? true : undefined,
   };
 }
 

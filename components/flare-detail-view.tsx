@@ -8,6 +8,7 @@ import { FlareHelpersSection } from "@/components/flare-helpers-section";
 import { FlareResolveActions } from "@/components/flare-resolve-actions";
 import { FlareStatePanel } from "@/components/flare-state-panel";
 import { FlareStatusBadge } from "@/components/flare-status-badge";
+import { MentionBody } from "@/components/mentions/mention-body";
 import { PostMedia } from "@/components/post-media";
 import type { FlareDetail } from "@/lib/flares/get-flare-detail";
 import { resolveFlareAuthor, resolveFlareTags } from "@/lib/flares/types";
@@ -38,7 +39,7 @@ export function FlareDetailView({
   redirectTo,
   statusMessages,
 }: FlareDetailViewProps) {
-  const { flare, comments, markedCommentIds, isAuthor, isHelper } = detail;
+  const { flare, comments, markedCommentIds, reactionsContext, isAuthor, isHelper } = detail;
   const author = resolveFlareAuthor(flare);
   const tags = resolveFlareTags(flare);
   const fields = parseStructuredFields(flare.structured_fields);
@@ -96,9 +97,10 @@ export function FlareDetailView({
         {isResolved && flare.resolution_note?.trim() ? (
           <div className="mt-5 rounded-md border border-border-subtle bg-[var(--hover-subtle)] p-4">
             <h2 className="text-sm font-medium text-fg">What solved it</h2>
-            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-fg">
-              {flare.resolution_note.trim()}
-            </p>
+            <MentionBody
+              body={flare.resolution_note.trim()}
+              className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-fg"
+            />
           </div>
         ) : null}
       </article>
@@ -123,6 +125,7 @@ export function FlareDetailView({
           flareId={flare.id}
           comments={comments}
           markedCommentIds={markedCommentIds}
+          reactionsContext={reactionsContext}
           flareAuthorId={flare.author_id}
           currentUserId={currentUserId}
           redirectTo={redirectTo}

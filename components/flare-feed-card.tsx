@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 import { AuthorLink } from "@/components/avatar";
+import { MentionBody } from "@/components/mentions/mention-body";
 import { FlareStatusBadge } from "@/components/flare-status-badge";
 import {
-  flareCardBodyExcerpt,
-  flareExcerpt,
+  flareBodyRedundantWithTitle,
   resolveFlareAuthor,
   resolveFlareHelpers,
   type FlareListItem,
@@ -20,7 +20,8 @@ export function FlareFeedCard({ flare }: FlareFeedCardProps) {
   const author = resolveFlareAuthor(flare);
   const helpers = resolveFlareHelpers(flare);
   const title = flare.title?.trim();
-  const bodyExcerpt = title ? flareCardBodyExcerpt(flare, 240) : flareExcerpt(flare);
+  const body = flare.body?.trim() ?? "";
+  const showBody = Boolean(body) && !(title && flareBodyRedundantWithTitle(title, body));
 
   return (
     <article className={`${cardClassName} border-ember/20`}>
@@ -41,8 +42,11 @@ export function FlareFeedCard({ flare }: FlareFeedCardProps) {
       <div className="mt-3">
         <p className="text-xs font-medium uppercase tracking-wide text-ember">Flare</p>
         {title ? <h3 className="mt-1 text-sm font-medium text-fg">{title}</h3> : null}
-        {bodyExcerpt ? (
-          <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-fg">{bodyExcerpt}</p>
+        {showBody ? (
+          <MentionBody
+            body={body}
+            className="mt-2 line-clamp-4 text-sm leading-relaxed text-fg"
+          />
         ) : null}
       </div>
 

@@ -21,6 +21,8 @@ export function notificationMessage(type: NotificationType, actorName: string | 
       return `${name} followed you`;
     case "post_comment":
       return `${name} commented on your post`;
+    case "mention":
+      return `${name} mentioned you`;
     case "helpful_received":
       return `${name} found your reply helpful`;
     default:
@@ -39,6 +41,14 @@ export function notificationHref(row: NotificationRow): string {
       return `/u/${row.actor_id}`;
     case "post_comment":
       return projectId ? `/projects/${projectId}` : "/";
+    case "mention":
+      if (row.flare_id) {
+        return `/flarespace/${row.flare_id}`;
+      }
+      if (projectId) {
+        return `/projects/${projectId}`;
+      }
+      return "/";
     case "helpful_received":
       if (row.flare_id) {
         return `/flarespace/${row.flare_id}`;

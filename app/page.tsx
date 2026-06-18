@@ -16,6 +16,8 @@ type HomePageProps = {
     commentPosted?: string;
     commentError?: string;
     helpfulError?: string;
+    reposted?: string;
+    repostError?: string;
     limit?: string;
     filter?: string;
   }>;

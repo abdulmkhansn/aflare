@@ -3,6 +3,8 @@
 import { useRef, useState, useTransition } from "react";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { MentionBody } from "@/components/mentions/mention-body";
+import { MentionTextarea } from "@/components/mentions/mention-textarea";
 import { fieldClassName, focusRingClassName, primaryButtonClassName, secondaryButtonClassName } from "@/lib/ui/classes";
 
 type EditableContentBodyProps = {
@@ -15,6 +17,7 @@ type EditableContentBodyProps = {
   deleteDescription: string;
   bodyClassName?: string;
   multiline?: boolean;
+  emptyMenuOnly?: boolean;
 };
 
 export function EditableContentBody({
@@ -27,6 +30,7 @@ export function EditableContentBody({
   deleteDescription,
   bodyClassName = "whitespace-pre-wrap text-sm leading-relaxed text-fg",
   multiline = true,
+  emptyMenuOnly = false,
 }: EditableContentBodyProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [editing, setEditing] = useState(false);
@@ -36,7 +40,7 @@ export function EditableContentBody({
   const deleteFormRef = useRef<HTMLFormElement>(null);
 
   if (!isAuthor) {
-    return <p className={bodyClassName}>{body}</p>;
+    return <MentionBody body={body} className={bodyClassName} />;
   }
 
   function startEdit() {
@@ -63,6 +67,8 @@ export function EditableContentBody({
     });
   }
 
+  const showEmptyMenuOnly = emptyMenuOnly && !body.trim() && !editing;
+
   function confirmDelete() {
     setConfirmOpen(false);
     setMenuOpen(false);
@@ -73,9 +79,9 @@ export function EditableContentBody({
     return (
       <div className="space-y-2">
         {multiline ? (
-          <textarea
+          <MentionTextarea
             value={draft}
-            onChange={(event) => setDraft(event.target.value)}
+            onChange={setDraft}
             rows={4}
             className={fieldClassName}
             disabled={isPending}
@@ -95,7 +101,7 @@ export function EditableContentBody({
           <button
             type="button"
             onClick={saveEdit}
-            disabled={isPending || !draft.trim()}
+            disabled={isPending || (!emptyMenuOnly && !draft.trim())}
             className={primaryButtonClassName}
           >
             Save
@@ -113,10 +119,73 @@ export function EditableContentBody({
     );
   }
 
+  if (showEmptyMenuOnly) {
+    return (
+      <>
+        <div className="flex justify-end">
+          <div className="relative shrink-0">
+            <button
+              type="button"
+              aria-label="Content options"
+              aria-expanded={menuOpen}
+              aria-haspopup="menu"
+              onClick={() => setMenuOpen((open) => !open)}
+              className={`rounded-md px-2 py-1 text-sm text-fg-muted hover:bg-[var(--hover-subtle)] hover:text-fg ${focusRingClassName}`}
+            >
+              ···
+            </button>
+            {menuOpen ? (
+              <div
+                role="menu"
+                className="absolute right-0 z-10 mt-1 min-w-[7rem] rounded-md border border-border-subtle bg-surface-card py-1 shadow-lg"
+              >
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={startEdit}
+                  className={`block w-full px-3 py-1.5 text-left text-sm text-fg hover:bg-[var(--hover-subtle)] ${focusRingClassName}`}
+                >
+                  Add a thought
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    setConfirmOpen(true);
+                  }}
+                  className={`block w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-[var(--hover-subtle)] ${focusRingClassName}`}
+                >
+                  Delete
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+
+        <form ref={deleteFormRef} action={deleteAction} className="hidden">
+          {Object.entries(hiddenFields).map(([key, value]) => (
+            <input key={key} type="hidden" name={key} value={value} />
+          ))}
+        </form>
+
+        <ConfirmDialog
+          open={confirmOpen}
+          title={deleteTitle}
+          description={deleteDescription}
+          onConfirm={confirmDelete}
+          onCancel={() => setConfirmOpen(false)}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <div className="flex items-start justify-between gap-2">
-        <p className={`min-w-0 flex-1 ${bodyClassName}`}>{body}</p>
+        <div className="min-w-0 flex-1">
+          <MentionBody body={body} className={bodyClassName} />
+        </div>
         <div className="relative shrink-0">
           <button
             type="button"

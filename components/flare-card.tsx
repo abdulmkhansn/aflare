@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 import { Avatar } from "@/components/avatar";
+import { MentionBody } from "@/components/mentions/mention-body";
 import { FlareStatusBadge } from "@/components/flare-status-badge";
 import {
-  flareCardBodyExcerpt,
-  flareExcerpt,
+  flareBodyRedundantWithTitle,
   resolveFlareAuthor,
   resolveFlareHelpers,
   resolveFlareTags,
@@ -24,7 +24,8 @@ export function FlareCard({ flare }: FlareCardProps) {
   const tags = resolveFlareTags(flare);
   const displayName = author?.display_name?.trim() || "Unknown builder";
   const title = flare.title?.trim();
-  const bodyExcerpt = title ? flareCardBodyExcerpt(flare) : flareExcerpt(flare);
+  const body = flare.body?.trim() ?? "";
+  const showBody = Boolean(body) && !(title && flareBodyRedundantWithTitle(title, body));
 
   return (
     <Link
@@ -36,8 +37,11 @@ export function FlareCard({ flare }: FlareCardProps) {
           {title ? (
             <h3 className="text-sm font-medium text-fg">{title}</h3>
           ) : null}
-          {bodyExcerpt ? (
-            <p className={`text-sm leading-relaxed text-fg ${title ? "mt-1" : ""}`}>{bodyExcerpt}</p>
+          {showBody ? (
+            <MentionBody
+              body={body}
+              className={`line-clamp-4 text-sm leading-relaxed text-fg ${title ? "mt-1" : ""}`}
+            />
           ) : null}
         </div>
         <FlareStatusBadge status={flare.status} />

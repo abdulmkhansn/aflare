@@ -6,6 +6,7 @@ import { PostMedia } from "@/components/post-media";
 import { AuthorLink } from "@/components/avatar";
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { EditableContentBody } from "@/components/editable-content-body";
+import { MentionBody } from "@/components/mentions/mention-body";
 import type { FeedPost } from "@/lib/feed/types";
 import { resolveFeedPostRelations } from "@/lib/feed/types";
 import { isSharePost, resolvePostKind } from "@/lib/posts/kinds";
@@ -15,11 +16,12 @@ import { focusRingClassName } from "@/lib/ui/classes";
 type PostCardProps = {
   post: FeedPost;
   embedded?: boolean;
+  hideProjectLink?: boolean;
   currentUserId?: string;
   redirectTo?: string;
 };
 
-export function PostCard({ post, embedded = false, currentUserId, redirectTo = "/" }: PostCardProps) {
+export function PostCard({ post, embedded = false, hideProjectLink = false, currentUserId, redirectTo = "/" }: PostCardProps) {
   const { profile, project } = resolveFeedPostRelations(post);
   const kind = resolvePostKind(post);
   const share = isSharePost(post);
@@ -50,7 +52,7 @@ export function PostCard({ post, embedded = false, currentUserId, redirectTo = "
         ) : null}
       </div>
 
-      {!share && project ? (
+      {!share && project && !hideProjectLink ? (
         <div className="mt-3">
           <Link
             href={`/projects/${project.id}`}
@@ -77,7 +79,7 @@ export function PostCard({ post, embedded = false, currentUserId, redirectTo = "
               deleteDescription="Comments and reactions go with it. You can't undo this."
             />
           ) : (
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-fg">{post.body}</p>
+            <MentionBody body={post.body} />
           )}
         </div>
       ) : null}

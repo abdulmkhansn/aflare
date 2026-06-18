@@ -6,6 +6,7 @@ import { IconFileText, IconLink, IconPhoto, IconVideo } from "@tabler/icons-reac
 import { useEffect, useRef, useState } from "react";
 
 import { createFeedPost } from "@/app/(app)/actions/posts";
+import { MentionTextarea } from "@/components/mentions/mention-textarea";
 import { FLARE_SEND_EXPLAINER } from "@/lib/flares/constants";
 import { DEFAULT_COMPOSE_PROMPT, pickComposePrompt } from "@/lib/posts/composer-prompts";
 import { POST_TYPES, BLOCKER_POST_TYPES, getPostTypeLabel } from "@/lib/posts/post-types";
@@ -313,7 +314,7 @@ export function FeedComposeForm({ projects, posted, error }: FeedComposeFormProp
           </>
         ) : null}
 
-        <div className="relative overflow-hidden rounded-md border border-[var(--border-input)] bg-surface-input shadow-[var(--elevation-input)] focus-within:ring-2 focus-within:ring-teal focus-within:ring-offset-2 focus-within:ring-offset-surface-page">
+        <div className="relative rounded-md border border-[var(--border-input)] bg-surface-input shadow-[var(--elevation-input)] focus-within:ring-2 focus-within:ring-teal focus-within:ring-offset-2 focus-within:ring-offset-surface-page">
           {showPlaceholder ? (
             <p
               aria-hidden="true"
@@ -322,12 +323,12 @@ export function FeedComposeForm({ projects, posted, error }: FeedComposeFormProp
               {prompt}
             </p>
           ) : null}
-          <textarea
+          <MentionTextarea
             id="feed-compose-body"
             name="body"
             rows={3}
             value={body}
-            onChange={(event) => setBody(event.target.value)}
+            onChange={setBody}
             className={COMPOSE_TEXTAREA_CLASS}
             aria-label="Post"
           />

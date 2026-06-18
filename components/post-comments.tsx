@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 import { deleteComment, updateComment } from "@/app/(app)/actions/content";
 import { createComment } from "@/app/(app)/actions/comments";
@@ -8,6 +9,7 @@ import { Avatar } from "@/components/avatar";
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { EditableContentBody } from "@/components/editable-content-body";
 import { ThisHelpedButton } from "@/components/this-helped-button";
+import { MentionTextarea } from "@/components/mentions/mention-textarea";
 import type { Comment } from "@/lib/comments/types";
 import { resolveCommentProfile } from "@/lib/comments/types";
 import {
@@ -16,6 +18,7 @@ import {
   focusRingClassName,
   primaryButtonClassName,
   statusTextClassName,
+  textLinkClassName,
 } from "@/lib/ui/classes";
 
 type CommentItemProps = {
@@ -94,6 +97,8 @@ type AddCommentFormProps = {
 };
 
 function AddCommentForm({ postId, redirectTo, posted, error }: AddCommentFormProps) {
+  const [body, setBody] = useState("");
+
   return (
     <div className="border-t border-border-subtle pt-3">
       {posted ? (
@@ -115,11 +120,13 @@ function AddCommentForm({ postId, redirectTo, posted, error }: AddCommentFormPro
         <label htmlFor={`comment-${postId}`} className="sr-only">
           Comment
         </label>
-        <textarea
+        <MentionTextarea
           id={`comment-${postId}`}
           name="body"
           rows={2}
           required
+          value={body}
+          onChange={setBody}
           className={fieldClassName}
           placeholder="Reply with something useful."
         />
@@ -141,7 +148,16 @@ type PostCommentsProps = {
   commentPosted?: boolean;
   commentError?: string;
   helpfulError?: string;
+  defaultCollapsed?: boolean;
 };
+
+function commentToggleLabel(count: number): string {
+  if (count === 0) {
+    return "Comment";
+  }
+
+  return count === 1 ? "1 comment" : `${count} comments`;
+}
 
 export function PostComments({
   postId,
@@ -152,10 +168,44 @@ export function PostComments({
   commentPosted,
   commentError,
   helpfulError,
+  defaultCollapsed = false,
 }: PostCommentsProps) {
+  const [expanded, setExpanded] = useState(
+    !defaultCollapsed || Boolean(commentPosted || commentError || helpfulError)
+  );
+
+  if (defaultCollapsed && !expanded) {
+    return (
+      <div className="mt-3 border-t border-border-subtle pt-3">
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          className={textLinkClassName}
+          aria-expanded={false}
+        >
+          {commentToggleLabel(comments.length)}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <section className="mt-4 border-t border-border-subtle pt-4" aria-label="Comments">
-      <h3 className="text-sm font-medium text-fg-muted">Comments</h3>
+      {defaultCollapsed ? (
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h3 className="text-sm font-medium text-fg-muted">Comments</h3>
+          <button
+            type="button"
+            onClick={() => setExpanded(false)}
+            className={`shrink-0 text-xs text-fg-muted hover:text-fg ${focusRingClassName}`}
+            aria-expanded={true}
+          >
+            Hide
+          </button>
+        </div>
+      ) : (
+        <h3 className="text-sm font-medium text-fg-muted">Comments</h3>
+      )}
 
       {helpfulError ? (
         <p className={`mt-2 ${errorTextClassName}`} role="alert">

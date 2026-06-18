@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { createMentionNotifications } from "@/lib/mentions/create-mention-notifications";
 import {
   hasStructuredMedia,
   type PostStructuredFields,
@@ -69,13 +70,17 @@ function readTagIds(formData: FormData): string[] {
     .filter(Boolean);
 }
 
-function revalidateFlarePaths(flareId?: string) {
+function revalidateFlarePaths(flareId?: string, projectId?: string | null) {
   revalidatePath("/");
   revalidatePath("/flarespace");
   revalidatePath("/blockers");
 
   if (flareId) {
     revalidatePath(`/flarespace/${flareId}`);
+  }
+
+  if (projectId) {
+    revalidatePath(`/projects/${projectId}`);
   }
 }
 
@@ -120,6 +125,7 @@ export async function createFlare(formData: FormData) {
   const auth = await requireOnboarded();
   const body = readTrimmed(formData, "body");
   const title = readTrimmed(formData, "title") || null;
+  const projectId = readTrimmed(formData, "project_id") || null;
   const redirectTo = readTrimmed(formData, "redirect_to") || "/flarespace";
   const structuredFields = readStructuredFields(formData);
   const tagIds = readTagIds(formData);
@@ -130,12 +136,29 @@ export async function createFlare(formData: FormData) {
 
   const supabase = await createClient();
 
+  if (projectId) {
+    const { data: project, error: projectError } = await supabase
+      .from("projects")
+      .select("owner_id")
+      .eq("id", projectId)
+      .maybeSingle();
+
+    if (projectError || !project) {
+      flareErrorRedirect(redirectTo, "That project was not found.");
+    }
+
+    if (project.owner_id !== auth.userId) {
+      flareErrorRedirect(redirectTo, "You can only link flares to your own projects.");
+    }
+  }
+
   const { data: flare, error: insertError } = await supabase
     .from("flares")
     .insert({
       author_id: auth.userId,
       body: body || "",
       title,
+      project_id: projectId,
       structured_fields: buildStructuredPayload(structuredFields),
     })
     .select("id")
@@ -143,6 +166,13 @@ export async function createFlare(formData: FormData) {
 
   if (insertError || !flare) {
     flareErrorRedirect(redirectTo, insertError?.message ?? "Could not send up that flare.");
+  }
+
+  if (body) {
+    await createMentionNotifications(body, {
+      actorId: auth.userId,
+      flareId: flare.id,
+    });
   }
 
   if (tagIds.length > 0) {
@@ -158,7 +188,7 @@ export async function createFlare(formData: FormData) {
     }
   }
 
-  revalidateFlarePaths(flare.id);
+  revalidateFlarePaths(flare.id, projectId);
 
   const { isNew } = await recordMilestone(supabase, auth.userId, "first_flare");
   redirect(
@@ -292,15 +322,25 @@ export async function createFlareComment(formData: FormData) {
     );
   }
 
-  const { error: insertError } = await supabase.from("flare_comments").insert({
-    flare_id: flareId,
-    author_id: auth.userId,
-    body,
-  });
+  const { data: comment, error: insertError } = await supabase
+    .from("flare_comments")
+    .insert({
+      flare_id: flareId,
+      author_id: auth.userId,
+      body,
+    })
+    .select("id")
+    .single();
 
-  if (insertError) {
-    redirect(`${redirectTo}?commentError=${encodeURIComponent(insertError.message)}`);
+  if (insertError || !comment) {
+    redirect(`${redirectTo}?commentError=${encodeURIComponent(insertError?.message ?? "Could not post that reply.")}`);
   }
+
+  await createMentionNotifications(body, {
+    actorId: auth.userId,
+    flareId,
+    flareCommentId: comment.id,
+  });
 
   await addHelperIfMissing(supabase, flareId, auth.userId);
 
