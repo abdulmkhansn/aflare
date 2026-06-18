@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { FollowButton } from "@/components/follow-button";
 import type { ShellSidebarData } from "@/lib/app/get-shell-data";
-import { focusRingClassName, sectionTitleClassName } from "@/lib/ui/classes";
+import { focusRingClassName, panelClassName, sectionTitleClassName } from "@/lib/ui/classes";
 
 type RightRailProps = {
   sidebar: ShellSidebarData;
@@ -12,7 +12,7 @@ export function RightRail({ sidebar }: RightRailProps) {
   return (
     <aside className="hidden w-[240px] shrink-0 self-start xl:block xl:w-[280px]">
       <div className="sticky top-14 space-y-6 px-3 py-6 lg:px-4">
-        <section className="rounded-lg border border-border-subtle bg-surface-rail p-4">
+        <section className={panelClassName}>
           <h2 className={sectionTitleClassName}>Flares you might help with</h2>
 
           {sidebar.blockers.length === 0 ? (
@@ -47,7 +47,7 @@ export function RightRail({ sidebar }: RightRailProps) {
           </Link>
         </section>
 
-        <section className="rounded-lg border border-border-subtle bg-surface-rail p-4">
+        <section className={panelClassName}>
           <h2 className={sectionTitleClassName}>Builders to follow</h2>
 
           {sidebar.suggestedBuilders.length === 0 ? (

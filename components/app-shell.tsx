@@ -3,16 +3,20 @@ import { Suspense } from "react";
 
 import { AppFooter } from "@/components/app-shell/app-footer";
 import { AppHeader } from "@/components/app-shell/app-header";
-import { LeftRail } from "@/components/app-shell/left-rail";
+import { BuildJourneyRail } from "@/components/app-shell/build-journey-rail";
 import { MobileNav } from "@/components/app-shell/mobile-nav";
 import { RightRail } from "@/components/app-shell/right-rail";
 import { TransientUrlToast } from "@/components/transient-url-toast";
-import type { ShellSidebarData, ShellUser } from "@/lib/app/get-shell-data";
+import type { BuildJourneyData, ShellSidebarData, ShellUser } from "@/lib/app/get-shell-data";
 import type { UserMilestone } from "@/lib/milestones/types";
+import type { AppNotification } from "@/lib/notifications/types";
 
 type AppShellProps = {
   user: ShellUser;
   sidebar: ShellSidebarData;
+  buildJourney: BuildJourneyData;
+  recentNotifications: AppNotification[];
+  unreadNotificationCount: number;
   unreadMessageCount?: number;
   pendingMilestones?: UserMilestone[];
   children: ReactNode;
@@ -21,6 +25,9 @@ type AppShellProps = {
 export function AppShell({
   user,
   sidebar,
+  buildJourney,
+  recentNotifications,
+  unreadNotificationCount,
   unreadMessageCount = 0,
   pendingMilestones = [],
   children,
@@ -31,6 +38,9 @@ export function AppShell({
         userId={user.id}
         avatarUrl={user.avatarUrl}
         displayName={user.displayName}
+        unreadMessageCount={unreadMessageCount}
+        recentNotifications={recentNotifications}
+        unreadNotificationCount={unreadNotificationCount}
       />
 
       <Suspense fallback={null}>
@@ -38,7 +48,7 @@ export function AppShell({
       </Suspense>
 
       <div className="mx-auto flex w-full max-w-[1280px] justify-center gap-0 xl:gap-8">
-        <LeftRail user={user} unreadMessageCount={unreadMessageCount} />
+        <BuildJourneyRail journey={buildJourney} />
 
         <main className="min-w-0 w-full max-w-[620px] flex-1 px-4 py-6 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-6 lg:px-0">
           {children}

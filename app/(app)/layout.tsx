@@ -19,16 +19,20 @@ export default async function AppLayout({
 }>) {
   const auth = await requireOnboarded();
   const supabase = await createClient();
-  const [{ user, sidebar }, unreadMessageCount, pendingMilestones] = await Promise.all([
-    getShellData(auth.userId),
-    getUnreadMessageCount(auth.userId),
-    getUncelebratedMilestones(supabase, auth.userId),
-  ]);
+  const [{ user, sidebar, buildJourney, recentNotifications, unreadNotificationCount }, unreadMessageCount, pendingMilestones] =
+    await Promise.all([
+      getShellData(auth.userId),
+      getUnreadMessageCount(auth.userId),
+      getUncelebratedMilestones(supabase, auth.userId),
+    ]);
 
   return (
     <AppShell
       user={user}
       sidebar={sidebar}
+      buildJourney={buildJourney}
+      recentNotifications={recentNotifications}
+      unreadNotificationCount={unreadNotificationCount}
       unreadMessageCount={unreadMessageCount}
       pendingMilestones={pendingMilestones}
     >

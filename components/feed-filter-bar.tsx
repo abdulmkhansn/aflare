@@ -16,8 +16,8 @@ function chipClassName(isActive: boolean) {
     "inline-flex shrink-0 items-center rounded-full px-3 py-1.5 text-sm font-medium transition-colors cursor-pointer",
     focusRingClassName,
     isActive
-      ? "bg-[var(--nav-active-bg)] text-ember"
-      : "border border-border-subtle bg-surface-card text-fg-muted hover:bg-[var(--hover-subtle)] hover:text-fg",
+      ? "bg-[var(--nav-active-bg)] text-ember shadow-[var(--elevation-input)]"
+      : "border border-[var(--border-input)] bg-surface-card text-fg-muted shadow-[var(--elevation-input)] hover:bg-[var(--hover-subtle)] hover:text-fg",
   ].join(" ");
 }
 

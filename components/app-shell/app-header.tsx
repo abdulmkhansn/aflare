@@ -1,68 +1,99 @@
-import Link from "next/link";
 import { Suspense } from "react";
 
-import { Avatar } from "@/components/avatar";
 import { HeaderSearch } from "@/components/app-shell/header-search";
+import { NotificationsBell } from "@/components/app-shell/notifications-bell";
+import { TopNav } from "@/components/app-shell/top-nav";
+import { UserMenu } from "@/components/app-shell/user-menu";
 import { AflareWordmark } from "@/components/aflare-wordmark";
 import { ThemeToggle } from "@/components/theme-toggle";
+import type { AppNotification } from "@/lib/notifications/types";
 
 type AppHeaderProps = {
   userId: string;
   avatarUrl: string | null;
   displayName: string | null;
+  unreadMessageCount?: number;
+  recentNotifications: AppNotification[];
+  unreadNotificationCount: number;
 };
 
-export function AppHeader({ userId, avatarUrl, displayName }: AppHeaderProps) {
+function HeaderActions({
+  userId,
+  displayName,
+  avatarUrl,
+  recentNotifications,
+  unreadNotificationCount,
+}: Pick<
+  AppHeaderProps,
+  "userId" | "displayName" | "avatarUrl" | "recentNotifications" | "unreadNotificationCount"
+>) {
   return (
-    <header className="sticky top-0 z-30 shrink-0 border-b border-border-subtle bg-surface-header">
-      <div className="hidden h-14 grid-cols-[minmax(0,1fr)_minmax(0,28rem)_minmax(0,1fr)] items-center gap-4 px-6 lg:px-8 md:grid">
-        <div className="flex items-center justify-start">
-          <AflareWordmark href="/" variant="app" className="shrink-0" />
+    <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+      <NotificationsBell
+        notifications={recentNotifications}
+        unreadCount={unreadNotificationCount}
+      />
+      <ThemeToggle />
+      <UserMenu userId={userId} displayName={displayName} avatarUrl={avatarUrl} />
+    </div>
+  );
+}
+
+export function AppHeader({
+  userId,
+  avatarUrl,
+  displayName,
+  unreadMessageCount = 0,
+  recentNotifications,
+  unreadNotificationCount,
+}: AppHeaderProps) {
+  return (
+    <header className="sticky top-0 z-30 shrink-0 border-b border-border-subtle bg-surface-header shadow-[var(--shadow-header)]">
+      <div className="mx-auto max-w-[1280px] px-4 lg:px-6">
+        <div className="hidden h-14 items-center md:flex">
+          <div className="flex shrink-0 items-center gap-8 lg:gap-12">
+            <AflareWordmark href="/" variant="app" className="shrink-0" />
+            <TopNav userId={userId} unreadMessageCount={unreadMessageCount} />
+          </div>
+
+          <div className="mx-5 min-w-0 flex-1 lg:mx-10 lg:max-w-lg">
+            <Suspense
+              fallback={
+                <div className="h-9 w-full rounded-md border border-[var(--border-input)] bg-surface-input shadow-[var(--elevation-input)]" />
+              }
+            >
+              <HeaderSearch />
+            </Suspense>
+          </div>
+
+          <HeaderActions
+            userId={userId}
+            displayName={displayName}
+            avatarUrl={avatarUrl}
+            recentNotifications={recentNotifications}
+            unreadNotificationCount={unreadNotificationCount}
+          />
         </div>
 
-        <div className="flex min-w-0 justify-center px-2">
+        <div className="flex flex-col gap-3 py-3 md:hidden">
+          <div className="flex items-center justify-between gap-3">
+            <AflareWordmark href="/" variant="app" className="shrink-0" />
+            <HeaderActions
+              userId={userId}
+              displayName={displayName}
+              avatarUrl={avatarUrl}
+              recentNotifications={recentNotifications}
+              unreadNotificationCount={unreadNotificationCount}
+            />
+          </div>
           <Suspense
             fallback={
-              <div className="h-9 w-full max-w-md rounded-md border border-border-subtle bg-surface-input" />
+              <div className="h-9 w-full rounded-md border border-[var(--border-input)] bg-surface-input shadow-[var(--elevation-input)]" />
             }
           >
             <HeaderSearch />
           </Suspense>
         </div>
-
-        <div className="flex items-center justify-end gap-2">
-          <ThemeToggle />
-          <Link
-            href={`/u/${userId}`}
-            className="inline-flex cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-surface-header"
-            aria-label={displayName?.trim() ? `${displayName.trim()} profile` : "Your profile"}
-          >
-            <Avatar displayName={displayName} avatarUrl={avatarUrl} size="sm" />
-          </Link>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-3 px-4 py-3 md:hidden">
-        <div className="flex items-center justify-between gap-3">
-          <AflareWordmark href="/" variant="app" className="shrink-0" />
-          <div className="flex shrink-0 items-center gap-1">
-            <ThemeToggle />
-            <Link
-              href={`/u/${userId}`}
-              className="inline-flex cursor-pointer rounded-full outline-none focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-surface-header"
-              aria-label={displayName?.trim() ? `${displayName.trim()} profile` : "Your profile"}
-            >
-              <Avatar displayName={displayName} avatarUrl={avatarUrl} size="sm" />
-            </Link>
-          </div>
-        </div>
-        <Suspense
-          fallback={
-            <div className="h-9 w-full rounded-md border border-border-subtle bg-surface-input" />
-          }
-        >
-          <HeaderSearch />
-        </Suspense>
       </div>
     </header>
   );

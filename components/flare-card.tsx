@@ -29,7 +29,7 @@ export function FlareCard({ flare }: FlareCardProps) {
   return (
     <Link
       href={`/flarespace/${flare.id}`}
-      className={`block rounded-lg border border-border-subtle bg-surface-card p-4 transition-colors hover:border-ember/30 ${focusRingClassName}`}
+      className={`block rounded-lg border border-border-subtle bg-surface-card p-4 shadow-[var(--elevation-card)] transition-colors hover:border-ember/30 ${focusRingClassName}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">

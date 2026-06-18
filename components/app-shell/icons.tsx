@@ -179,3 +179,40 @@ export function IconSignOut({ className = "h-4 w-4" }: IconProps) {
     </svg>
   );
 }
+
+export function IconBell({ className = "h-5 w-5" }: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a2 2 0 0 0 1 1.73l1 .54a1 1 0 0 1 -.55 1.94h-12.9a1 1 0 0 1 -.55 -1.94l1 -.54a2 2 0 0 0 1 -1.73v-3a7 7 0 0 1 4 -6" />
+      <path d="M9 18a3 3 0 0 0 6 0" />
+    </svg>
+  );
+}
+
+export function IconChevronDown({ className = "h-4 w-4" }: IconProps) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M6 9l6 6 6 -6" />
+    </svg>
+  );
+}

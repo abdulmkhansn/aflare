@@ -1,9 +1,15 @@
+import { getBuildJourneyData, type BuildJourneyData } from "@/lib/app/get-build-journey";
 import {
   FLARE_SELECT,
   flareExcerpt,
   resolveFlareAuthor,
   type FlareRow,
 } from "@/lib/flares/types";
+import {
+  getRecentNotifications,
+  getUnreadNotificationCount,
+} from "@/lib/notifications/queries";
+import type { AppNotification } from "@/lib/notifications/types";
 import { createClient } from "@/utils/supabase/server";
 
 export type ShellUser = {
@@ -13,6 +19,8 @@ export type ShellUser = {
   verifiedBuilder: boolean;
   reputationScore: number;
 };
+
+export type { BuildJourneyData };
 
 export type SidebarBlocker = {
   id: string;
@@ -142,15 +150,25 @@ export async function getSuggestedBuilders(
 export async function getShellData(userId: string): Promise<{
   user: ShellUser;
   sidebar: ShellSidebarData;
+  buildJourney: BuildJourneyData;
+  recentNotifications: AppNotification[];
+  unreadNotificationCount: number;
 }> {
-  const [user, blockers, suggestedBuilders] = await Promise.all([
-    getShellUser(userId),
-    getSidebarBlockers(userId),
-    getSuggestedBuilders(userId),
-  ]);
+  const [user, blockers, suggestedBuilders, buildJourney, recentNotifications, unreadNotificationCount] =
+    await Promise.all([
+      getShellUser(userId),
+      getSidebarBlockers(userId),
+      getSuggestedBuilders(userId),
+      getBuildJourneyData(userId),
+      getRecentNotifications(userId),
+      getUnreadNotificationCount(userId),
+    ]);
 
   return {
     user,
     sidebar: { blockers, suggestedBuilders },
+    buildJourney,
+    recentNotifications,
+    unreadNotificationCount,
   };
 }

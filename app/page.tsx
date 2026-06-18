@@ -48,13 +48,21 @@ export default async function HomePage({ searchParams }: HomePageProps) {
     redirect("/onboarding");
   }
 
-  const [{ user, sidebar }, unreadMessageCount] = await Promise.all([
-    getShellData(auth.userId),
-    getUnreadMessageCount(auth.userId),
-  ]);
+  const [{ user, sidebar, buildJourney, recentNotifications, unreadNotificationCount }, unreadMessageCount] =
+    await Promise.all([
+      getShellData(auth.userId),
+      getUnreadMessageCount(auth.userId),
+    ]);
 
   return (
-    <AppShell user={user} sidebar={sidebar} unreadMessageCount={unreadMessageCount}>
+    <AppShell
+      user={user}
+      sidebar={sidebar}
+      buildJourney={buildJourney}
+      recentNotifications={recentNotifications}
+      unreadNotificationCount={unreadNotificationCount}
+      unreadMessageCount={unreadMessageCount}
+    >
       <FeedView userId={auth.userId} searchParams={params} />
     </AppShell>
   );

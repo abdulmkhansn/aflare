@@ -313,7 +313,7 @@ export function FeedComposeForm({ projects, posted, error }: FeedComposeFormProp
           </>
         ) : null}
 
-        <div className="relative overflow-hidden rounded-md border border-border-subtle bg-surface-input focus-within:ring-2 focus-within:ring-teal focus-within:ring-offset-2 focus-within:ring-offset-surface-page">
+        <div className="relative overflow-hidden rounded-md border border-[var(--border-input)] bg-surface-input shadow-[var(--elevation-input)] focus-within:ring-2 focus-within:ring-teal focus-within:ring-offset-2 focus-within:ring-offset-surface-page">
           {showPlaceholder ? (
             <p
               aria-hidden="true"
