@@ -1,8 +1,7 @@
 /**
- * ONE-TIME teardown for demo seed data.
+ * Teardown for demo seed data.
  * Deletes every auth user where user_metadata.seed === true.
- * CASCADE removes their profiles, projects, posts, comments, helpful_marks, etc.
- * Also removes uploaded synthetic avatars from the seed-avatars storage bucket.
+ * CASCADE removes their profiles, projects, posts, comments, flares, etc.
  *
  * Run: npx tsx scripts/unseed.ts
  *
@@ -12,7 +11,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 import { loadEnvLocal } from "./load-env-local";
-import { deleteSeedAvatarsStorage } from "./seed-avatars";
 
 async function listAllUsers(supabase: SupabaseClient) {
   const users = [];
@@ -65,31 +63,27 @@ async function main() {
 
   if (seedUsers.length === 0) {
     console.log("No seed users found (user_metadata.seed === true).");
-  } else {
-    console.log(`Deleting ${seedUsers.length} seed user(s)...`);
-
-    let deleted = 0;
-
-    for (const user of seedUsers) {
-      const name = user.user_metadata?.full_name ?? user.email ?? user.id;
-      const { error } = await supabase.auth.admin.deleteUser(user.id);
-
-      if (error) {
-        console.error(`  Failed to delete ${name}: ${error.message}`);
-        continue;
-      }
-
-      console.log(`  Deleted ${name}`);
-      deleted += 1;
-    }
-
-    console.log(`\nRemoved ${deleted} seed user(s). Real accounts were not touched.`);
+    return;
   }
 
-  console.log("\nCleaning up seed-avatars storage...");
-  const { deletedObjects, bucketRemoved } = await deleteSeedAvatarsStorage(supabase);
-  console.log(`  Removed ${deletedObjects} object(s) from seed-avatars.`);
-  console.log(bucketRemoved ? "  Bucket seed-avatars deleted." : "  Bucket seed-avatars left in place (empty or already gone).");
+  console.log(`Deleting ${seedUsers.length} seed user(s)...`);
+
+  let deleted = 0;
+
+  for (const user of seedUsers) {
+    const name = user.user_metadata?.full_name ?? user.email ?? user.id;
+    const { error } = await supabase.auth.admin.deleteUser(user.id);
+
+    if (error) {
+      console.error(`  Failed to delete ${name}: ${error.message}`);
+      continue;
+    }
+
+    console.log(`  Deleted ${name}`);
+    deleted += 1;
+  }
+
+  console.log(`\nRemoved ${deleted} seed user(s). Real accounts were not touched.`);
 }
 
 const isDirectRun = process.argv[1]?.replace(/\\/g, "/").endsWith("scripts/unseed.ts");
