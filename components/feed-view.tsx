@@ -139,6 +139,7 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
                 <FlareFeedCard
                   key={`flare-${item.id}`}
                   flare={item.flare}
+                  currentUserId={userId}
                   isBookmarked={bookmarksContext.flareIds.has(item.flare.id)}
                 />
               );

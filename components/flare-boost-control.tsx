@@ -3,9 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
-import { repostPost } from "@/app/(app)/actions/reposts";
-import { RepostActionTrigger } from "@/components/content-action-row";
+import { boostFlare } from "@/app/(app)/actions/boosts";
+import { BoostActionTrigger } from "@/components/content-action-row";
 import { MentionTextarea } from "@/components/mentions/mention-textarea";
+import type { FlareStatus } from "@/lib/flares/types";
+import { canBoostFlare } from "@/lib/posts/boost";
 import { refreshInPlace } from "@/lib/ui/refresh-in-place";
 import {
   errorTextClassName,
@@ -23,32 +25,41 @@ import {
   secondaryButtonClassName,
 } from "@/lib/ui/classes";
 
-type PostRepostControlProps = {
-  postId: string;
+type FlareBoostControlProps = {
+  flareId: string;
+  flareAuthorId: string;
+  flareStatus: FlareStatus;
+  currentUserId: string;
   redirectTo: string;
-  disabled?: boolean;
   compact?: boolean;
 };
 
-export function PostRepostControl({
-  postId,
+export function FlareBoostControl({
+  flareId,
+  flareAuthorId,
+  flareStatus,
+  currentUserId,
   redirectTo,
-  disabled = false,
-  compact = false,
-}: PostRepostControlProps) {
+  compact = true,
+}: FlareBoostControlProps) {
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [quote, setQuote] = useState("");
+  const [note, setNote] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [isPending, startTransition] = useTransition();
 
-  function openDialog() {
-    if (disabled) {
-      return;
-    }
+  const canBoost = canBoostFlare(
+    { author_id: flareAuthorId, status: flareStatus },
+    currentUserId
+  );
 
-    setQuote("");
+  if (!canBoost) {
+    return null;
+  }
+
+  function openDialog() {
+    setNote("");
     setError(null);
     setSuccess(false);
     dialogRef.current?.showModal();
@@ -66,7 +77,7 @@ export function PostRepostControl({
       setError(null);
       setSuccess(false);
 
-      const result = await repostPost(formData);
+      const result = await boostFlare(formData);
 
       if (!result.ok) {
         setError(result.error);
@@ -82,21 +93,22 @@ export function PostRepostControl({
   return (
     <>
       {compact ? (
-        <RepostActionTrigger onClick={openDialog} disabled={disabled || isPending} />
+        <BoostActionTrigger onClick={openDialog} disabled={isPending} />
       ) : (
         <button
           type="button"
-          disabled={disabled || isPending}
+          disabled={isPending}
           onClick={openDialog}
           className={`inline-flex h-8 items-center gap-1 rounded-full border border-border-subtle px-2.5 text-xs font-medium text-fg-muted transition-colors hover:border-fg/20 hover:text-fg disabled:cursor-not-allowed disabled:opacity-60 ${focusRingClassName}`}
+          title="Know someone who can help?"
         >
-          Repost
+          Share
         </button>
       )}
 
       {success ? (
         <span className="sr-only" role="status">
-          Reposted to your followers.
+          Shared to your followers.
         </span>
       ) : null}
 
@@ -110,12 +122,12 @@ export function PostRepostControl({
         }}
       >
         <form className={modalBodyClassName} onSubmit={handleSubmit}>
-          <h2 className={modalTitleClassName}>Repost</h2>
+          <h2 className={modalTitleClassName}>Share this flare</h2>
           <p className={modalDescriptionClassName}>
-            Share this with your followers. Add a thought if you want, or leave it blank.
+            Share it with people who might have answers. Add a note if you want.
           </p>
 
-          <input type="hidden" name="post_id" value={postId} />
+          <input type="hidden" name="flare_id" value={flareId} />
           <input type="hidden" name="redirect_to" value={redirectTo} />
 
           {error ? (
@@ -125,15 +137,15 @@ export function PostRepostControl({
           ) : null}
 
           <div className={modalSectionClassName}>
-            <label htmlFor={`repost-quote-${postId}`} className={labelClassName}>
-              Add your thoughts <span className="font-normal text-fg-muted">(optional)</span>
+            <label htmlFor={`boost-note-${flareId}`} className={labelClassName}>
+              Add a note <span className="font-normal text-fg-muted">(optional)</span>
             </label>
             <MentionTextarea
-              id={`repost-quote-${postId}`}
-              name="quote"
+              id={`boost-note-${flareId}`}
+              name="note"
               rows={3}
-              value={quote}
-              onChange={setQuote}
+              value={note}
+              onChange={setNote}
               disabled={isPending}
               shellClassName={modalFieldShellClassName}
               className="min-h-[5rem]"
@@ -146,7 +158,7 @@ export function PostRepostControl({
               Cancel
             </button>
             <button type="submit" className={primaryButtonClassName} disabled={isPending}>
-              {isPending ? "Reposting…" : "Repost"}
+              {isPending ? "Sharing…" : "Share"}
             </button>
           </div>
         </form>

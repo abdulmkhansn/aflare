@@ -6,7 +6,7 @@ import { deleteProject, fetchProjectDeletePreview } from "@/app/(app)/actions/pr
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ProjectDeleteConfirmBody } from "@/components/project/project-delete-confirm-body";
 import type { ProjectDeletePreview } from "@/lib/projects/get-project-delete-preview";
-import { focusRingClassName } from "@/lib/ui/classes";
+import { focusRingClassName, popoverPanelClassName } from "@/lib/ui/classes";
 
 type ProjectOwnerMenuProps = {
   projectId: string;
@@ -109,7 +109,7 @@ export function ProjectOwnerMenu({
         {menuOpen ? (
           <div
             role="menu"
-            className="absolute right-0 z-20 mt-1 min-w-[10rem] rounded-md border border-border-subtle bg-surface-card py-1 shadow-lg"
+            className={`absolute right-0 z-20 mt-1 min-w-[10rem] ${popoverPanelClassName} py-1`}
             onClick={(event) => event.stopPropagation()}
           >
             <button

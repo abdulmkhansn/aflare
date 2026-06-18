@@ -4,6 +4,7 @@ import { Avatar } from "@/components/avatar";
 import { isDeletedProfile, profileAvatarUrl, profileDisplayName } from "@/lib/profiles/public-fields";
 import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
 import { ContentActionRow } from "@/components/content-action-row";
+import { FlareBoostControl } from "@/components/flare-boost-control";
 import { MentionBody } from "@/components/mentions/mention-body";
 import { FlareStatusBadge } from "@/components/flare-status-badge";
 import {
@@ -19,10 +20,11 @@ import { cardClassName, focusRingClassName, tagPillClassName } from "@/lib/ui/cl
 
 type FlareCardProps = {
   flare: FlareListItem;
+  currentUserId: string;
   isBookmarked?: boolean;
 };
 
-export function FlareCard({ flare, isBookmarked = false }: FlareCardProps) {
+export function FlareCard({ flare, currentUserId, isBookmarked = false }: FlareCardProps) {
   const author = resolveFlareAuthor(flare);
   const helpers = resolveFlareHelpers(flare);
   const tags = resolveFlareTags(flare);
@@ -106,6 +108,13 @@ export function FlareCard({ flare, isBookmarked = false }: FlareCardProps) {
         >
           View flare
         </Link>
+        <FlareBoostControl
+          flareId={flare.id}
+          flareAuthorId={flare.author_id}
+          flareStatus={flare.status}
+          currentUserId={currentUserId}
+          redirectTo={`/flarespace/${flare.id}`}
+        />
         <BookmarkControl targetType="flare" targetId={flare.id} isSaved={isBookmarked} showLabel={false} />
       </ContentActionRow>
     </article>

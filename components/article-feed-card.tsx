@@ -42,7 +42,7 @@ export function ArticleFeedCard({
   const excerptHasMentions = excerptFromPostBody && hasMentionTokens(excerpt);
 
   return (
-    <article className="overflow-hidden rounded-lg border border-border-subtle bg-surface-card">
+    <article className="overflow-hidden rounded-lg border border-border-subtle bg-surface-card shadow-[var(--elevation-card)]">
       {article.cover_image_url ? (
         <div className="relative aspect-[2/1] border-b border-border-subtle bg-[var(--hover-subtle)]">
           <Image

@@ -13,6 +13,7 @@ export type FeedPost = {
   project_id: string | null;
   article_id: string | null;
   reposted_post_id: string | null;
+  boosted_flare_id: string | null;
   structured_fields: PostStructuredFields | Record<string, unknown> | null;
   profiles:
     | {
@@ -40,6 +41,7 @@ export type FeedPost = {
     | null;
   articles: FeedArticleSummary | FeedArticleSummary[] | null;
   reposted_post?: FeedPost | FeedPost[] | null;
+  boosted_flare?: FeedFlare | FeedFlare[] | null;
 };
 
 export function resolveRepostedPostRelation(post: FeedPost): FeedPost | null {
@@ -68,6 +70,7 @@ export const REPOSTED_POST_SELECT = `
   project_id,
   article_id,
   reposted_post_id,
+  boosted_flare_id,
   structured_fields,
   profiles:author_id ( display_name, avatar_url, deleted, verified_builder ),
   projects:project_id ( id, name ),
@@ -81,6 +84,17 @@ export const REPOSTED_POST_SELECT = `
   )
 `;
 
+export const BOOSTED_FLARE_EMBED_SELECT = `
+  id,
+  author_id,
+  title,
+  body,
+  status,
+  created_at,
+  profiles:author_id ( display_name, avatar_url, deleted, verified_builder ),
+  flare_tags ( tag_id, tags ( id, label ) )
+`;
+
 export const FEED_POST_SELECT = `
   id,
   type,
@@ -92,6 +106,7 @@ export const FEED_POST_SELECT = `
   project_id,
   article_id,
   reposted_post_id,
+  boosted_flare_id,
   structured_fields,
   profiles:author_id ( display_name, avatar_url, deleted, verified_builder ),
   projects:project_id ( id, name ),
@@ -105,6 +120,9 @@ export const FEED_POST_SELECT = `
   ),
   reposted_post:reposted_post_id (
     ${REPOSTED_POST_SELECT}
+  ),
+  boosted_flare:boosted_flare_id (
+    ${BOOSTED_FLARE_EMBED_SELECT}
   )
 `;
 

@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { inlineError, inlineOk, type InlineActionResult } from "@/lib/actions/inline-result";
+import { isBoostPost } from "@/lib/posts/boost";
 import { isRepostPost } from "@/lib/posts/repost";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
@@ -23,7 +24,7 @@ async function ensurePostAuthor(
 ) {
   const { data, error } = await supabase
     .from("posts")
-    .select("id, author_id, project_id, kind, reposted_post_id, structured_fields")
+    .select("id, author_id, project_id, kind, reposted_post_id, boosted_flare_id, structured_fields")
     .eq("id", postId)
     .maybeSingle();
 
@@ -60,8 +61,9 @@ export async function updatePost(formData: FormData) {
   }
 
   const isRepost = isRepostPost(post);
+  const isBoost = isBoostPost(post);
 
-  if (!isRepost && !body) {
+  if (!isRepost && !isBoost && !body) {
     redirectWithError(redirectTo, "Write something before saving.");
   }
 

@@ -12,7 +12,7 @@ import {
   isDeletedProfile,
   profileDisplayName,
 } from "@/lib/profiles/public-fields";
-import { emptyStateClassName, focusRingClassName } from "@/lib/ui/classes";
+import { emptyStateClassName, focusRingClassName, modalBackdropClassName, modalPanelClassName } from "@/lib/ui/classes";
 import { refreshInPlace } from "@/lib/ui/refresh-in-place";
 import { useInlineFormAction } from "@/lib/ui/use-inline-form-action";
 
@@ -104,16 +104,12 @@ function FollowListDialog({
   }, [onClose]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-charcoal/40 p-4"
-      role="presentation"
-      onClick={onClose}
-    >
+    <div className={modalBackdropClassName} role="presentation" onClick={onClose}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="follow-list-title"
-        className="flex max-h-[min(80vh,32rem)] w-full max-w-md flex-col rounded-lg border border-border-subtle bg-surface-card shadow-lg"
+        className={`${modalPanelClassName} flex max-h-[min(80vh,32rem)] max-w-md flex-col overflow-hidden`}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-border-subtle px-5 py-4">

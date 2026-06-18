@@ -8,7 +8,7 @@ import { markAllNotificationsRead } from "@/app/(app)/actions/notifications";
 import { IconBell } from "@/components/app-shell/icons";
 import { NotificationList } from "@/components/notifications/notification-list";
 import type { AppNotification } from "@/lib/notifications/types";
-import { focusRingClassName } from "@/lib/ui/classes";
+import { focusRingClassName, popoverPanelClassName } from "@/lib/ui/classes";
 
 type NotificationsBellProps = {
   notifications: AppNotification[];
@@ -89,7 +89,7 @@ export function NotificationsBell({ notifications, unreadCount }: NotificationsB
       </button>
 
       {open ? (
-        <div className="absolute top-full right-0 z-50 mt-2 w-[min(22rem,calc(100vw-2rem))] rounded-lg border border-border-subtle bg-surface-card shadow-lg">
+        <div className={`absolute top-full right-0 z-50 mt-2 w-[min(22rem,calc(100vw-2rem))] ${popoverPanelClassName}`}>
           <div className="flex items-center justify-between gap-3 border-b border-border-subtle px-4 py-3">
             <h2 className="text-sm font-medium text-fg">Notifications</h2>
             {localUnread > 0 ? (

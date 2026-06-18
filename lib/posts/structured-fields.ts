@@ -5,6 +5,7 @@ export type PostStructuredFields = {
   link_url?: string;
   link_label?: string;
   repost?: boolean;
+  boost?: boolean;
 };
 
 export function parseStructuredFields(raw: unknown): PostStructuredFields {
@@ -21,6 +22,7 @@ export function parseStructuredFields(raw: unknown): PostStructuredFields {
     link_url: readString(record.link_url),
     link_label: readString(record.link_label),
     repost: record.repost === true ? true : undefined,
+    boost: record.boost === true ? true : undefined,
   };
 }
 

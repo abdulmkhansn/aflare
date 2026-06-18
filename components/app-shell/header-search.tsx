@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { IconSearch } from "@/components/app-shell/icons";
 import { formatTagLabel } from "@/lib/tags/format-tag-label";
 import type { QuickSearchResults } from "@/lib/search/run-quick-search";
-import { focusRingClassName, headerSearchClassName } from "@/lib/ui/classes";
+import { focusRingClassName, headerSearchClassName, popoverPanelClassName } from "@/lib/ui/classes";
 
 const EMPTY_RESULTS: QuickSearchResults = {
   builders: [],
@@ -135,7 +135,7 @@ export function HeaderSearch() {
         <div
           id="header-search-results"
           role="listbox"
-          className="absolute top-full right-0 left-0 z-50 mt-1 max-h-[min(24rem,70vh)] overflow-y-auto rounded-lg border border-border-subtle bg-surface-card shadow-lg"
+          className={`absolute top-full right-0 left-0 z-50 mt-1 max-h-[min(24rem,70vh)] overflow-y-auto ${popoverPanelClassName}`}
         >
           {loading ? (
             <p className="px-4 py-3 text-sm text-fg-muted">Searching…</p>

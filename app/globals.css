@@ -17,10 +17,12 @@ html[data-theme="dark"] {
   --surface-rail: #1c1c2b;
   --surface-header: #1c1c2b;
   --surface-input: #252536;
+  --surface-modal: #2a2a3e;
   --text-primary: #faf7f2;
   --text-muted: rgba(250, 247, 242, 0.64);
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-input: rgba(255, 255, 255, 0.1);
+  --border-modal: rgba(255, 255, 255, 0.16);
   --nav-active-bg: rgba(255, 107, 53, 0.14);
   --accent-stripe-neutral: rgba(250, 247, 242, 0.14);
   --pill-neutral-bg: rgba(250, 247, 242, 0.1);
@@ -29,6 +31,8 @@ html[data-theme="dark"] {
   --hover-subtle: rgba(250, 247, 242, 0.06);
   --elevation-card: 0 1px 2px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.04);
   --elevation-input: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --elevation-modal: 0 24px 64px rgba(0, 0, 0, 0.72), 0 0 0 1px var(--border-modal);
+  --modal-backdrop: rgba(0, 0, 0, 0.78);
   --shadow-header: 0 1px 0 rgba(255, 255, 255, 0.04);
   --text-error: #f87171;
 
@@ -53,11 +57,13 @@ html[data-theme="light"] {
   --surface-rail: #faf7f2;
   --surface-header: #faf7f2;
   --surface-input: #ffffff;
+  --surface-modal: #ffffff;
   --text-primary: #1a1a2e;
-  --text-muted: #4f4f62;
+  --text-muted: #45455a;
   --text-error: #b91c1c;
   --border-subtle: rgba(26, 26, 46, 0.14);
   --border-input: rgba(26, 26, 46, 0.22);
+  --border-modal: rgba(26, 26, 46, 0.2);
   --nav-active-bg: rgba(255, 107, 53, 0.16);
   --accent-stripe-neutral: rgba(26, 26, 46, 0.12);
   --pill-neutral-bg: rgba(26, 26, 46, 0.08);
@@ -66,6 +72,8 @@ html[data-theme="light"] {
   --hover-subtle: rgba(26, 26, 46, 0.06);
   --elevation-card: 0 1px 2px rgba(26, 26, 46, 0.06), 0 0 0 1px rgba(26, 26, 46, 0.05);
   --elevation-input: 0 1px 2px rgba(26, 26, 46, 0.04);
+  --elevation-modal: 0 24px 64px rgba(26, 26, 46, 0.22), 0 0 0 1px var(--border-modal);
+  --modal-backdrop: color-mix(in srgb, var(--charcoal) 58%, transparent);
   --shadow-header: 0 1px 3px rgba(26, 26, 46, 0.07);
 
   --stripe-shipped: var(--teal);
@@ -93,6 +101,7 @@ html[data-theme="light"] {
   --color-surface-rail: var(--surface-rail);
   --color-surface-header: var(--surface-header);
   --color-surface-input: var(--surface-input);
+  --color-surface-modal: var(--surface-modal);
   --color-fg: var(--text-primary);
   --color-fg-muted: var(--text-muted);
   --color-border-subtle: var(--border-subtle);
@@ -267,14 +276,28 @@ dialog.centered-dialog {
   top: 50%;
   left: 50%;
   margin: 0;
+  padding: 0;
+  width: min(100%, 28rem);
   max-height: calc(100vh - 2rem);
   max-width: min(28rem, calc(100vw - 2rem));
   transform: translate(-50%, -50%);
-  border: none;
-  padding: 0;
-  overflow: visible;
+  border: 1px solid var(--border-modal);
+  border-radius: 0.5rem;
+  background: var(--surface-modal);
+  color: var(--text-primary);
+  box-shadow: var(--elevation-modal);
+  overflow: auto;
 }
 
 dialog.centered-dialog::backdrop {
-  background: color-mix(in srgb, var(--charcoal) 40%, transparent);
+  background: var(--modal-backdrop);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  dialog.centered-dialog::backdrop {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
 }

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { inlineError, inlineOk, type InlineActionResult } from "@/lib/actions/inline-result";
 import { HELPFUL_TARGET } from "@/lib/helpful/target-types";
 import { recordHelpGivenMilestone } from "@/lib/milestones/record-help-given";
+import { isBoostPost } from "@/lib/posts/boost";
 import { isRepostPost } from "@/lib/posts/repost";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
@@ -156,7 +157,7 @@ export async function togglePostHelpful(formData: FormData): Promise<InlineActio
 
   const { data: post, error: postError } = await supabase
     .from("posts")
-    .select("id, author_id, project_id, reposted_post_id, structured_fields")
+    .select("id, author_id, project_id, reposted_post_id, boosted_flare_id, structured_fields")
     .eq("id", postId)
     .maybeSingle();
 
@@ -170,6 +171,10 @@ export async function togglePostHelpful(formData: FormData): Promise<InlineActio
 
   if (isRepostPost(post)) {
     return inlineError("Reposts are amplification. Mark the original if it helped.");
+  }
+
+  if (isBoostPost(post)) {
+    return inlineError("Shares are about finding help. Mark a reply on the flare if it helped.");
   }
 
   if (isMarked) {

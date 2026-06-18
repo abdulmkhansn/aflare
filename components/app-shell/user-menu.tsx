@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { signOut } from "@/app/(app)/actions/auth";
 import { Avatar } from "@/components/avatar";
 import { IconSignOut } from "@/components/app-shell/icons";
-import { focusRingClassName } from "@/lib/ui/classes";
+import { focusRingClassName, popoverPanelClassName } from "@/lib/ui/classes";
 
 type UserMenuProps = {
   userId: string;
@@ -56,7 +56,7 @@ export function UserMenu({ userId, displayName, avatarUrl }: UserMenuProps) {
       </button>
 
       {open ? (
-        <div className="absolute top-full right-0 z-50 mt-2 w-52 rounded-lg border border-border-subtle bg-surface-card py-1 shadow-lg">
+        <div className={`absolute top-full right-0 z-50 mt-2 w-52 ${popoverPanelClassName} py-1`}>
           <div className="border-b border-border-subtle px-4 py-3">
             <p className="truncate text-sm font-medium text-fg">{name}</p>
           </div>

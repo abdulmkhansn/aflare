@@ -4,6 +4,7 @@ import { AuthorLink } from "@/components/avatar";
 import { authorLinkProps } from "@/lib/profiles/public-fields";
 import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
 import { ContentActionRow } from "@/components/content-action-row";
+import { FlareBoostControl } from "@/components/flare-boost-control";
 import { MentionBody } from "@/components/mentions/mention-body";
 import { FlareStatusBadge } from "@/components/flare-status-badge";
 import {
@@ -17,10 +18,11 @@ import { cardClassName, focusRingClassName } from "@/lib/ui/classes";
 
 type FlareFeedCardProps = {
   flare: FlareListItem;
+  currentUserId: string;
   isBookmarked?: boolean;
 };
 
-export function FlareFeedCard({ flare, isBookmarked = false }: FlareFeedCardProps) {
+export function FlareFeedCard({ flare, currentUserId, isBookmarked = false }: FlareFeedCardProps) {
   const author = resolveFlareAuthor(flare);
   const helpers = resolveFlareHelpers(flare);
   const title = flare.title?.trim();
@@ -57,6 +59,13 @@ export function FlareFeedCard({ flare, isBookmarked = false }: FlareFeedCardProp
         >
           View flare
         </Link>
+        <FlareBoostControl
+          flareId={flare.id}
+          flareAuthorId={flare.author_id}
+          flareStatus={flare.status}
+          currentUserId={currentUserId}
+          redirectTo={`/flarespace/${flare.id}`}
+        />
         {helpers.length > 0 ? (
           <span className="inline-flex h-8 items-center px-1 text-xs text-fg-muted">
             {helpers.length} {helpers.length === 1 ? "helper" : "helpers"}

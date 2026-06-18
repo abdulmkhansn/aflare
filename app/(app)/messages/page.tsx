@@ -5,7 +5,7 @@ import { NewMessagePicker } from "@/components/new-message-picker";
 import { PageHeader } from "@/components/page-header";
 import { pageTitle } from "@/lib/app/brand";
 import { getInbox } from "@/lib/messages/get-inbox";
-import { emptyStateClassName, errorTextClassName } from "@/lib/ui/classes";
+import { emptyStateClassName, errorTextClassName, pageStackClassName } from "@/lib/ui/classes";
 import { requireOnboarded } from "@/utils/auth/session";
 
 export const metadata: Metadata = {
@@ -22,7 +22,7 @@ export default async function MessagesPage({ searchParams }: MessagesPageProps) 
   const items = await getInbox(auth.userId);
 
   return (
-    <div className="space-y-6">
+    <div className={pageStackClassName}>
       <PageHeader title="Messages" description="Message other builders directly." />
 
       <NewMessagePicker />

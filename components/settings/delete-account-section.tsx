@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { deleteAccount } from "@/app/(app)/actions/account";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { DELETED_BUILDER_LABEL } from "@/lib/profiles/public-fields";
-import { fieldClassName, labelClassName, secondaryButtonClassName } from "@/lib/ui/classes";
+import { fieldClassName, labelClassName, dangerOutlineButtonClassName, dangerSurfaceClassName, modalSectionClassName } from "@/lib/ui/classes";
 
 const CONFIRM_PHRASE = "delete my account";
 
@@ -36,7 +36,7 @@ export function DeleteAccountSection() {
   }
 
   return (
-    <section className="rounded-lg border border-red-500/25 bg-surface-card p-5 shadow-[var(--elevation-card)]">
+    <section className={dangerSurfaceClassName}>
       <h2 className="text-sm font-medium text-fg">Delete account</h2>
       <p className="mt-2 text-sm leading-relaxed text-fg-muted">
         This removes your profile, name, and avatar. You will be signed out, and it cannot be
@@ -50,7 +50,7 @@ export function DeleteAccountSection() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`mt-4 ${secondaryButtonClassName} !border-red-500/40 !text-red-600 hover:!bg-red-500/5 dark:!text-red-400`}
+        className={`mt-4 ${dangerOutlineButtonClassName}`}
       >
         Delete account
       </button>
@@ -84,7 +84,7 @@ export function DeleteAccountSection() {
               <span>I understand this is permanent and I will be signed out.</span>
             </label>
 
-            <div>
+            <div className={modalSectionClassName}>
               <label htmlFor="delete-account-confirm" className={labelClassName}>
                 Type <span className="font-medium">{CONFIRM_PHRASE}</span> to confirm
               </label>
@@ -94,7 +94,7 @@ export function DeleteAccountSection() {
                 value={confirmText}
                 onChange={(event) => setConfirmText(event.target.value)}
                 autoComplete="off"
-                className={`${fieldClassName} mt-1.5`}
+                className={fieldClassName}
                 placeholder={CONFIRM_PHRASE}
               />
             </div>

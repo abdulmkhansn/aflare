@@ -8,7 +8,7 @@ import { MentionBody } from "@/components/mentions/mention-body";
 import { MentionTextarea } from "@/components/mentions/mention-textarea";
 import type { InlineActionResult } from "@/lib/actions/inline-result";
 import { refreshInPlace } from "@/lib/ui/refresh-in-place";
-import { fieldClassName, focusRingClassName, primaryButtonClassName, secondaryButtonClassName, errorTextClassName } from "@/lib/ui/classes";
+import { fieldClassName, focusRingClassName, popoverPanelClassName, primaryButtonClassName, secondaryButtonClassName, errorTextClassName } from "@/lib/ui/classes";
 
 type EditableContentBodyProps = {
   body: string;
@@ -170,7 +170,7 @@ export function EditableContentBody({
             {menuOpen ? (
               <div
                 role="menu"
-                className="absolute right-0 z-10 mt-1 min-w-[7rem] rounded-md border border-border-subtle bg-surface-card py-1 shadow-lg"
+                className={`absolute right-0 z-10 mt-1 min-w-[7rem] ${popoverPanelClassName} py-1`}
               >
                 <button
                   type="button"
@@ -232,7 +232,7 @@ export function EditableContentBody({
           {menuOpen ? (
             <div
               role="menu"
-              className="absolute right-0 z-10 mt-1 min-w-[7rem] rounded-md border border-border-subtle bg-surface-card py-1 shadow-lg"
+              className={`absolute right-0 z-10 mt-1 min-w-[7rem] ${popoverPanelClassName} py-1`}
             >
               <button
                 type="button"

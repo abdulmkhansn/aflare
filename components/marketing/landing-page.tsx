@@ -79,7 +79,7 @@ export function LandingPage() {
             <div className="mx-auto flex max-w-2xl flex-col items-center text-center">
               <AflareWordmark variant="nav" className="text-4xl sm:text-[2.75rem]" />
 
-              <h1 className="mt-8 text-3xl font-medium leading-tight tracking-[-0.02em] sm:text-4xl sm:leading-tight">
+              <h1 className="mt-8 font-display font-display text-3xl font-medium leading-tight tracking-[-0.02em] sm:text-4xl sm:leading-tight">
                 {LANDING_TAGLINE}
               </h1>
 
@@ -106,7 +106,7 @@ export function LandingPage() {
         >
           <div className={LANDING_CONTAINER}>
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-3xl font-medium leading-tight tracking-[-0.02em] sm:text-4xl">
+              <h2 className="font-display font-display text-3xl font-medium leading-tight tracking-[-0.02em] sm:text-4xl">
                 Everyone started somewhere.
               </h2>
 
@@ -139,7 +139,7 @@ export function LandingPage() {
         {/* How it works */}
         <section id="how-it-works" className={`w-full ${SECTION_PADDING}`}>
           <div className={LANDING_CONTAINER}>
-            <h2 className="text-2xl font-medium tracking-[-0.02em]">How it works</h2>
+            <h2 className="font-display text-2xl font-medium tracking-[-0.02em]">How it works</h2>
             <p className="mt-2 max-w-xl text-sm leading-relaxed text-fg-muted">
               Plain steps. Nothing to perform, nothing to prove before you show up.
             </p>
@@ -162,7 +162,7 @@ export function LandingPage() {
           className={`w-full border-t border-border-subtle bg-surface-card ${SECTION_PADDING}`}
         >
           <div className={LANDING_CONTAINER}>
-            <h2 className="text-2xl font-medium tracking-[-0.02em]">Who it&apos;s for</h2>
+            <h2 className="font-display text-2xl font-medium tracking-[-0.02em]">Who it&apos;s for</h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-fg-muted sm:text-base">
               If you build and want to build in the open, you belong here.
             </p>
@@ -199,7 +199,7 @@ export function LandingPage() {
         <section className={`w-full border-t border-border-subtle bg-surface-card ${SECTION_PADDING}`}>
           <div className={LANDING_CONTAINER}>
             <div className="mx-auto max-w-2xl text-center">
-              <h2 className="text-2xl font-medium tracking-[-0.02em] sm:text-3xl">
+              <h2 className="font-display text-2xl font-medium tracking-[-0.02em] sm:text-3xl">
                 {LANDING_TAGLINE}
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-fg-muted sm:text-base">

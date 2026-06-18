@@ -1,3 +1,4 @@
+import { BoostedFlarePostCard, isBoostFeedPost } from "@/components/boosted-flare-post-card";
 import { PostCard } from "@/components/post-card";
 import { PostCardShell } from "@/components/post-card-shell";
 import { PostInteractionFooter } from "@/components/post-interaction-footer";
@@ -62,6 +63,23 @@ export function PostWithComments({
   if (isRepostFeedPost(post)) {
     return (
       <RepostPostCard
+        post={post}
+        comments={comments}
+        markedCommentIds={markedCommentIds}
+        currentUserId={currentUserId}
+        redirectTo={redirectTo}
+        reactionsContext={reactionsContext}
+        bookmarksContext={bookmarksContext}
+        commentPosted={commentPosted}
+        commentError={commentError}
+        collapseComments={collapseComments}
+      />
+    );
+  }
+
+  if (isBoostFeedPost(post)) {
+    return (
+      <BoostedFlarePostCard
         post={post}
         comments={comments}
         markedCommentIds={markedCommentIds}

@@ -2,6 +2,7 @@ import type { FeedPost } from "@/lib/feed/types";
 import { resolveFeedPostRelations } from "@/lib/feed/types";
 
 import { resolvePostKind } from "./kinds";
+import { isBoostPost } from "./boost";
 import { parseStructuredFields, type PostStructuredFields } from "./structured-fields";
 
 export function isRepostMarker(fields: PostStructuredFields): boolean {
@@ -52,7 +53,10 @@ export function repostHeaderLabel(displayName: string | null | undefined): strin
 }
 
 export function canRepostPost(
-  post: Pick<FeedPost, "author_id" | "kind" | "article_id" | "reposted_post_id" | "structured_fields">,
+  post: Pick<
+    FeedPost,
+    "author_id" | "kind" | "article_id" | "reposted_post_id" | "boosted_flare_id" | "structured_fields"
+  >,
   currentUserId: string
 ): boolean {
   if (post.author_id === currentUserId) {
@@ -60,6 +64,10 @@ export function canRepostPost(
   }
 
   if (resolvePostKind(post) === "article") {
+    return false;
+  }
+
+  if (isBoostPost(post)) {
     return false;
   }
 

@@ -60,4 +60,4 @@ export function postTypeBadgeClassName(type: PostType): string {
 }
 
 export const POST_CARD_SHELL_CLASS =
-  "overflow-hidden rounded-tr-lg rounded-br-lg rounded-tl-none rounded-bl-none border border-border-subtle border-l-[3px] bg-surface-card";
+  "overflow-hidden rounded-tr-lg rounded-br-lg rounded-tl-none rounded-bl-none border border-border-subtle border-l-[3px] bg-surface-card shadow-[var(--elevation-card)]";

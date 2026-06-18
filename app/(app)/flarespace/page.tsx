@@ -23,6 +23,7 @@ import {
   emptyStateClassName,
   errorTextClassName,
   inlineLinkClassName,
+  pageStackClassName,
 } from "@/lib/ui/classes";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
@@ -106,7 +107,7 @@ export default async function FlarespacePage({ searchParams }: FlarespacePagePro
           : "No flares up right now. If you are stuck on something, send one up.";
 
   return (
-    <div className="space-y-6">
+    <div className={pageStackClassName}>
       <PageHeader
         title="Flarespace"
         description="Where people get unstuck together."
@@ -142,6 +143,7 @@ export default async function FlarespacePage({ searchParams }: FlarespacePagePro
                 <FlareCard
                   key={`${view}-${flare.id}`}
                   flare={flare}
+                  currentUserId={auth.userId}
                   isBookmarked={bookmarksContext.flareIds.has(flare.id)}
                 />
               ))}

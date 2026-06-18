@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { blockUser, reportUser, unblockUser } from "@/app/(app)/actions/safety";
-import { focusRingClassName, textareaFieldClassName } from "@/lib/ui/classes";
+import { focusRingClassName, popoverPanelClassName, textareaFieldClassName } from "@/lib/ui/classes";
 
 type SafetyMenuProps = {
   otherUserId: string;
@@ -46,7 +46,7 @@ export function SafetyMenu({ otherUserId, isBlocked, redirectTo }: SafetyMenuPro
       {open ? (
         <div
           role="menu"
-          className="absolute top-full right-0 z-20 mt-1 w-56 rounded-lg border border-border-subtle bg-surface-card p-2 shadow-lg"
+          className={`absolute top-full right-0 z-20 mt-1 w-56 ${popoverPanelClassName} p-2`}
         >
           {showReportForm ? (
             <form action={reportUser} className="space-y-2 p-1">

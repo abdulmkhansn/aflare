@@ -32,6 +32,38 @@ export const emptyStateClassName =
 export const insetPanelClassName =
   "rounded-md border border-border-subtle bg-[var(--hover-subtle)] p-4";
 
+export const modalBackdropClassName =
+  "fixed inset-0 z-50 flex items-center justify-center bg-[var(--modal-backdrop)] p-4 backdrop-blur-[8px] motion-reduce:backdrop-blur-none";
+
+export const modalPanelClassName =
+  "w-full max-w-md rounded-lg border border-[var(--border-modal)] bg-[var(--surface-modal)] text-fg shadow-[var(--elevation-modal)]";
+
+export const modalDialogClassName = "centered-dialog";
+
+export const modalBodyClassName = "p-6";
+
+export const modalTitleClassName = `${displayFontClassName} text-lg font-medium leading-snug text-fg`;
+
+export const modalDescriptionClassName = "mt-2 text-sm leading-relaxed text-fg-muted";
+
+export const modalSectionClassName = "mt-5 space-y-2.5";
+
+export const modalActionsClassName = "mt-6 flex flex-wrap justify-end gap-2";
+
+export const modalInlineErrorClassName = "mt-4";
+
+export const modalFieldShellClassName = `rounded-md border border-[var(--border-input)] bg-surface-input shadow-[var(--elevation-input)] transition-shadow focus-within:ring-2 focus-within:ring-teal focus-within:ring-offset-2 focus-within:ring-offset-[var(--surface-modal)]`;
+
+export const popoverPanelClassName =
+  "rounded-lg border border-border-subtle bg-surface-card shadow-[var(--elevation-card)]";
+
+export const dangerSurfaceClassName =
+  "rounded-lg border border-[color-mix(in_srgb,var(--text-error)_28%,transparent)] bg-surface-card p-5 shadow-[var(--elevation-card)]";
+
+export const dangerOutlineButtonClassName = `cursor-pointer rounded-md border border-[color-mix(in_srgb,var(--text-error)_35%,transparent)] bg-surface-card px-4 py-2.5 text-sm font-medium text-[var(--text-error)] shadow-[var(--elevation-input)] outline-none transition-colors hover:bg-[color-mix(in_srgb,var(--text-error)_8%,transparent)] disabled:cursor-not-allowed disabled:opacity-60 ${focusRingClassName}`;
+
+export const dangerButtonClassName = `cursor-pointer rounded-md bg-[var(--text-error)] px-4 py-2.5 text-sm font-medium text-warmwhite outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-[var(--text-error)] focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page disabled:cursor-not-allowed disabled:opacity-60`;
+
 export const tagPillClassName =
   "rounded-full bg-[var(--pill-neutral-bg)] px-2.5 py-0.5 text-xs text-fg";
 

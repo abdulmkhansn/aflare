@@ -1,6 +1,6 @@
 "use client";
 
-import { IconMessageCircle, IconRepeat } from "@tabler/icons-react";
+import { IconMessageCircle, IconRepeat, IconUserPlus } from "@tabler/icons-react";
 
 import { ReactionTooltip, helpfulButtonClass } from "@/components/reactions/social-reaction-controls";
 import { THIS_HELPED_REACTION } from "@/lib/reactions/constants";
@@ -119,6 +119,27 @@ export function RepostActionTrigger({ onClick, disabled = false }: RepostActionT
     >
       <IconRepeat className="h-3.5 w-3.5" stroke={1.75} aria-hidden="true" />
       <span className="sr-only">Repost</span>
+    </button>
+  );
+}
+
+type BoostActionTriggerProps = {
+  onClick: () => void;
+  disabled?: boolean;
+};
+
+export function BoostActionTrigger({ onClick, disabled = false }: BoostActionTriggerProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={actionPillClassName()}
+      aria-label="Share"
+      title="Know someone who can help?"
+    >
+      <IconUserPlus className="h-3.5 w-3.5" stroke={1.75} aria-hidden="true" />
+      <span>Share</span>
     </button>
   );
 }

@@ -4,6 +4,7 @@ import { AuthorLink } from "@/components/avatar";
 import { authorLinkProps, profileDisplayName } from "@/lib/profiles/public-fields";
 import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
 import { ContentActionRow } from "@/components/content-action-row";
+import { FlareBoostControl } from "@/components/flare-boost-control";
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { EditableFlareAsk } from "@/components/editable-flare-ask";
 import { FlareCommentsSection } from "@/components/flare-comments-section";
@@ -23,6 +24,7 @@ import {
   focusRingClassName,
   inlineLinkClassName,
   insetPanelClassName,
+  pageStackClassName,
   tagPillClassName,
 } from "@/lib/ui/classes";
 
@@ -52,7 +54,7 @@ export function FlareDetailView({
   const isResolved = flare.status === "resolved";
 
   return (
-    <div className="space-y-4">
+    <div className={pageStackClassName}>
       {statusMessages.error ? (
         <p className={errorTextClassName} role="alert">
           {statusMessages.error}
@@ -107,6 +109,13 @@ export function FlareDetailView({
         ) : null}
 
         <ContentActionRow>
+          <FlareBoostControl
+            flareId={flare.id}
+            flareAuthorId={flare.author_id}
+            flareStatus={flare.status}
+            currentUserId={currentUserId}
+            redirectTo={redirectTo}
+          />
           <BookmarkControl targetType="flare" targetId={flare.id} isSaved={isBookmarked} showLabel={false} />
         </ContentActionRow>
       </article>
