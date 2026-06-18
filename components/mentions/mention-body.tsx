@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Fragment } from "react";
 
@@ -23,11 +25,6 @@ export function MentionBody({
 
   if (!text) {
     return null;
-  }
-
-  if (segments.length === 0) {
-    const Wrapper = inline ? "span" : "div";
-    return <Wrapper className={className}>{text}</Wrapper>;
   }
 
   const content = segments.map((segment, index) => {

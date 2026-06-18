@@ -3,9 +3,11 @@ import Image from "next/image";
 import { IconFileText, IconFileTypePdf } from "@tabler/icons-react";
 
 import { AuthorLink } from "@/components/avatar";
+import { MentionBody } from "@/components/mentions/mention-body";
 import type { FeedPost } from "@/lib/feed/types";
 import { resolveFeedPostRelations } from "@/lib/feed/types";
 import { parseArticleBody, resolveFeedArticle } from "@/lib/articles/types";
+import { hasMentionTokens } from "@/lib/mentions/parse-mentions";
 import { formatRelativeTime } from "@/lib/time/relative-time";
 import { focusRingClassName } from "@/lib/ui/classes";
 
@@ -26,8 +28,10 @@ export function ArticleFeedCard({ post }: ArticleFeedCardProps) {
   const excerpt =
     article.excerpt?.trim() ||
     (isDocument ? parsed.description : null) ||
-    post.body ||
+    post.body?.trim() ||
     "";
+  const excerptFromPostBody = !article.excerpt?.trim() && !isDocument && Boolean(post.body?.trim());
+  const excerptHasMentions = excerptFromPostBody && hasMentionTokens(excerpt);
 
   return (
     <article className="overflow-hidden rounded-lg border border-border-subtle bg-surface-card">
@@ -79,7 +83,14 @@ export function ArticleFeedCard({ post }: ArticleFeedCardProps) {
             {article.title}
           </Link>
           {excerpt ? (
-            <p className="line-clamp-3 text-sm leading-relaxed text-fg-muted">{excerpt}</p>
+            excerptHasMentions ? (
+              <MentionBody
+                body={excerpt}
+                className="line-clamp-3 text-sm leading-relaxed text-fg-muted"
+              />
+            ) : (
+              <p className="line-clamp-3 text-sm leading-relaxed text-fg-muted">{excerpt}</p>
+            )
           ) : null}
         </div>
 

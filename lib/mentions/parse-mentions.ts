@@ -1,5 +1,6 @@
+/** Stored mention token: @[Display Name](userId) — see buildMentionToken(). */
 export const MENTION_TOKEN_PATTERN =
-  /@\[([^\]]+)\]\(([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\)/;
+  /@\[([^\]]+)\]\s*\(([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\)/;
 
 /** @deprecated Use mentionTokenRegex() — shared global regex can retain lastIndex between calls. */
 export const MENTION_TOKEN_REGEX = new RegExp(MENTION_TOKEN_PATTERN.source, "gi");
@@ -12,12 +13,32 @@ export function mentionTokenRegex(): RegExp {
   return new RegExp(MENTION_TOKEN_PATTERN.source, "gi");
 }
 
-export function normalizeMentionBody(body: unknown): string {
-  if (typeof body !== "string") {
+export function coerceUserTextContent(body: unknown): string {
+  if (body == null) {
     return "";
   }
 
-  return body;
+  if (typeof body === "string") {
+    return body;
+  }
+
+  if (typeof body === "number" || typeof body === "boolean") {
+    return String(body);
+  }
+
+  return "";
+}
+
+export function normalizeMentionBody(body: unknown): string {
+  const raw = coerceUserTextContent(body);
+
+  if (!raw) {
+    return "";
+  }
+
+  return raw
+    .replace(/[\u200b-\u200d\ufeff]/g, "")
+    .normalize("NFKC");
 }
 
 export function buildMentionToken(displayName: string, userId: string): string {
