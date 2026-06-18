@@ -25,7 +25,6 @@ import {
 import { useInlineFormAction } from "@/lib/ui/use-inline-form-action";
 import {
   errorTextClassName,
-  fieldClassName,
   focusRingClassName,
   primaryButtonClassName,
   statusTextClassName,
@@ -225,7 +224,7 @@ export function FlareCommentsSection({
               value={replyBody}
               onChange={setReplyBody}
               disabled={isPending}
-              className={fieldClassName}
+              className="min-h-[5rem]"
               placeholder="Reply with something useful."
             />
 

@@ -4,12 +4,10 @@ import { authorLinkProps, profileDisplayName } from "@/lib/profiles/public-field
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { EditableContentBody } from "@/components/editable-content-body";
 import { MentionBody } from "@/components/mentions/mention-body";
-import { PostComments } from "@/components/post-comments";
-import { PostReactionBar } from "@/components/post-reaction-bar";
+import { PostInteractionFooter } from "@/components/post-interaction-footer";
 import { QuotedPostCard } from "@/components/quoted-post-card";
 import { SharePostCardShell } from "@/components/share-post-card-shell";
 import type { BookmarksContext } from "@/lib/bookmarks/types";
-import { getPostBookmarkTarget, isPostBookmarked } from "@/lib/bookmarks/get-bookmark-state";
 import type { Comment } from "@/lib/comments/types";
 import type { FeedPost } from "@/lib/feed/types";
 import { resolveFeedPostRelations } from "@/lib/feed/types";
@@ -20,7 +18,6 @@ import {
   resolveRepostedPost,
 } from "@/lib/posts/repost";
 import type { PostReactionsContext } from "@/lib/reactions/types";
-import { getPostReactionBarProps } from "@/lib/reactions/get-post-reaction-bar-props";
 import { emptyStateClassName } from "@/lib/ui/classes";
 
 type RepostPostCardProps = {
@@ -53,9 +50,6 @@ export function RepostPostCard({
   const original = resolveRepostedPost(post);
   const unavailable = isRepostOriginalUnavailable(post);
   const isAuthor = post.author_id === currentUserId;
-  const reactionProps = getPostReactionBarProps(post.id, post.author_id, reactionsContext);
-  const bookmarkTarget = getPostBookmarkTarget(post);
-  const isBookmarked = isPostBookmarked(post, bookmarksContext);
   const quote = post.body?.trim() ?? "";
 
   return (
@@ -119,26 +113,17 @@ export function RepostPostCard({
           ) : null}
         </div>
 
-        <PostReactionBar
-          postId={post.id}
-          currentUserId={currentUserId}
-          redirectTo={redirectTo}
-          hideHelpfulMark
-          bookmarkTargetType={bookmarkTarget?.targetType}
-          bookmarkTargetId={bookmarkTarget?.targetId}
-          isBookmarked={isBookmarked}
-          {...reactionProps}
-        />
-
-        <PostComments
-          postId={post.id}
+        <PostInteractionFooter
+          post={post}
           comments={comments}
           markedCommentIds={markedCommentIds}
           currentUserId={currentUserId}
           redirectTo={redirectTo}
+          reactionsContext={reactionsContext}
+          bookmarksContext={bookmarksContext}
           commentPosted={commentPosted}
           commentError={commentError}
-          defaultCollapsed={collapseComments}
+          collapseComments={collapseComments}
         />
       </article>
     </SharePostCardShell>

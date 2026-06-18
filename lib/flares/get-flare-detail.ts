@@ -86,6 +86,6 @@ export async function getFlareDetail(
     reactionsContext,
     helperUserIds,
     isAuthor: flare.author_id === currentUserId,
-    isHelper: helperUserIds.has(currentUserId),
+    isHelper: helperUserIds.has(currentUserId) && flare.author_id !== currentUserId,
   };
 }

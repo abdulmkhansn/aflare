@@ -2,6 +2,7 @@ import {
   ErrorBanner,
   OnboardingShell,
   fieldClassName,
+  onboardingTextareaClassName,
   labelClassName,
   primaryButtonClassName,
 } from "./onboarding-shell";
@@ -59,7 +60,7 @@ export function StepOne({ displayName, bio, error }: StepOneProps) {
               name="bio"
               rows={3}
               defaultValue={bio}
-              className={fieldClassName}
+              className={onboardingTextareaClassName}
               placeholder="A short line about what you do or care about."
             />
           </div>
@@ -123,7 +124,7 @@ export function StepOne({ displayName, bio, error }: StepOneProps) {
               id="abstract_description"
               name="abstract_description"
               rows={4}
-              className={fieldClassName}
+              className={onboardingTextareaClassName}
               placeholder="A public summary of what you are building. Leave out secrets, keys, and private details."
             />
             <p className="text-xs text-charcoal/50">

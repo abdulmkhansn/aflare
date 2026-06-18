@@ -18,6 +18,7 @@ import {
   cardClassName,
   errorTextClassName,
   fieldClassName,
+  fieldShellClassName,
   focusRingClassName,
   labelClassName,
   primaryButtonClassName,
@@ -314,7 +315,7 @@ export function FeedComposeForm({ projects, posted, error }: FeedComposeFormProp
           </>
         ) : null}
 
-        <div className="relative rounded-md border border-[var(--border-input)] bg-surface-input shadow-[var(--elevation-input)] focus-within:ring-2 focus-within:ring-teal focus-within:ring-offset-2 focus-within:ring-offset-surface-page">
+        <div className={fieldShellClassName}>
           {showPlaceholder ? (
             <p
               aria-hidden="true"
@@ -329,6 +330,7 @@ export function FeedComposeForm({ projects, posted, error }: FeedComposeFormProp
             rows={3}
             value={body}
             onChange={setBody}
+            embedded
             className={COMPOSE_TEXTAREA_CLASS}
             aria-label="Post"
           />

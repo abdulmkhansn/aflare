@@ -5,17 +5,11 @@ import { useOptimistic, useState, useTransition } from "react";
 
 import { setPostSocialReaction } from "@/app/(app)/actions/post-reactions";
 import { togglePostHelpful } from "@/app/(app)/actions/helpful-marks";
-import {
-  ReactionCluster,
-  ReactionTooltip,
-  SocialReactionPicker,
-  applyReactionPick,
-  helpfulButtonClass,
-} from "@/components/reactions/social-reaction-controls";
-import { PostRepostControl } from "@/components/post-repost-control";
 import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
+import { ActionRowError, CommentCountAction, ContentActionRow, HelpfulActionButton } from "@/components/content-action-row";
+import { PostRepostControl } from "@/components/post-repost-control";
+import { SocialReactionPicker, applyReactionPick } from "@/components/reactions/social-reaction-controls";
 import type { BookmarkTargetType } from "@/lib/bookmarks/types";
-import { THIS_HELPED_REACTION } from "@/lib/reactions/constants";
 import type { PostReactionType, ReactionCounts } from "@/lib/reactions/types";
 import { refreshInPlace } from "@/lib/ui/refresh-in-place";
 
@@ -33,6 +27,10 @@ type PostReactionBarProps = {
   bookmarkTargetType?: BookmarkTargetType;
   bookmarkTargetId?: string;
   isBookmarked?: boolean;
+  commentAction?: {
+    label: string;
+    onClick: () => void;
+  };
 };
 
 type OptimisticState = {
@@ -54,6 +52,7 @@ export function PostReactionBar({
   bookmarkTargetType,
   bookmarkTargetId,
   isBookmarked = false,
+  commentAction,
 }: PostReactionBarProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -73,6 +72,7 @@ export function PostReactionBar({
   );
 
   const isOwnPost = postAuthorId === currentUserId;
+  const showHelpful = !hideHelpfulMark && !isOwnPost;
 
   function pickSocialReaction(reaction: PostReactionType) {
     const next = applyReactionPick(optimistic.reactionCounts, optimistic.userReaction, reaction);
@@ -121,54 +121,42 @@ export function PostReactionBar({
   }
 
   return (
-    <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-      <div className="flex flex-wrap items-center gap-2">
-        {!hideHelpfulMark && !isOwnPost ? (
-          <div>
-            {helpfulError ? (
-              <p className="mb-1 text-xs text-red-600" role="alert">
-                {helpfulError}
-              </p>
-            ) : null}
-            <button
-              type="button"
-              onClick={toggleHelpful}
-              className={helpfulButtonClass(optimisticHelpfulMarked)}
-              disabled={isPending}
-              aria-label={THIS_HELPED_REACTION.label}
-              title={THIS_HELPED_REACTION.label}
-            >
-              <span aria-hidden="true">{THIS_HELPED_REACTION.emoji}</span>
-              <span>{THIS_HELPED_REACTION.label}</span>
-              <span aria-hidden="true">·</span>
-              <span>{optimisticHelpfulCount}</span>
-              <ReactionTooltip label={THIS_HELPED_REACTION.label} groupName="helpful" />
-            </button>
-          </div>
-        ) : null}
+    <ContentActionRow>
+      {helpfulError ? <ActionRowError message={helpfulError} /> : null}
 
-        {canRepost ? (
-          <PostRepostControl postId={postId} redirectTo={redirectTo} disabled={isPending} />
-        ) : null}
-
-        <SocialReactionPicker
-          userReaction={optimistic.userReaction}
-          reactionCounts={optimistic.reactionCounts}
+      {showHelpful ? (
+        <HelpfulActionButton
+          count={optimisticHelpfulCount}
+          active={optimisticHelpfulMarked}
           disabled={isPending}
-          onPick={pickSocialReaction}
+          onClick={toggleHelpful}
         />
+      ) : null}
 
-        {bookmarkTargetType && bookmarkTargetId ? (
-          <BookmarkControl
-            targetType={bookmarkTargetType}
-            targetId={bookmarkTargetId}
-            isSaved={isBookmarked}
-            disabled={isPending}
-          />
-        ) : null}
-      </div>
+      <SocialReactionPicker
+        userReaction={optimistic.userReaction}
+        reactionCounts={optimistic.reactionCounts}
+        disabled={isPending}
+        onPick={pickSocialReaction}
+      />
 
-      <ReactionCluster counts={optimistic.reactionCounts} />
-    </div>
+      {canRepost ? (
+        <PostRepostControl postId={postId} redirectTo={redirectTo} disabled={isPending} compact />
+      ) : null}
+
+      {bookmarkTargetType && bookmarkTargetId ? (
+        <BookmarkControl
+          targetType={bookmarkTargetType}
+          targetId={bookmarkTargetId}
+          isSaved={isBookmarked}
+          disabled={isPending}
+          showLabel={false}
+        />
+      ) : null}
+
+      {commentAction ? (
+        <CommentCountAction label={commentAction.label} onClick={commentAction.onClick} />
+      ) : null}
+    </ContentActionRow>
   );
 }

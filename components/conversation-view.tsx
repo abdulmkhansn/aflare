@@ -6,7 +6,7 @@ import { markMessagesRead, sendMessage } from "@/app/(app)/actions/messages";
 import { MentionBody } from "@/components/mentions/mention-body";
 import { formatRelativeTime } from "@/lib/time/relative-time";
 import type { MessageRow } from "@/lib/messages/types";
-import { errorTextClassName, fieldClassName, primaryButtonClassName } from "@/lib/ui/classes";
+import { errorTextClassName, textareaFieldClassName, primaryButtonClassName } from "@/lib/ui/classes";
 import { createClient } from "@/utils/supabase/client";
 
 type ConversationViewProps = {
@@ -152,7 +152,7 @@ export function ConversationView({
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             placeholder="Write a message"
-            className={`${fieldClassName} min-h-[44px] flex-1 resize-none`}
+            className={`${textareaFieldClassName} min-h-[44px] flex-1`}
           />
           <button
             type="submit"

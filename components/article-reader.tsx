@@ -12,8 +12,12 @@ import {
 } from "@/lib/articles/types";
 import { formatRelativeTime } from "@/lib/time/relative-time";
 import {
+  cardClassName,
   errorTextClassName,
   inlineLinkClassName,
+  pageContainerArticleClassName,
+  pageStackClassName,
+  pageTitleClassName,
   primaryButtonClassName,
   secondaryButtonClassName,
 } from "@/lib/ui/classes";
@@ -38,9 +42,9 @@ export function ArticleReader({
   const isOwnArticle = article.author_id === currentUserId;
 
   return (
-    <article className="mx-auto max-w-3xl space-y-8">
+    <article className={`${pageContainerArticleClassName} ${pageStackClassName}`}>
       <header className="space-y-4">
-        <h1 className="text-[2rem] font-medium leading-tight tracking-[-0.02em] text-fg sm:text-[2.25rem]">
+        <h1 className={pageTitleClassName}>
           {article.title}
         </h1>
 
@@ -87,7 +91,7 @@ export function ArticleReader({
           </a>
         </div>
       ) : (
-        <div className="space-y-4 rounded-lg border border-border-subtle bg-surface-card p-6">
+        <div className={`${cardClassName} space-y-4`}>
           <p className="text-sm leading-relaxed text-fg">
             This article is a Word document. Download it to read offline. Browsers cannot preview
             .docx files inline.

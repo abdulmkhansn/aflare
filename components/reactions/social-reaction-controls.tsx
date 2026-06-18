@@ -9,7 +9,7 @@ import { focusRingClassName } from "@/lib/ui/classes";
 
 export function helpfulButtonClass(active: boolean) {
   return [
-    "group/helpful relative inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+    "group/helpful relative inline-flex h-8 items-center gap-1 rounded-full border px-2.5 text-xs font-medium transition-colors",
     focusRingClassName,
     active
       ? "border-teal/30 bg-teal/15 text-teal"
@@ -19,7 +19,7 @@ export function helpfulButtonClass(active: boolean) {
 
 export function reactButtonClass(active: boolean) {
   return [
-    "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+    "inline-flex h-8 items-center gap-1 rounded-full border px-2.5 text-xs font-medium transition-colors",
     focusRingClassName,
     active
       ? "border-ember/30 bg-ember/10 text-fg"
@@ -180,6 +180,7 @@ export function SocialReactionPicker({
         aria-expanded={paletteOpen}
         aria-haspopup="menu"
         aria-label={currentMeta ? `${currentMeta.label}. Open reaction picker` : "React"}
+        title={currentMeta ? currentMeta.label : "React"}
         className={reactButtonClass(Boolean(userReaction))}
         onClick={handleTriggerClick}
       >
@@ -189,7 +190,10 @@ export function SocialReactionPicker({
             {activeCount > 0 ? <span>{activeCount}</span> : null}
           </>
         ) : (
-          <span>React</span>
+          <span className="inline-flex items-center gap-1">
+            <span aria-hidden="true">👏</span>
+            <span className="sr-only">React</span>
+          </span>
         )}
       </button>
     </div>

@@ -2,12 +2,7 @@ import Link from "next/link";
 
 import { PageHeader } from "@/components/page-header";
 import { formatTagLabel } from "@/lib/tags/format-tag-label";
-import {
-  emptyStateClassName,
-  interactiveCardLinkClassName,
-  sectionTitleClassName,
-  tagPillClassName,
-} from "@/lib/ui/classes";
+import { cardClassName, emptyStateClassName, interactiveCardLinkClassName, pageStackClassName, sectionTitleClassName, tagPillClassName } from "@/lib/ui/classes";
 import type { SearchResults } from "@/lib/search/run-search";
 
 type SearchResultsViewProps = {
@@ -17,7 +12,7 @@ type SearchResultsViewProps = {
 
 export function SearchResultsView({ query, results }: SearchResultsViewProps) {
   return (
-    <div className="space-y-8">
+    <div className={pageStackClassName}>
       <PageHeader title="Search" description={`Results for "${query}"`} />
 
       {results.builders.length > 0 ? (
@@ -60,7 +55,7 @@ export function SearchResultsView({ query, results }: SearchResultsViewProps) {
             {results.tags.map((tag) => (
               <li
                 key={tag.id}
-                className="rounded-lg border border-border-subtle bg-surface-card p-4"
+                className={cardClassName}
               >
                 <Link
                   href={`/blockers?tag=${tag.id}`}

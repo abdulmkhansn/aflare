@@ -6,6 +6,7 @@ import { createPost } from "@/app/(app)/actions/posts";
 import { MentionTextarea } from "@/components/mentions/mention-textarea";
 import { POST_TYPES, getPostTypeLabel } from "@/lib/posts/post-types";
 import {
+  cardClassName,
   errorTextClassName,
   fieldClassName,
   focusRingClassName,
@@ -40,7 +41,7 @@ export function ProjectPostUpdateForm({
   }
 
   return (
-    <div className="rounded-lg border border-[var(--border-input)] bg-surface-input p-3 shadow-[var(--elevation-input)]">
+    <div className={`${cardClassName} !p-4`}>
       {posted ? (
         <p className={`mb-2 ${statusTextClassName}`} role="status">
           Posted to the build log.
@@ -64,7 +65,7 @@ export function ProjectPostUpdateForm({
           autoFocus
           value={body}
           onChange={setBody}
-          className={`${fieldClassName} !bg-surface-card`}
+          className="min-h-[5rem]"
           placeholder="What changed, what you learned, or where you are stuck."
         />
 

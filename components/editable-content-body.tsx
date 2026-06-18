@@ -116,7 +116,7 @@ export function EditableContentBody({
             value={draft}
             onChange={setDraft}
             rows={4}
-            className={fieldClassName}
+            className="min-h-[6rem]"
             disabled={isPending}
             autoFocus
           />

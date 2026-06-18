@@ -71,7 +71,7 @@ export function EditableFlareAsk({
             value={bodyDraft}
             onChange={setBodyDraft}
             rows={6}
-            className={`mt-1 ${fieldClassName}`}
+            className="mt-1 min-h-[8rem]"
             disabled={isPending}
           />
         </div>

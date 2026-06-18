@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
+import { ContentActionRow } from "@/components/content-action-row";
 import { FlareStatusBadge } from "@/components/flare-status-badge";
 import { flareTimelineTitle } from "@/lib/projects/project-timeline";
 import type { ProjectTimelineFlare } from "@/lib/projects/project-timeline";
@@ -17,7 +18,7 @@ export function TimelineFlareEntry({ flare, isBookmarked = false }: TimelineFlar
   const resolved = flare.status === "resolved";
 
   return (
-    <div className={`${cardClassName} border-ember/25 px-4 py-3`}>
+    <div className={`${cardClassName} border-ember/25`}>
       <Link
         href={`/flarespace/${flare.id}`}
         className={`block transition-colors hover:opacity-90 ${focusRingClassName}`}
@@ -42,15 +43,15 @@ export function TimelineFlareEntry({ flare, isBookmarked = false }: TimelineFlar
         </time>
       </Link>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-border-subtle pt-3">
+      <ContentActionRow>
         <Link
           href={`/flarespace/${flare.id}`}
-          className={`text-sm font-medium text-fg hover:underline ${focusRingClassName}`}
+          className={`inline-flex h-8 items-center gap-1 rounded-full border border-border-subtle px-2.5 text-xs font-medium text-fg-muted transition-colors hover:border-fg/20 hover:text-fg ${focusRingClassName}`}
         >
-          View in Flarespace
+          View flare
         </Link>
-        <BookmarkControl targetType="flare" targetId={flare.id} isSaved={isBookmarked} />
-      </div>
+        <BookmarkControl targetType="flare" targetId={flare.id} isSaved={isBookmarked} showLabel={false} />
+      </ContentActionRow>
     </div>
   );
 }

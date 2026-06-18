@@ -18,7 +18,7 @@ type BookmarkControlProps = {
 
 function bookmarkButtonClass(active: boolean) {
   return [
-    "group/bookmark relative inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors",
+    "group/bookmark relative inline-flex h-8 items-center gap-1 rounded-full border px-2.5 text-xs font-medium transition-colors",
     focusRingClassName,
     active
       ? "border-ember/30 bg-ember/15 text-ember"

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { reopenFlare, resolveFlare } from "@/app/(app)/actions/flares";
 import {
   fieldClassName,
+  textareaFieldClassName,
   focusRingClassName,
   secondaryButtonClassName,
   textLinkClassName,
@@ -68,7 +69,7 @@ export function FlareResolveActions({ flareId, isResolved }: FlareResolveActions
           id="resolution_note"
           name="resolution_note"
           rows={2}
-          className={fieldClassName}
+          className={textareaFieldClassName}
           placeholder="What fixed it? (optional but helps the next person)"
         />
 

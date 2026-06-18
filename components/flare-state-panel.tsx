@@ -6,6 +6,7 @@ import { updateFlareState } from "@/app/(app)/actions/flares";
 import { MentionBody } from "@/components/mentions/mention-body";
 import {
   fieldClassName,
+  textareaFieldClassName,
   focusRingClassName,
   primaryButtonClassName,
   secondaryButtonClassName,
@@ -107,7 +108,7 @@ function FlareStateField({
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
         rows={3}
-        className={fieldClassName}
+        className={textareaFieldClassName}
         autoFocus
       />
       <div className="flex gap-2">

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 export const SHARE_POST_CARD_SHELL_CLASS =
-  "overflow-hidden rounded-lg border border-border-subtle bg-surface-card";
+  "overflow-hidden rounded-lg border border-border-subtle bg-surface-card shadow-[var(--elevation-card)]";
 
 type SharePostCardShellProps = {
   children: ReactNode;

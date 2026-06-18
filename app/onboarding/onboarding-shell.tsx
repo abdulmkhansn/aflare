@@ -71,7 +71,7 @@ export function OnboardingShell({
       <main className="flex flex-1 items-start justify-center bg-warmwhite px-6 py-10 lg:w-3/5 lg:px-12 lg:py-14">
         <div className="w-full max-w-lg">
           <header className="mb-8">
-            <h1 className="text-2xl font-medium text-charcoal">{title}</h1>
+            <h1 className="font-display text-2xl font-medium text-charcoal">{title}</h1>
             <p className="mt-2 text-sm leading-relaxed text-charcoal/70">{description}</p>
           </header>
           {children}
@@ -82,7 +82,9 @@ export function OnboardingShell({
 }
 
 export const fieldClassName =
-  "w-full rounded-md border border-charcoal/15 bg-white px-3 py-2 text-sm text-charcoal outline-none transition-shadow placeholder:text-charcoal/40 focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-warmwhite";
+  "w-full rounded-md border border-charcoal/15 bg-white px-3 py-2 text-sm leading-relaxed text-charcoal outline-none transition-shadow placeholder:text-charcoal/40 focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-warmwhite";
+
+export const onboardingTextareaClassName = `${fieldClassName} resize-none min-h-[5rem]`;
 
 export const labelClassName = "block text-sm font-medium text-charcoal";
 

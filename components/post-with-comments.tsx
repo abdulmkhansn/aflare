@@ -1,7 +1,6 @@
 import { PostCard } from "@/components/post-card";
 import { PostCardShell } from "@/components/post-card-shell";
-import { PostComments } from "@/components/post-comments";
-import { PostReactionBar } from "@/components/post-reaction-bar";
+import { PostInteractionFooter } from "@/components/post-interaction-footer";
 import { RepostPostCard, isRepostFeedPost } from "@/components/repost-post-card";
 import { SharePostCardShell } from "@/components/share-post-card-shell";
 import { ArticleFeedCard } from "@/components/article-feed-card";
@@ -9,10 +8,8 @@ import type { BookmarksContext } from "@/lib/bookmarks/types";
 import { getPostBookmarkTarget, isPostBookmarked } from "@/lib/bookmarks/get-bookmark-state";
 import type { Comment } from "@/lib/comments/types";
 import type { FeedPost } from "@/lib/feed/types";
-import { getPostReactionBarProps } from "@/lib/reactions/get-post-reaction-bar-props";
-import type { PostReactionsContext } from "@/lib/reactions/types";
-import { canRepostPost } from "@/lib/posts/repost";
 import { isSharePost, resolvePostKind } from "@/lib/posts/kinds";
+import type { PostReactionsContext } from "@/lib/reactions/types";
 
 type PostWithCommentsProps = {
   post: FeedPost;
@@ -79,11 +76,6 @@ export function PostWithComments({
     );
   }
 
-  const reactionProps = getPostReactionBarProps(post.id, post.author_id, reactionsContext);
-  const showRepost = canRepostPost(post, currentUserId);
-  const bookmarkTarget = getPostBookmarkTarget(post);
-  const isBookmarked = isPostBookmarked(post, bookmarksContext);
-
   const inner = (
     <>
       <PostCard
@@ -93,25 +85,17 @@ export function PostWithComments({
         currentUserId={currentUserId}
         redirectTo={redirectTo}
       />
-      <PostReactionBar
-        postId={post.id}
-        currentUserId={currentUserId}
-        redirectTo={redirectTo}
-        canRepost={showRepost}
-        bookmarkTargetType={bookmarkTarget?.targetType}
-        bookmarkTargetId={bookmarkTarget?.targetId}
-        isBookmarked={isBookmarked}
-        {...reactionProps}
-      />
-      <PostComments
-        postId={post.id}
+      <PostInteractionFooter
+        post={post}
         comments={comments}
         markedCommentIds={markedCommentIds}
         currentUserId={currentUserId}
         redirectTo={redirectTo}
+        reactionsContext={reactionsContext}
+        bookmarksContext={bookmarksContext}
         commentPosted={commentPosted}
         commentError={commentError}
-        defaultCollapsed={collapseComments}
+        collapseComments={collapseComments}
       />
     </>
   );

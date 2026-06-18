@@ -9,6 +9,8 @@ import { isGitHubVerifyConfigured } from "@/lib/github/verify-config";
 import {
   cardClassName,
   errorTextClassName,
+  pageContainerNarrowClassName,
+  pageStackClassName,
   pageSubtitleClassName,
   pageTitleClassName,
   sectionTitleClassName,
@@ -50,7 +52,7 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
   const displayName = profile?.display_name?.trim() || "Your profile";
 
   return (
-    <div className="mx-auto max-w-2xl space-y-8">
+    <div className={`${pageContainerNarrowClassName} ${pageStackClassName}`}>
       <header>
         <h1 className={pageTitleClassName}>Settings</h1>
         <p className={pageSubtitleClassName}>

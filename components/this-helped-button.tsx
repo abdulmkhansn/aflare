@@ -4,9 +4,12 @@ import { useRouter } from "next/navigation";
 import { useOptimistic, useState, useTransition } from "react";
 
 import { toggleCommentHelpful } from "@/app/(app)/actions/helpful-marks";
-import { HELPFUL_ACTION_LABEL } from "@/lib/helpful/constants";
+import {
+  ActionRowError,
+  ContentActionRow,
+  HelpfulActionButton,
+} from "@/components/content-action-row";
 import { refreshInPlace } from "@/lib/ui/refresh-in-place";
-import { focusRingClassName } from "@/lib/ui/classes";
 
 type ThisHelpedButtonProps = {
   commentId: string;
@@ -52,28 +55,14 @@ export function ThisHelpedButton({
   }
 
   return (
-    <div>
-      {error ? (
-        <p className="mb-1 text-xs text-red-600" role="alert">
-          {error}
-        </p>
-      ) : null}
-      <button
-        type="button"
-        onClick={handleClick}
+    <ContentActionRow nested>
+      {error ? <ActionRowError message={error} /> : null}
+      <HelpfulActionButton
+        count={optimisticCount}
+        active={optimisticMarked}
         disabled={isPending}
-        className={[
-          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium transition-colors",
-          focusRingClassName,
-          optimisticMarked
-            ? "bg-teal/15 text-teal"
-            : "text-fg-muted hover:bg-[var(--hover-subtle)] hover:text-fg",
-        ].join(" ")}
-      >
-        {HELPFUL_ACTION_LABEL}
-        <span aria-hidden="true">·</span>
-        <span>{optimisticCount}</span>
-      </button>
-    </div>
+        onClick={handleClick}
+      />
+    </ContentActionRow>
   );
 }

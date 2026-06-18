@@ -2,6 +2,7 @@ import { PROJECT_STAGES, PROJECT_STAGE_LABELS } from "@/lib/projects/stages";
 import {
   errorTextClassName,
   fieldClassName,
+  textareaFieldClassName,
   labelClassName,
   primaryButtonClassName,
   statusTextClassName,
@@ -104,7 +105,7 @@ export function ProjectForm({
           name="abstract_description"
           rows={4}
           defaultValue={initialValues?.abstractDescription ?? ""}
-          className={fieldClassName}
+          className={textareaFieldClassName}
           placeholder="A public summary of what you are building. Leave out secrets, keys, and private details."
         />
         <p className="text-xs text-fg-muted">

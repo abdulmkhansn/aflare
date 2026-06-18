@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import { blockUser, reportUser, unblockUser } from "@/app/(app)/actions/safety";
-import { focusRingClassName } from "@/lib/ui/classes";
+import { focusRingClassName, textareaFieldClassName } from "@/lib/ui/classes";
 
 type SafetyMenuProps = {
   otherUserId: string;
@@ -60,7 +60,7 @@ export function SafetyMenu({ otherUserId, isBlocked, redirectTo }: SafetyMenuPro
                 name="reason"
                 rows={3}
                 placeholder="Optional reason"
-                className="w-full rounded-md border border-border-subtle bg-surface-input px-2.5 py-2 text-sm text-fg outline-none placeholder:text-fg-muted focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-surface-card"
+                className={textareaFieldClassName}
               />
               <button
                 type="submit"

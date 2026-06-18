@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 
 import { repostPost } from "@/app/(app)/actions/reposts";
+import { RepostActionTrigger } from "@/components/content-action-row";
 import { MentionTextarea } from "@/components/mentions/mention-textarea";
 import { refreshInPlace } from "@/lib/ui/refresh-in-place";
 import {
@@ -17,9 +18,15 @@ type PostRepostControlProps = {
   postId: string;
   redirectTo: string;
   disabled?: boolean;
+  compact?: boolean;
 };
 
-export function PostRepostControl({ postId, redirectTo, disabled = false }: PostRepostControlProps) {
+export function PostRepostControl({
+  postId,
+  redirectTo,
+  disabled = false,
+  compact = false,
+}: PostRepostControlProps) {
   const router = useRouter();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [quote, setQuote] = useState("");
@@ -65,14 +72,18 @@ export function PostRepostControl({ postId, redirectTo, disabled = false }: Post
 
   return (
     <>
-      <button
-        type="button"
-        disabled={disabled}
-        onClick={openDialog}
-        className={`inline-flex items-center gap-1 rounded-full border border-border-subtle px-2.5 py-1 text-xs font-medium text-fg-muted transition-colors hover:border-fg/20 hover:text-fg disabled:cursor-not-allowed disabled:opacity-60 ${focusRingClassName}`}
-      >
-        Repost
-      </button>
+      {compact ? (
+        <RepostActionTrigger onClick={openDialog} disabled={disabled || isPending} />
+      ) : (
+        <button
+          type="button"
+          disabled={disabled || isPending}
+          onClick={openDialog}
+          className={`inline-flex h-8 items-center gap-1 rounded-full border border-border-subtle px-2.5 text-xs font-medium text-fg-muted transition-colors hover:border-fg/20 hover:text-fg disabled:cursor-not-allowed disabled:opacity-60 ${focusRingClassName}`}
+        >
+          Repost
+        </button>
+      )}
 
       {success ? (
         <span className="sr-only" role="status">
@@ -115,7 +126,7 @@ export function PostRepostControl({ postId, redirectTo, disabled = false }: Post
               value={quote}
               onChange={setQuote}
               disabled={isPending}
-              className="mt-1.5 w-full rounded-md border border-[var(--border-input)] bg-surface-input px-3 py-2 text-sm text-fg shadow-[var(--elevation-input)] outline-none placeholder:text-fg-muted focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page"
+              className="mt-1.5 min-h-[5rem]"
               placeholder="Add a note (optional)"
             />
           </div>

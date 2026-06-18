@@ -23,17 +23,27 @@ import {
 } from "@/lib/mentions/compose-mentions";
 import { getActiveMentionQuery } from "@/lib/mentions/mention-input";
 import type { BuilderSearchResult } from "@/lib/search/run-builder-search";
-import { focusRingClassName } from "@/lib/ui/classes";
+import {
+  fieldControlClassName,
+  fieldShellClassName,
+  focusRingClassName,
+  textareaControlClassName,
+} from "@/lib/ui/classes";
 
 type MentionTextareaProps = Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, "onChange" | "value"> & {
   value: string;
   onChange: (value: string) => void;
+  /** When true, border/background come from a parent shell (e.g. feed compose). */
+  embedded?: boolean;
+  shellClassName?: string;
 };
 
 export function MentionTextarea({
   value,
   onChange,
   className,
+  shellClassName,
+  embedded = false,
   name,
   onKeyDown,
   onClick,
@@ -194,46 +204,68 @@ export function MentionTextarea({
   }
 
   const storageValue = composeDisplayToStorage(displayText, spans);
-  const fieldClassName = className ?? "";
+  const minHeightClass = className?.match(/\bmin-h-\[[^\]]+\]|\bmin-h-\S+/)?.[0] ?? "";
+  const controlExtras =
+    className
+      ?.replace(minHeightClass, "")
+      .replace(/\bresize-\S+/g, "")
+      .replace(/\bborder-\S+/g, "")
+      .replace(/\bbg-\S+/g, "")
+      .replace(/\bshadow-\S+/g, "")
+      .trim() ?? "";
+
+  const controlClassName = embedded
+    ? [className ?? fieldControlClassName, "resize-none"].join(" ")
+    : [textareaControlClassName, controlExtras].filter(Boolean).join(" ");
   const backdropClassName = [
-    fieldClassName,
+    controlClassName,
     "pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words text-fg",
   ].join(" ");
   const textareaClassName = [
-    fieldClassName,
+    controlClassName,
     "relative z-[1] w-full bg-transparent text-transparent caret-fg selection:bg-teal/30",
   ].join(" ");
+
+  const editor = (
+    <div className="relative min-h-[inherit]">
+      <MentionComposeBackdrop text={displayText} spans={spans} className={backdropClassName} />
+      <textarea
+        ref={textareaRef}
+        value={displayText}
+        onChange={handleChange}
+        onClick={(event) => {
+          refreshMentionState(displayText, event.currentTarget.selectionStart, spans);
+          onClick?.(event);
+        }}
+        onKeyUp={(event) => {
+          if (event.key === "Escape") {
+            setOpen(false);
+          } else {
+            refreshMentionState(displayText, event.currentTarget.selectionStart, spans);
+          }
+          onKeyUp?.(event);
+        }}
+        onKeyDown={handleKeyDown}
+        className={textareaClassName}
+        aria-autocomplete="list"
+        aria-expanded={open}
+        aria-controls={open ? listId : undefined}
+        {...props}
+      />
+    </div>
+  );
 
   return (
     <div className="relative">
       {name ? <input type="hidden" name={name} value={storageValue} readOnly /> : null}
 
-      <div className="relative">
-        <MentionComposeBackdrop text={displayText} spans={spans} className={backdropClassName} />
-        <textarea
-          ref={textareaRef}
-          value={displayText}
-          onChange={handleChange}
-          onClick={(event) => {
-            refreshMentionState(displayText, event.currentTarget.selectionStart, spans);
-            onClick?.(event);
-          }}
-          onKeyUp={(event) => {
-            if (event.key === "Escape") {
-              setOpen(false);
-            } else {
-              refreshMentionState(displayText, event.currentTarget.selectionStart, spans);
-            }
-            onKeyUp?.(event);
-          }}
-          onKeyDown={handleKeyDown}
-          className={textareaClassName}
-          aria-autocomplete="list"
-          aria-expanded={open}
-          aria-controls={open ? listId : undefined}
-          {...props}
-        />
-      </div>
+      {embedded ? (
+        editor
+      ) : (
+        <div className={[shellClassName ?? fieldShellClassName, minHeightClass].filter(Boolean).join(" ")}>
+          {editor}
+        </div>
+      )}
 
       {open ? (
         <div

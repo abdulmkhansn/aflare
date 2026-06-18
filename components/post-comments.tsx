@@ -21,7 +21,6 @@ import { resolveCommentProfile } from "@/lib/comments/types";
 import { useInlineFormAction } from "@/lib/ui/use-inline-form-action";
 import {
   errorTextClassName,
-  fieldClassName,
   focusRingClassName,
   primaryButtonClassName,
   statusTextClassName,
@@ -96,14 +95,12 @@ function CommentItem({
         </div>
 
         {!isOwnComment ? (
-          <div className="mt-2">
-            <ThisHelpedButton
-              commentId={comment.id}
-              helpfulCount={comment.helpful_count ?? 0}
-              isMarked={isMarked}
-              redirectTo={redirectTo}
-            />
-          </div>
+          <ThisHelpedButton
+            commentId={comment.id}
+            helpfulCount={comment.helpful_count ?? 0}
+            isMarked={isMarked}
+            redirectTo={redirectTo}
+          />
         ) : null}
       </div>
     </li>
@@ -145,7 +142,7 @@ function AddCommentForm({ postId, redirectTo }: { postId: string; redirectTo: st
           value={body}
           onChange={setBody}
           disabled={isPending}
-          className={fieldClassName}
+          className="min-h-[4.5rem]"
           placeholder="Reply with something useful."
         />
 
@@ -167,6 +164,9 @@ type PostCommentsProps = {
   commentError?: string;
   helpfulError?: string;
   defaultCollapsed?: boolean;
+  expanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
+  hideCollapsedToggle?: boolean;
 };
 
 function commentToggleLabel(count: number): string {
@@ -176,6 +176,8 @@ function commentToggleLabel(count: number): string {
 
   return count === 1 ? "1 comment" : `${count} comments`;
 }
+
+export { commentToggleLabel };
 
 export function PostComments({
   postId,
@@ -187,12 +189,24 @@ export function PostComments({
   commentError,
   helpfulError,
   defaultCollapsed = false,
+  expanded: expandedProp,
+  onExpandedChange,
+  hideCollapsedToggle = false,
 }: PostCommentsProps) {
-  const [expanded, setExpanded] = useState(
+  const [internalExpanded, setInternalExpanded] = useState(
     !defaultCollapsed || Boolean(commentPosted || commentError || helpfulError)
   );
+  const expanded = expandedProp ?? internalExpanded;
 
-  if (defaultCollapsed && !expanded) {
+  function setExpanded(next: boolean) {
+    if (onExpandedChange) {
+      onExpandedChange(next);
+    } else {
+      setInternalExpanded(next);
+    }
+  }
+
+  if (defaultCollapsed && !expanded && !hideCollapsedToggle) {
     return (
       <div className="mt-3 border-t border-border-subtle pt-3">
         <button
@@ -205,6 +219,10 @@ export function PostComments({
         </button>
       </div>
     );
+  }
+
+  if (defaultCollapsed && !expanded && hideCollapsedToggle) {
+    return null;
   }
 
   return (

@@ -286,7 +286,7 @@ export function FlareComposeForm({
           onFocus={handleBodyFocus}
           rows={3}
           placeholder={FLARE_COMPOSE_PLACEHOLDER}
-          className={`${fieldClassName} min-h-[4.5rem] resize-y`}
+          className="min-h-[4.5rem]"
         />
 
         <p className="text-xs text-fg-muted">{FLARE_COMPOSE_HINT}</p>

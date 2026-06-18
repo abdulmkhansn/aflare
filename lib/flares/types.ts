@@ -108,7 +108,9 @@ export function resolveFlareAuthor(flare: FlareRow) {
 }
 
 export function resolveFlareHelpers(flare: FlareRow): FlareHelper[] {
-  return flare.flare_helpers ?? [];
+  return (flare.flare_helpers ?? []).filter(
+    (helper) => helper.user_id !== flare.author_id
+  );
 }
 
 export function resolveFlareTags(flare: FlareRow) {

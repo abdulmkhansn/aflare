@@ -7,6 +7,7 @@ import {
   cardClassName,
   errorTextClassName,
   fieldClassName,
+  textareaFieldClassName,
   focusRingClassName,
   labelClassName,
   primaryButtonClassName,
@@ -160,7 +161,7 @@ export function ProfileEditForm({
             rows={4}
             defaultValue={bio}
             placeholder="What you're building, what you care about, what you'd like help with."
-            className={fieldClassName}
+            className={textareaFieldClassName}
           />
         </div>
 

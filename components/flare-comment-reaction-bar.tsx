@@ -6,13 +6,11 @@ import { useOptimistic, useState, useTransition } from "react";
 import { setFlareCommentSocialReaction } from "@/app/(app)/actions/flare-comment-reactions";
 import { toggleFlareCommentHelpful } from "@/app/(app)/actions/helpful-marks";
 import {
-  ReactionCluster,
-  ReactionTooltip,
-  SocialReactionPicker,
-  applyReactionPick,
-  helpfulButtonClass,
-} from "@/components/reactions/social-reaction-controls";
-import { THIS_HELPED_REACTION } from "@/lib/reactions/constants";
+  ActionRowError,
+  ContentActionRow,
+  HelpfulActionButton,
+} from "@/components/content-action-row";
+import { SocialReactionPicker, applyReactionPick } from "@/components/reactions/social-reaction-controls";
 import type { PostReactionType, ReactionCounts } from "@/lib/reactions/types";
 import { refreshInPlace } from "@/lib/ui/refresh-in-place";
 
@@ -115,48 +113,26 @@ export function FlareCommentReactionBar({
   const showHelpfulCountOnly = !showHelpfulControl && helpfulCount > 0;
 
   return (
-    <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-      <div className="flex flex-wrap items-center gap-2">
-        {showHelpfulControl ? (
-          <div>
-            {helpfulError ? (
-              <p className="mb-1 text-xs text-red-600" role="alert">
-                {helpfulError}
-              </p>
-            ) : null}
-            <button
-              type="button"
-              onClick={toggleHelpful}
-              className={helpfulButtonClass(optimisticHelpfulMarked)}
-              disabled={isPending}
-              aria-label={THIS_HELPED_REACTION.label}
-              title={THIS_HELPED_REACTION.label}
-            >
-              <span aria-hidden="true">{THIS_HELPED_REACTION.emoji}</span>
-              <span>{THIS_HELPED_REACTION.label}</span>
-              <span aria-hidden="true">·</span>
-              <span>{optimisticHelpfulCount}</span>
-              <ReactionTooltip label={THIS_HELPED_REACTION.label} groupName="helpful" />
-            </button>
-          </div>
-        ) : showHelpfulCountOnly ? (
-          <span className="inline-flex items-center gap-1 rounded-full border border-teal/30 bg-teal/15 px-2.5 py-1 text-xs font-medium text-teal">
-            <span aria-hidden="true">{THIS_HELPED_REACTION.emoji}</span>
-            <span>{THIS_HELPED_REACTION.label}</span>
-            <span aria-hidden="true">·</span>
-            <span>{helpfulCount}</span>
-          </span>
-        ) : null}
+    <ContentActionRow nested>
+      {helpfulError ? <ActionRowError message={helpfulError} /> : null}
 
-        <SocialReactionPicker
-          userReaction={optimistic.userReaction}
-          reactionCounts={optimistic.reactionCounts}
+      {showHelpfulControl ? (
+        <HelpfulActionButton
+          count={optimisticHelpfulCount}
+          active={optimisticHelpfulMarked}
           disabled={isPending}
-          onPick={pickSocialReaction}
+          onClick={toggleHelpful}
         />
-      </div>
+      ) : showHelpfulCountOnly ? (
+        <HelpfulActionButton count={helpfulCount} active={helpfulCount > 0} readOnly />
+      ) : null}
 
-      <ReactionCluster counts={optimistic.reactionCounts} />
-    </div>
+      <SocialReactionPicker
+        userReaction={optimistic.userReaction}
+        reactionCounts={optimistic.reactionCounts}
+        disabled={isPending}
+        onPick={pickSocialReaction}
+      />
+    </ContentActionRow>
   );
 }

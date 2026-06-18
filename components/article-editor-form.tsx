@@ -10,6 +10,7 @@ import { uploadFileWithProgress } from "@/lib/upload/with-progress";
 import {
   errorTextClassName,
   fieldClassName,
+  textareaFieldClassName,
   labelClassName,
   primaryButtonClassName,
   secondaryButtonClassName,
@@ -222,7 +223,7 @@ export function ArticleEditorForm({ error }: ArticleEditorFormProps) {
               onChange={(event) => setDescription(event.target.value)}
               rows={3}
               placeholder="A short note about what is in the document."
-              className={fieldClassName}
+              className={textareaFieldClassName}
             />
           </div>
 

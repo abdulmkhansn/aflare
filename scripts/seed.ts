@@ -535,6 +535,17 @@ async function seedFlares(
       createdComments.push({ id: commentRow.id, authorId: commentRow.author_id });
       commentCount += 1;
 
+      if (commentAuthor.id !== author.id) {
+        const { error: replyHelperError } = await supabase.from("flare_helpers").upsert(
+          { flare_id: row.id, user_id: commentAuthor.id },
+          { onConflict: "flare_id,user_id", ignoreDuplicates: true }
+        );
+        if (replyHelperError && replyHelperError.code !== "23505") {
+          throw new Error(`flare_helpers from reply: ${replyHelperError.message}`);
+        }
+        helperCount += 1;
+      }
+
       if (comment.markHelpfulByAuthor && commentAuthor.id !== author.id) {
         const { error: markError } = await supabase.from("helpful_marks").insert({
           target_type: "flare_comment",
@@ -554,6 +565,29 @@ async function seedFlares(
           }
         } else {
           helpfulCount += 1;
+        }
+      }
+    }
+
+    if (flare.status === "open") {
+      const { count, error: helperCountError } = await supabase
+        .from("flare_helpers")
+        .select("user_id", { count: "exact", head: true })
+        .eq("flare_id", row.id);
+
+      if (helperCountError) {
+        throw new Error(`flare_helpers count: ${helperCountError.message}`);
+      }
+
+      if ((count ?? 0) > 0) {
+        const { error: statusError } = await supabase
+          .from("flares")
+          .update({ status: "being_helped" })
+          .eq("id", row.id)
+          .eq("status", "open");
+
+        if (statusError) {
+          throw new Error(`flare status: ${statusError.message}`);
         }
       }
     }

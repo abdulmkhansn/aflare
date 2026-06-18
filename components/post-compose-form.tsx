@@ -3,6 +3,7 @@ import {
   cardClassName,
   errorTextClassName,
   fieldClassName,
+  textareaFieldClassName,
   labelClassName,
   primaryButtonClassName,
   sectionTitleClassName,
@@ -96,7 +97,7 @@ export function PostComposeForm({
             name="body"
             rows={4}
             required
-            className={fieldClassName}
+            className={textareaFieldClassName}
             placeholder="What changed, what you learned, or where you are stuck."
           />
         </div>

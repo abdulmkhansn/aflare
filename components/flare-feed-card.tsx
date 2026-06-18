@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AuthorLink } from "@/components/avatar";
 import { authorLinkProps } from "@/lib/profiles/public-fields";
 import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
+import { ContentActionRow } from "@/components/content-action-row";
 import { MentionBody } from "@/components/mentions/mention-body";
 import { FlareStatusBadge } from "@/components/flare-status-badge";
 import {
@@ -49,20 +50,20 @@ export function FlareFeedCard({ flare, isBookmarked = false }: FlareFeedCardProp
         ) : null}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
+      <ContentActionRow>
         <Link
           href={`/flarespace/${flare.id}`}
-          className={`text-sm font-medium text-fg hover:underline ${focusRingClassName}`}
+          className={`inline-flex h-8 items-center gap-1 rounded-full border border-border-subtle px-2.5 text-xs font-medium text-fg-muted transition-colors hover:border-fg/20 hover:text-fg ${focusRingClassName}`}
         >
-          View in Flarespace
+          View flare
         </Link>
         {helpers.length > 0 ? (
-          <span className="text-xs text-fg-muted">
+          <span className="inline-flex h-8 items-center px-1 text-xs text-fg-muted">
             {helpers.length} {helpers.length === 1 ? "helper" : "helpers"}
           </span>
         ) : null}
-        <BookmarkControl targetType="flare" targetId={flare.id} isSaved={isBookmarked} />
-      </div>
+        <BookmarkControl targetType="flare" targetId={flare.id} isSaved={isBookmarked} showLabel={false} />
+      </ContentActionRow>
     </article>
   );
 }

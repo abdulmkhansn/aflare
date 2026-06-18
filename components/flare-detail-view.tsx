@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AuthorLink } from "@/components/avatar";
 import { authorLinkProps, profileDisplayName } from "@/lib/profiles/public-fields";
 import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
+import { ContentActionRow } from "@/components/content-action-row";
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { EditableFlareAsk } from "@/components/editable-flare-ask";
 import { FlareCommentsSection } from "@/components/flare-comments-section";
@@ -21,6 +22,7 @@ import {
   errorTextClassName,
   focusRingClassName,
   inlineLinkClassName,
+  insetPanelClassName,
   tagPillClassName,
 } from "@/lib/ui/classes";
 
@@ -95,7 +97,7 @@ export function FlareDetailView({
         ) : null}
 
         {isResolved && flare.resolution_note?.trim() ? (
-          <div className="mt-5 rounded-md border border-border-subtle bg-[var(--hover-subtle)] p-4">
+          <div className={`mt-5 ${insetPanelClassName}`}>
             <h2 className="text-sm font-medium text-fg">What solved it</h2>
             <MentionBody
               body={flare.resolution_note.trim()}
@@ -104,9 +106,9 @@ export function FlareDetailView({
           </div>
         ) : null}
 
-        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border-subtle pt-4">
-          <BookmarkControl targetType="flare" targetId={flare.id} isSaved={isBookmarked} />
-        </div>
+        <ContentActionRow>
+          <BookmarkControl targetType="flare" targetId={flare.id} isSaved={isBookmarked} showLabel={false} />
+        </ContentActionRow>
       </article>
 
       <FlareHelpersSection

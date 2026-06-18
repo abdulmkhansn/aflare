@@ -10,6 +10,7 @@ import {
   type PostStructuredFields,
 } from "@/lib/posts/structured-fields";
 import { recordMilestone, withCelebrationParam } from "@/lib/milestones/record-milestone";
+import { addFlareHelperIfEligible } from "@/lib/flares/sync-helpers";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
 
@@ -105,21 +106,6 @@ async function ensureFlareAuthor(
   }
 
   return flare;
-}
-
-async function addHelperIfMissing(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  flareId: string,
-  userId: string
-) {
-  const { error } = await supabase.from("flare_helpers").upsert(
-    { flare_id: flareId, user_id: userId },
-    { onConflict: "flare_id,user_id", ignoreDuplicates: true }
-  );
-
-  if (error && error.code !== "23505") {
-    throw new Error(error.message);
-  }
 }
 
 export async function createFlare(formData: FormData) {
@@ -241,7 +227,7 @@ export async function joinFlareHelper(formData: FormData) {
 
   const { data: flare, error: flareError } = await supabase
     .from("flares")
-    .select("id, status")
+    .select("id, status, author_id")
     .eq("id", flareId)
     .maybeSingle();
 
@@ -251,6 +237,10 @@ export async function joinFlareHelper(formData: FormData) {
 
   if (flare.status === "resolved") {
     flareDetailRedirect(flareId, "This flare is resolved. Reopen it first if help is still needed.");
+  }
+
+  if (flare.author_id === auth.userId) {
+    flareDetailRedirect(flareId, "You can't join as a helper on your own flare.");
   }
 
   const { error } = await supabase.from("flare_helpers").upsert(
@@ -340,7 +330,7 @@ export async function createFlareComment(formData: FormData): Promise<InlineActi
     flareCommentId: comment.id,
   });
 
-  await addHelperIfMissing(supabase, flareId, auth.userId);
+  await addFlareHelperIfEligible(supabase, flareId, auth.userId, flare.author_id);
 
   if (flare.author_id !== auth.userId) {
     await recordMilestone(supabase, auth.userId, "first_flare_reply");
