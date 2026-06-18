@@ -1,4 +1,8 @@
-import { buildMentionToken } from "./parse-mentions";
+import {
+  insertMentionInCompose,
+  mentionDisplayLabel,
+  type MentionSpan,
+} from "./compose-mentions";
 
 export type ActiveMentionQuery = {
   start: number;
@@ -7,7 +11,8 @@ export type ActiveMentionQuery = {
 
 export function getActiveMentionQuery(
   text: string,
-  cursor: number
+  cursor: number,
+  spans: MentionSpan[] = []
 ): ActiveMentionQuery | null {
   if (cursor < 0) {
     return null;
@@ -32,9 +37,18 @@ export function getActiveMentionQuery(
     return null;
   }
 
+  const insideExistingMention = spans.some(
+    (span) => lastAt >= span.start && lastAt < span.end
+  );
+
+  if (insideExistingMention) {
+    return null;
+  }
+
   return { start: lastAt, query: match[1] };
 }
 
+/** @deprecated Prefer insertMentionInCompose — inserts storage tokens into plain text. */
 export function insertMentionAt(
   text: string,
   mentionStart: number,
@@ -42,9 +56,16 @@ export function insertMentionAt(
   displayName: string,
   userId: string
 ): { nextValue: string; nextCursor: number } {
-  const token = buildMentionToken(displayName, userId);
-  const nextValue = `${text.slice(0, mentionStart)}${token} ${text.slice(cursor)}`;
-  const nextCursor = mentionStart + token.length + 1;
+  const { text: nextText, nextCursor } = insertMentionInCompose(
+    text,
+    [],
+    mentionStart,
+    cursor,
+    displayName,
+    userId
+  );
 
-  return { nextValue, nextCursor };
+  return { nextValue: nextText, nextCursor };
 }
+
+export { insertMentionInCompose, mentionDisplayLabel };

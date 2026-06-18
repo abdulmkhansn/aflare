@@ -32,11 +32,11 @@ export function MentionBody({
       return <Fragment key={index}>{segment.value}</Fragment>;
     }
 
-    return (
-      <Link key={index} href={`/u/${segment.userId}`} className={mentionLinkClassName}>
-        {segment.displayName}
-      </Link>
-    );
+        return (
+          <Link key={index} href={`/u/${segment.userId}`} className={mentionLinkClassName}>
+            @{segment.displayName}
+          </Link>
+        );
   });
 
   if (inline) {

@@ -10,8 +10,18 @@ import {
   type TextareaHTMLAttributes,
 } from "react";
 
+import { MentionComposeBackdrop } from "@/components/mentions/mention-compose-backdrop";
 import { Avatar } from "@/components/avatar";
-import { getActiveMentionQuery, insertMentionAt } from "@/lib/mentions/mention-input";
+import {
+  composeDisplayToStorage,
+  findTextEdit,
+  insertMentionInCompose,
+  reconcileSpansAfterEdit,
+  storageToComposeDisplay,
+  validateMentionSpans,
+  type MentionSpan,
+} from "@/lib/mentions/compose-mentions";
+import { getActiveMentionQuery } from "@/lib/mentions/mention-input";
 import type { BuilderSearchResult } from "@/lib/search/run-builder-search";
 import { focusRingClassName } from "@/lib/ui/classes";
 
@@ -24,13 +34,18 @@ export function MentionTextarea({
   value,
   onChange,
   className,
+  name,
   onKeyDown,
   onClick,
   onKeyUp,
   ...props
 }: MentionTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const lastEmittedStorage = useRef(value);
   const listId = useId();
+  const initialCompose = storageToComposeDisplay(value);
+  const [displayText, setDisplayText] = useState(initialCompose.text);
+  const [spans, setSpans] = useState<MentionSpan[]>(initialCompose.spans);
   const [open, setOpen] = useState(false);
   const [mentionStart, setMentionStart] = useState(0);
   const [query, setQuery] = useState("");
@@ -38,8 +53,28 @@ export function MentionTextarea({
   const [loading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const refreshMentionState = useCallback((text: string, cursor: number) => {
-    const active = getActiveMentionQuery(text, cursor);
+  useEffect(() => {
+    if (value === lastEmittedStorage.current) {
+      return;
+    }
+
+    const { text, spans: nextSpans } = storageToComposeDisplay(value);
+    setDisplayText(text);
+    setSpans(nextSpans);
+    lastEmittedStorage.current = value;
+  }, [value]);
+
+  const emitStorage = useCallback(
+    (text: string, nextSpans: MentionSpan[]) => {
+      const storage = composeDisplayToStorage(text, nextSpans);
+      lastEmittedStorage.current = storage;
+      onChange(storage);
+    },
+    [onChange]
+  );
+
+  const refreshMentionState = useCallback((text: string, cursor: number, activeSpans: MentionSpan[]) => {
+    const active = getActiveMentionQuery(text, cursor, activeSpans);
 
     if (!active) {
       setOpen(false);
@@ -93,15 +128,18 @@ export function MentionTextarea({
     }
 
     const displayName = builder.displayName?.trim() || "Unknown builder";
-    const { nextValue, nextCursor } = insertMentionAt(
-      value,
+    const { text, spans: nextSpans, nextCursor } = insertMentionInCompose(
+      displayText,
+      spans,
       mentionStart,
       textarea.selectionStart,
       displayName,
       builder.id
     );
 
-    onChange(nextValue);
+    setDisplayText(text);
+    setSpans(nextSpans);
+    emitStorage(text, nextSpans);
     setOpen(false);
     setQuery("");
 
@@ -112,9 +150,15 @@ export function MentionTextarea({
   }
 
   function handleChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
-    const next = event.target.value;
-    onChange(next);
-    refreshMentionState(next, event.target.selectionStart);
+    const nextDisplay = event.target.value;
+    const edit = findTextEdit(displayText, nextDisplay);
+    const shiftedSpans = reconcileSpansAfterEdit(spans, edit);
+    const nextSpans = validateMentionSpans(nextDisplay, shiftedSpans);
+
+    setDisplayText(nextDisplay);
+    setSpans(nextSpans);
+    emitStorage(nextDisplay, nextSpans);
+    refreshMentionState(nextDisplay, event.target.selectionStart, nextSpans);
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -149,31 +193,47 @@ export function MentionTextarea({
     onKeyDown?.(event);
   }
 
+  const storageValue = composeDisplayToStorage(displayText, spans);
+  const fieldClassName = className ?? "";
+  const backdropClassName = [
+    fieldClassName,
+    "pointer-events-none absolute inset-0 overflow-hidden whitespace-pre-wrap break-words text-fg",
+  ].join(" ");
+  const textareaClassName = [
+    fieldClassName,
+    "relative z-[1] w-full bg-transparent text-transparent caret-fg selection:bg-teal/30",
+  ].join(" ");
+
   return (
     <div className="relative">
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={handleChange}
-        onClick={(event) => {
-          refreshMentionState(value, event.currentTarget.selectionStart);
-          onClick?.(event);
-        }}
-        onKeyUp={(event) => {
-          if (event.key === "Escape") {
-            setOpen(false);
-          } else {
-            refreshMentionState(value, event.currentTarget.selectionStart);
-          }
-          onKeyUp?.(event);
-        }}
-        onKeyDown={handleKeyDown}
-        className={className}
-        aria-autocomplete="list"
-        aria-expanded={open}
-        aria-controls={open ? listId : undefined}
-        {...props}
-      />
+      {name ? <input type="hidden" name={name} value={storageValue} readOnly /> : null}
+
+      <div className="relative">
+        <MentionComposeBackdrop text={displayText} spans={spans} className={backdropClassName} />
+        <textarea
+          ref={textareaRef}
+          value={displayText}
+          onChange={handleChange}
+          onClick={(event) => {
+            refreshMentionState(displayText, event.currentTarget.selectionStart, spans);
+            onClick?.(event);
+          }}
+          onKeyUp={(event) => {
+            if (event.key === "Escape") {
+              setOpen(false);
+            } else {
+              refreshMentionState(displayText, event.currentTarget.selectionStart, spans);
+            }
+            onKeyUp?.(event);
+          }}
+          onKeyDown={handleKeyDown}
+          className={textareaClassName}
+          aria-autocomplete="list"
+          aria-expanded={open}
+          aria-controls={open ? listId : undefined}
+          {...props}
+        />
+      </div>
 
       {open ? (
         <div
@@ -189,7 +249,7 @@ export function MentionTextarea({
             <p className="px-3 py-2 text-sm text-fg-muted">No builders match that.</p>
           ) : (
             results.map((builder, index) => {
-              const name = builder.displayName?.trim() || "Unknown builder";
+              const label = builder.displayName?.trim() || "Unknown builder";
 
               return (
                 <button
@@ -212,7 +272,7 @@ export function MentionTextarea({
                     avatarUrl={builder.avatarUrl}
                     size="sm"
                   />
-                  <span className="truncate font-medium">{name}</span>
+                  <span className="truncate font-medium">{label}</span>
                 </button>
               );
             })
