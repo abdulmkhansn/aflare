@@ -122,7 +122,7 @@ export function ProfileEditForm({
       <section className={cardClassName}>
         <h2 className="text-sm font-medium text-fg">Photo</h2>
         <p className="mt-1 text-xs text-fg-muted">
-          Uploads go straight to storage from your browser — nothing passes through our server.
+          Uploads go straight to storage from your browser. Nothing passes through our server.
         </p>
         <div className="mt-4">
           <AvatarUploadControl

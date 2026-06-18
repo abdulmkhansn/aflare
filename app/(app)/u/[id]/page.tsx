@@ -87,7 +87,7 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
       <div className="space-y-4">
         <h1 className={pageTitleClassName}>Profile</h1>
         <p className={errorTextClassName} role="alert">
-          Could not load this profile right now. Try again in a moment.
+          Couldn't load this profile. Refresh and try again.
         </p>
       </div>
     );

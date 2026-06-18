@@ -122,7 +122,7 @@ export default async function FlarespacePage({ searchParams }: FlarespacePagePro
         ) : null}
 
         {tagsError ? (
-          <p className={`mb-4 ${errorTextClassName}`}>Could not load tags. Refresh the page.</p>
+          <p className={`mb-4 ${errorTextClassName}`}>Tags didn't load. Refresh and try again.</p>
         ) : null}
 
         <Suspense fallback={<div className="mb-4 h-16" />}>

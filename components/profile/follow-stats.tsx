@@ -90,7 +90,7 @@ function FollowListDialog({
   const emptyMessage =
     kind === "followers"
       ? "No followers yet. When builders follow this profile, they show up here."
-      : "Not following anyone yet.";
+      : "Not following anyone yet. Find builders on the feed or Flarespace and follow from their profile.";
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {

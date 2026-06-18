@@ -120,9 +120,9 @@ export default async function SettingsPage({ searchParams }: SettingsPageProps) 
       />
 
       <div className="space-y-3 border-t border-border-subtle pt-8">
-        <h2 className={sectionTitleClassName}>Danger zone</h2>
+        <h2 className={sectionTitleClassName}>Delete account</h2>
         <p className="text-sm text-fg-muted">
-          Permanent actions for your account. Take your time here.
+          Permanent changes. Take your time here.
         </p>
         <DeleteAccountSection />
       </div>

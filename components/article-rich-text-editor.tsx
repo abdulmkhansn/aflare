@@ -118,7 +118,7 @@ export function ArticleRichTextEditor({ initialContent = "", onChange }: Article
       uploadingRef.current = false;
 
       if (result.error || !result.url) {
-        window.alert(result.error ?? "Could not upload that image.");
+        window.alert(result.error ?? "Couldn't upload that image.");
         return;
       }
 

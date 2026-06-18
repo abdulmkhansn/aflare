@@ -5,7 +5,7 @@ export function StepThree() {
   return (
     <OnboardingShell
       step={3}
-      title="Verified Builder (optional)"
+      title="Verified builder (optional)"
       description="You can skip this and still use Aflare."
       asideNote={
         <p className="flex items-start gap-2">
@@ -20,12 +20,11 @@ export function StepThree() {
       <div className="space-y-6">
         <div className="rounded-md border border-charcoal/10 bg-white px-4 py-4">
           <p className="text-sm leading-relaxed text-charcoal">
-            Later, you can connect GitHub to become a Verified Builder. We read commit activity
-            and language stats only. We never read your code.
+            Later, you can connect GitHub to become a verified builder. We only read public profile
+            info and building activity. We never read your code.
           </p>
           <p className="mt-3 text-sm text-teal">
-            Repo access is not part of sign-in. You will choose that separately when verification
-            ships.
+            Repo access is not part of sign-in. You choose that separately when you verify.
           </p>
         </div>
 

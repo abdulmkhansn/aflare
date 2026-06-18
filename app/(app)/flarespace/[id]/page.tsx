@@ -40,7 +40,7 @@ export default async function FlareDetailPage({ params, searchParams }: FlareDet
 
   return (
     <div className="space-y-6">
-      <PageHeader title={title} description="Flare thread in Flarespace." />
+      <PageHeader title={title} description="A flare thread. Ask, reply, mark it resolved when it's fixed." />
 
       <FlareDetailView
         detail={detail}

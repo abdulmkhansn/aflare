@@ -151,7 +151,7 @@ export function EditableFlareAsk({
       <ConfirmDialog
         open={confirmOpen}
         title="Delete this flare?"
-        description="This removes the whole thread — replies and all. You can't undo it."
+        description="This removes the whole thread, replies and all. You can't undo it."
         onConfirm={() => {
           setConfirmOpen(false);
           deleteFormRef.current?.requestSubmit();

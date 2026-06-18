@@ -115,7 +115,7 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
         <div className={emptyStateClassName}>
           {filter === "all" ? (
             <>
-              Your feed is empty. Post above, or follow builders who share in the open.
+              Nothing here yet. Post above, or follow builders who share in the open.
             </>
           ) : filter === "following" ? (
             <>No posts from people you follow yet. Follow builders to see their updates here.</>

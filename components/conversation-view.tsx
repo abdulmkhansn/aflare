@@ -73,7 +73,7 @@ export function ConversationView({
     const body = draft.trim();
 
     if (!body) {
-      setError("Write a message before sending.");
+      setError("Write something before sending.");
       return;
     }
 

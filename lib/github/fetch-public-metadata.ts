@@ -44,7 +44,7 @@ export async function exchangeGitHubCodeForToken(
   });
 
   if (!response.ok) {
-    throw new Error("Could not connect to GitHub. Try again.");
+    throw new Error("Couldn't connect to GitHub. Try again.");
   }
 
   const data = (await response.json()) as { access_token?: string; error?: string };
@@ -68,7 +68,7 @@ export async function fetchGitHubPublicUserMetadata(
   });
 
   if (!response.ok) {
-    throw new Error("Could not read your public GitHub profile. Try again.");
+    throw new Error("Couldn't read your public GitHub profile. Try again.");
   }
 
   const data = (await response.json()) as {

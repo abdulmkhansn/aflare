@@ -63,7 +63,7 @@ export function ArticleEditorForm({ error }: ArticleEditorFormProps) {
     setUploadingCover(false);
 
     if (result.error || !result.url) {
-      window.alert(result.error ?? "Could not upload that image.");
+      window.alert(result.error ?? "Couldn't upload that image.");
       return;
     }
 
@@ -87,7 +87,7 @@ export function ArticleEditorForm({ error }: ArticleEditorFormProps) {
     setUploadProgress(0);
 
     if (result.error || !result.url || !result.doc_type) {
-      window.alert(result.error ?? "Could not upload that document.");
+      window.alert(result.error ?? "Couldn't upload that document.");
       return;
     }
 

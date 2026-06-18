@@ -57,7 +57,7 @@ export function readVideoDuration(file: File): Promise<number> {
 
     video.onerror = () => {
       URL.revokeObjectURL(objectUrl);
-      reject(new Error("Could not read that video file."));
+      reject(new Error("Couldn't read that video file."));
     };
 
     video.src = objectUrl;

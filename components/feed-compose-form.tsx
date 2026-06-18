@@ -169,7 +169,7 @@ export function FeedComposeForm({ projects, posted, error }: FeedComposeFormProp
     if (!result.url) {
       URL.revokeObjectURL(preview);
       setMedia(null);
-      setUploadError(result.error ?? "Could not upload that image. Try again.");
+      setUploadError(result.error ?? "Couldn't upload that image. Try again.");
     } else {
       setMedia({ kind: "image", url: result.url, preview });
     }
@@ -209,7 +209,7 @@ export function FeedComposeForm({ projects, posted, error }: FeedComposeFormProp
         return;
       }
     } catch {
-      setUploadError("Could not read that video file. Try another format.");
+      setUploadError("Couldn't read that video file. Try another format.");
       event.target.value = "";
       return;
     }
@@ -225,7 +225,7 @@ export function FeedComposeForm({ projects, posted, error }: FeedComposeFormProp
     if (!result.url) {
       URL.revokeObjectURL(preview);
       setMedia(null);
-      setUploadError(result.error ?? "Could not upload that video. Try again.");
+      setUploadError(result.error ?? "Couldn't upload that video. Try again.");
     } else {
       setMedia({ kind: "video", url: result.url, preview });
     }

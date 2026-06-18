@@ -37,7 +37,7 @@ export function AvatarUploadControl({
     setUploading(false);
 
     if (result.error || !result.url) {
-      setError(result.error ?? "Upload failed.");
+      setError(result.error ?? "Couldn't upload that photo. Try again.");
       event.target.value = "";
       return;
     }

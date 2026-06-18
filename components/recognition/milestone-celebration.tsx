@@ -65,7 +65,7 @@ export function MilestoneCelebration({ pending }: MilestoneCelebrationProps) {
           disabled={isPending}
           className={`shrink-0 text-xs text-fg-muted hover:text-fg ${focusRingClassName}`}
         >
-          Nice
+          Got it
         </button>
       </div>
     </div>

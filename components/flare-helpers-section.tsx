@@ -75,7 +75,7 @@ export function FlareHelpersSection({
           </span>
         </div>
       ) : (
-        <span className="text-fg-muted">No one yet.</span>
+        <span className="text-fg-muted">No one helping yet. Tap I can help if you have something useful.</span>
       )}
 
       {canHelp ? (

@@ -47,7 +47,7 @@ export async function createComment(formData: FormData): Promise<InlineActionRes
     .single();
 
   if (insertError || !comment) {
-    return inlineError(insertError?.message ?? "Could not post that comment.");
+    return inlineError(insertError?.message ?? "Couldn't post that comment.");
   }
 
   await createMentionNotifications(body, {

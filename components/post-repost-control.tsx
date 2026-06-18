@@ -92,7 +92,7 @@ export function PostRepostControl({ postId, redirectTo, disabled = false }: Post
         <form className="p-5" onSubmit={handleSubmit}>
           <h2 className="text-base font-medium text-fg">Repost</h2>
           <p className="mt-1 text-sm text-fg-muted">
-            Share this with your followers. Add a thought if you want — or leave it blank.
+            Share this with your followers. Add a thought if you want, or leave it blank.
           </p>
 
           <input type="hidden" name="post_id" value={postId} />
@@ -116,7 +116,7 @@ export function PostRepostControl({ postId, redirectTo, disabled = false }: Post
               onChange={setQuote}
               disabled={isPending}
               className="mt-1.5 w-full rounded-md border border-[var(--border-input)] bg-surface-input px-3 py-2 text-sm text-fg shadow-[var(--elevation-input)] outline-none placeholder:text-fg-muted focus-visible:ring-2 focus-visible:ring-teal focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page"
-              placeholder="Why this is worth a look…"
+              placeholder="Add a note (optional)"
             />
           </div>
 

@@ -166,7 +166,7 @@ export async function createFlare(formData: FormData) {
     .single();
 
   if (insertError || !flare) {
-    flareErrorRedirect(redirectTo, insertError?.message ?? "Could not send up that flare.");
+    flareErrorRedirect(redirectTo, insertError?.message ?? "Couldn't send up that flare.");
   }
 
   if (body) {
@@ -331,7 +331,7 @@ export async function createFlareComment(formData: FormData): Promise<InlineActi
     .single();
 
   if (insertError || !comment) {
-    return inlineError(insertError?.message ?? "Could not post that reply.");
+    return inlineError(insertError?.message ?? "Couldn't post that reply.");
   }
 
   await createMentionNotifications(body, {

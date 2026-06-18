@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     try {
       await ensurePostImagesBucket(admin);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Could not prepare image storage.";
+      const message = error instanceof Error ? error.message : "Couldn't prepare image storage.";
       return NextResponse.json({ error: message }, { status: 500 });
     }
   }

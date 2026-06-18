@@ -63,7 +63,7 @@ export default async function OnboardingPage({ searchParams }: OnboardingPagePro
             params.error ??
             tagsError?.message ??
             profileTagsError?.message ??
-            "Could not load tags. Refresh the page."
+            "Tags didn't load. Refresh and try again."
           }
         />
       );

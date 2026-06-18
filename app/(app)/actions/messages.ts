@@ -92,7 +92,7 @@ export async function sendMessage(
   }
 
   if (!trimmed) {
-    return { ok: false, error: "Write a message before sending." };
+    return { ok: false, error: "Write something before sending." };
   }
 
   const supabase = await createClient();

@@ -60,8 +60,8 @@ export function ProjectTimeline({
       {entries.length === 0 ? (
         <div className={`mt-4 ${emptyStateClassName}`}>
           {isOwner
-            ? "Nothing in the log yet. Post your first update above — even a rough note counts."
-            : "No updates yet."}
+            ? "Nothing in the log yet. Post your first update above. Even a rough note counts."
+            : "No updates on this project yet."}
         </div>
       ) : (
         <div className="relative mt-4">

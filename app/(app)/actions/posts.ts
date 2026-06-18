@@ -118,7 +118,7 @@ export async function createFeedPost(formData: FormData) {
     .single();
 
   if (insertError || !post) {
-    redirectWithPostError(redirectTo, insertError?.message ?? "Could not post that update.");
+    redirectWithPostError(redirectTo, insertError?.message ?? "Couldn't post that update.");
   }
 
   await createMentionNotifications(body, {
@@ -201,7 +201,7 @@ export async function createPost(formData: FormData) {
     .single();
 
   if (insertError || !post) {
-    redirectWithPostError(redirectTo, insertError?.message ?? "Could not post that update.");
+    redirectWithPostError(redirectTo, insertError?.message ?? "Couldn't post that update.");
   }
 
   await createMentionNotifications(body, {

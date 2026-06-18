@@ -81,7 +81,7 @@ export async function publishArticle(formData: FormData) {
     .single();
 
   if (articleError || !article) {
-    redirectWithArticleError(articleError?.message ?? "Could not save the article.");
+    redirectWithArticleError(articleError?.message ?? "Couldn't save the article.");
   }
 
   const postBody = excerpt || title;

@@ -37,7 +37,7 @@ export function PostComposeForm({
 
   return (
     <div className={cardClassName}>
-      <h2 className={sectionTitleClassName}>Post update</h2>
+      <h2 className={sectionTitleClassName}>Post an update</h2>
 
       {posted ? (
         <p className={`mt-2 ${statusTextClassName}`} role="status">

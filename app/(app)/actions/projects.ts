@@ -77,7 +77,7 @@ export async function createProject(formData: FormData) {
     .single();
 
   if (error || !data) {
-    projectFormErrorRedirect("/projects/new", error?.message ?? "Could not create project.");
+    projectFormErrorRedirect("/projects/new", error?.message ?? "Couldn't create project.");
   }
 
   const { isNew } = await recordMilestone(supabase, auth.userId, "first_project");
@@ -169,7 +169,7 @@ export async function fetchProjectDeletePreview(projectId: string) {
     return { preview } as const;
   } catch (error) {
     return {
-      error: error instanceof Error ? error.message : "Could not load project details.",
+      error: error instanceof Error ? error.message : "Couldn't load project details.",
     } as const;
   }
 }

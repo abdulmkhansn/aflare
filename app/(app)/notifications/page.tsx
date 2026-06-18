@@ -44,7 +44,7 @@ export default async function NotificationsPage() {
       <div className="mt-6">
         {notifications.length === 0 ? (
           <div className={emptyStateClassName}>
-            Nothing here yet. When someone interacts with your work, you will see it here.
+            Nothing here yet. Post something, reply on a flare, or follow a few builders to get things moving.
           </div>
         ) : (
           <NotificationList notifications={notifications} />

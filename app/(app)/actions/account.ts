@@ -20,7 +20,7 @@ export async function deleteAccount() {
 
   if (anonymizeError) {
     redirect(
-      `/settings?error=${encodeURIComponent(anonymizeError.message || "Could not delete your account. Try again.")}`
+      `/settings?error=${encodeURIComponent(anonymizeError.message || "Couldn't delete your account. Try again.")}`
     );
   }
 
@@ -28,7 +28,7 @@ export async function deleteAccount() {
 
   if (deleteAuthError) {
     redirect(
-      `/settings?error=${encodeURIComponent(deleteAuthError.message || "Could not finish deleting your account. Try again.")}`
+      `/settings?error=${encodeURIComponent(deleteAuthError.message || "Couldn't finish deleting your account. Try again.")}`
     );
   }
 

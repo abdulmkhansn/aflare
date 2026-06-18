@@ -1,7 +1,7 @@
 import { verifiedBadgeClassName } from "@/lib/ui/classes";
 
 export const VERIFIED_BUILDER_TOOLTIP =
-  "Verified builder — we confirmed real public building activity, and never touched their code.";
+  "Verified builder. We confirmed real public building activity, and never touched their code.";
 
 type VerifiedBuilderBadgeProps = {
   variant?: "full" | "compact";

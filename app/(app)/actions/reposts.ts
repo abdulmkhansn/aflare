@@ -58,7 +58,7 @@ export async function repostPost(formData: FormData): Promise<InlineActionResult
     .single();
 
   if (insertError || !repost) {
-    return inlineError(insertError?.message ?? "Could not repost that.");
+    return inlineError(insertError?.message ?? "Couldn't repost that.");
   }
 
   if (quote) {

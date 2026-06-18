@@ -11,7 +11,7 @@ type InboxListProps = {
 
 function snippet(body: string | null) {
   if (!body) {
-    return "No messages yet";
+    return "Start the conversation";
   }
 
   const trimmed = body.trim().replace(/\s+/g, " ");

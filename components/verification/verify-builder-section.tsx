@@ -65,7 +65,7 @@ export function VerifyBuilderSection({
 
       {verifiedMessage ? (
         <p className={`mt-4 ${statusTextClassName}`} role="status">
-          Verified. We only read public GitHub info — never your code.
+          Verified. We only read public GitHub info. Never your code.
         </p>
       ) : null}
 
@@ -111,7 +111,7 @@ export function VerifyBuilderSection({
       ) : (
         <div className="mt-4 space-y-4">
           <p className="text-sm leading-relaxed text-fg-muted">
-            Connect GitHub so we can confirm you build. We only read public info — never your code.
+            Connect GitHub so we can confirm you build. We only read public info. Never your code.
             We don&apos;t post, and we don&apos;t touch private repos.
           </p>
           <ul className="space-y-2 text-sm text-fg-muted">

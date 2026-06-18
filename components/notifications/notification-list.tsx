@@ -36,7 +36,7 @@ export function NotificationList({
   if (notifications.length === 0) {
     return (
       <p className="px-2 py-6 text-center text-sm text-fg-muted">
-        Nothing new right now. When someone replies, follows, or helps, it shows up here.
+        Nothing new right now. Post something or follow builders to get things moving.
       </p>
     );
   }

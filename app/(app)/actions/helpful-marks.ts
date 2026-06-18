@@ -169,7 +169,7 @@ export async function togglePostHelpful(formData: FormData): Promise<InlineActio
   }
 
   if (isRepostPost(post)) {
-    return inlineError("Reposts are amplification — mark the original if it helped.");
+    return inlineError("Reposts are amplification. Mark the original if it helped.");
   }
 
   if (isMarked) {
