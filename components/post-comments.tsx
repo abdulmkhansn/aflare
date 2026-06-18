@@ -6,12 +6,19 @@ import { useState } from "react";
 import { deleteComment, updateComment } from "@/app/(app)/actions/content";
 import { createComment } from "@/app/(app)/actions/comments";
 import { Avatar } from "@/components/avatar";
+import { VerifiedBuilderBadge } from "@/components/verification/verified-builder-badge";
+import {
+  isDeletedProfile,
+  profileAvatarUrl,
+  profileDisplayName,
+} from "@/lib/profiles/public-fields";
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { EditableContentBody } from "@/components/editable-content-body";
 import { ThisHelpedButton } from "@/components/this-helped-button";
 import { MentionTextarea } from "@/components/mentions/mention-textarea";
 import type { Comment } from "@/lib/comments/types";
 import { resolveCommentProfile } from "@/lib/comments/types";
+import { useInlineFormAction } from "@/lib/ui/use-inline-form-action";
 import {
   errorTextClassName,
   fieldClassName,
@@ -35,27 +42,41 @@ function CommentItem({
   isMarked,
 }: CommentItemProps) {
   const profile = resolveCommentProfile(comment);
-  const displayName = profile?.display_name?.trim() || "Unknown builder";
+  const displayName = profileDisplayName(profile);
+  const deleted = isDeletedProfile(profile);
   const isOwnComment = comment.author_id === currentUserId;
 
   return (
     <li className="flex gap-3 border-t border-border-subtle py-3 first:border-t-0 first:pt-0">
-      <Link href={`/u/${comment.author_id}`} className={`shrink-0 ${focusRingClassName}`}>
-        <Avatar
-          displayName={profile?.display_name ?? null}
-          avatarUrl={profile?.avatar_url ?? null}
-          size="sm"
-        />
-      </Link>
+      {deleted ? (
+        <span className="shrink-0">
+          <Avatar displayName={displayName} avatarUrl={null} size="sm" deleted />
+        </span>
+      ) : (
+        <Link href={`/u/${comment.author_id}`} className={`shrink-0 ${focusRingClassName}`}>
+          <Avatar
+            displayName={profile?.display_name ?? null}
+            avatarUrl={profileAvatarUrl(profile)}
+            size="sm"
+          />
+        </Link>
+      )}
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <Link
-            href={`/u/${comment.author_id}`}
-            className={`text-sm font-medium text-fg hover:underline ${focusRingClassName}`}
-          >
-            {displayName}
-          </Link>
+          {deleted ? (
+            <span className="text-sm font-medium text-fg-muted">{displayName}</span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5">
+              <Link
+                href={`/u/${comment.author_id}`}
+                className={`text-sm font-medium text-fg hover:underline ${focusRingClassName}`}
+              >
+                {displayName}
+              </Link>
+              {profile?.verified_builder ? <VerifiedBuilderBadge variant="compact" /> : null}
+            </span>
+          )}
           <ContentTimestamp createdAt={comment.created_at} editedAt={comment.edited_at} />
         </div>
 
@@ -89,19 +110,15 @@ function CommentItem({
   );
 }
 
-type AddCommentFormProps = {
-  postId: string;
-  redirectTo: string;
-  posted?: boolean;
-  error?: string;
-};
-
-function AddCommentForm({ postId, redirectTo, posted, error }: AddCommentFormProps) {
+function AddCommentForm({ postId, redirectTo }: { postId: string; redirectTo: string }) {
   const [body, setBody] = useState("");
+  const { onSubmit, isPending, error, success } = useInlineFormAction(createComment, {
+    onSuccess: () => setBody(""),
+  });
 
   return (
     <div className="border-t border-border-subtle pt-3">
-      {posted ? (
+      {success ? (
         <p className={`mb-3 ${statusTextClassName}`} role="status">
           Posted.
         </p>
@@ -113,7 +130,7 @@ function AddCommentForm({ postId, redirectTo, posted, error }: AddCommentFormPro
         </p>
       ) : null}
 
-      <form action={createComment} className="space-y-3">
+      <form onSubmit={onSubmit} className="space-y-3">
         <input type="hidden" name="post_id" value={postId} />
         <input type="hidden" name="redirect_to" value={redirectTo} />
 
@@ -127,12 +144,13 @@ function AddCommentForm({ postId, redirectTo, posted, error }: AddCommentFormPro
           required
           value={body}
           onChange={setBody}
+          disabled={isPending}
           className={fieldClassName}
           placeholder="Reply with something useful."
         />
 
-        <button type="submit" className={primaryButtonClassName}>
-          Comment
+        <button type="submit" className={primaryButtonClassName} disabled={isPending}>
+          {isPending ? "Posting…" : "Comment"}
         </button>
       </form>
     </div>
@@ -231,12 +249,7 @@ export function PostComments({
         </ul>
       )}
 
-      <AddCommentForm
-        postId={postId}
-        redirectTo={redirectTo}
-        posted={commentPosted}
-        error={commentError}
-      />
+      <AddCommentForm postId={postId} redirectTo={redirectTo} />
     </section>
   );
 }

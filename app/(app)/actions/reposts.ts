@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
+import { inlineError, inlineOk, type InlineActionResult } from "@/lib/actions/inline-result";
 import { createMentionNotifications } from "@/lib/mentions/create-mention-notifications";
 import { resolvePostKind } from "@/lib/posts/kinds";
 import { buildRepostStructuredFields } from "@/lib/posts/repost";
@@ -13,19 +13,13 @@ function readTrimmed(formData: FormData, key: string) {
   return String(formData.get(key) ?? "").trim();
 }
 
-function repostErrorRedirect(redirectTo: string, message: string): never {
-  const separator = redirectTo.includes("?") ? "&" : "?";
-  redirect(`${redirectTo}${separator}repostError=${encodeURIComponent(message)}`);
-}
-
-export async function repostPost(formData: FormData) {
+export async function repostPost(formData: FormData): Promise<InlineActionResult> {
   const auth = await requireOnboarded();
   const postId = readTrimmed(formData, "post_id");
   const quote = readTrimmed(formData, "quote");
-  const redirectTo = readTrimmed(formData, "redirect_to") || "/";
 
   if (!postId) {
-    repostErrorRedirect(redirectTo, "That post was not found.");
+    return inlineError("That post was not found.");
   }
 
   const supabase = await createClient();
@@ -37,15 +31,15 @@ export async function repostPost(formData: FormData) {
     .maybeSingle();
 
   if (originalError || !original) {
-    repostErrorRedirect(redirectTo, "That post was not found.");
+    return inlineError("That post was not found.");
   }
 
   if (original.author_id === auth.userId) {
-    repostErrorRedirect(redirectTo, "You can't repost your own post.");
+    return inlineError("You can't repost your own post.");
   }
 
   if (resolvePostKind(original) === "article") {
-    repostErrorRedirect(redirectTo, "Articles can't be reposted yet.");
+    return inlineError("Articles can't be reposted yet.");
   }
 
   const { data: repost, error: insertError } = await supabase
@@ -64,7 +58,7 @@ export async function repostPost(formData: FormData) {
     .single();
 
   if (insertError || !repost) {
-    repostErrorRedirect(redirectTo, insertError?.message ?? "Could not repost that.");
+    return inlineError(insertError?.message ?? "Could not repost that.");
   }
 
   if (quote) {
@@ -82,6 +76,5 @@ export async function repostPost(formData: FormData) {
     revalidatePath(`/projects/${original.project_id}`);
   }
 
-  const separator = redirectTo.includes("?") ? "&" : "?";
-  redirect(`${redirectTo}${separator}reposted=1`);
+  return inlineOk();
 }

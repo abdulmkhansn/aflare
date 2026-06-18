@@ -6,6 +6,13 @@ export type ReactionClusterMeta = {
   emojis: string[];
 };
 
+export type ReactionBreakdownItem = {
+  type: PostReactionType;
+  emoji: string;
+  label: string;
+  count: number;
+};
+
 export function getReactionClusterMeta(counts: ReactionCounts): ReactionClusterMeta {
   const emojis: string[] = [];
   let total = 0;
@@ -20,6 +27,13 @@ export function getReactionClusterMeta(counts: ReactionCounts): ReactionClusterM
   }
 
   return { total, emojis };
+}
+
+export function getReactionBreakdown(counts: ReactionCounts): ReactionBreakdownItem[] {
+  return SOCIAL_POST_REACTIONS.flatMap(({ type, emoji, label }) => {
+    const count = counts[type];
+    return count > 0 ? [{ type, emoji, label, count }] : [];
+  });
 }
 
 export function applyReactionPick(

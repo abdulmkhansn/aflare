@@ -1,15 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 
-import { POST_REACTION_TYPES, type PostReactionType } from "./types";
-import {
-  emptyReactionCounts,
-  type ReactionCounts,
-} from "./types";
+import { emptyReactionCounts, normalizeReactionType, type PostReactionType } from "./types";
+import type { ReactionCounts } from "./types";
 import type { FlareCommentReactionsContext } from "./get-flare-comment-reaction-bar-props";
-
-function isPostReactionType(value: string): value is PostReactionType {
-  return POST_REACTION_TYPES.includes(value as PostReactionType);
-}
 
 export async function getFlareCommentReactionsForComments(
   commentIds: string[],
@@ -39,16 +32,18 @@ export async function getFlareCommentReactionsForComments(
   }
 
   for (const row of reactions ?? []) {
-    if (!isPostReactionType(row.reaction)) {
+    const reaction = normalizeReactionType(row.reaction);
+
+    if (!reaction) {
       continue;
     }
 
     const counts = countsByCommentId.get(row.flare_comment_id) ?? emptyReactionCounts();
-    counts[row.reaction] += 1;
+    counts[reaction] += 1;
     countsByCommentId.set(row.flare_comment_id, counts);
 
     if (row.user_id === currentUserId) {
-      userReactionByCommentId.set(row.flare_comment_id, row.reaction);
+      userReactionByCommentId.set(row.flare_comment_id, reaction);
     }
   }
 

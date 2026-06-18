@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { inlineError, inlineOk, type InlineActionResult } from "@/lib/actions/inline-result";
 import { isRepostPost } from "@/lib/posts/repost";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
@@ -135,21 +136,20 @@ async function ensureCommentAuthor(
   return data;
 }
 
-export async function updateComment(formData: FormData) {
+export async function updateComment(formData: FormData): Promise<InlineActionResult> {
   const auth = await requireOnboarded();
   const commentId = readTrimmed(formData, "comment_id");
   const body = readTrimmed(formData, "body");
-  const redirectTo = readTrimmed(formData, "redirect_to") || "/";
 
   if (!commentId || !body) {
-    redirectWithError(redirectTo, "Write something before saving.");
+    return inlineError("Write something before saving.");
   }
 
   const supabase = await createClient();
   const comment = await ensureCommentAuthor(supabase, commentId, auth.userId);
 
   if (!comment) {
-    redirectWithError(redirectTo, "You can only edit your own comments.");
+    return inlineError("You can only edit your own comments.");
   }
 
   const { error } = await supabase
@@ -158,51 +158,52 @@ export async function updateComment(formData: FormData) {
     .eq("id", commentId);
 
   if (error) {
-    redirectWithError(redirectTo, error.message);
+    return inlineError(error.message);
   }
 
   const post = Array.isArray(comment.posts) ? comment.posts[0] : comment.posts;
 
   revalidatePath("/");
   revalidatePath("/flarespace");
+
   if (post?.project_id) {
     revalidatePath(`/projects/${post.project_id}`);
   }
 
-  redirect(redirectTo);
+  return inlineOk();
 }
 
-export async function deleteComment(formData: FormData) {
+export async function deleteComment(formData: FormData): Promise<InlineActionResult> {
   const auth = await requireOnboarded();
   const commentId = readTrimmed(formData, "comment_id");
-  const redirectTo = readTrimmed(formData, "redirect_to") || "/";
 
   if (!commentId) {
-    redirect(redirectTo);
+    return inlineError("That comment was not found.");
   }
 
   const supabase = await createClient();
   const comment = await ensureCommentAuthor(supabase, commentId, auth.userId);
 
   if (!comment) {
-    redirectWithError(redirectTo, "You can only delete your own comments.");
+    return inlineError("You can only delete your own comments.");
   }
 
   const { error } = await supabase.from("comments").delete().eq("id", commentId);
 
   if (error) {
-    redirectWithError(redirectTo, error.message);
+    return inlineError(error.message);
   }
 
   const post = Array.isArray(comment.posts) ? comment.posts[0] : comment.posts;
 
   revalidatePath("/");
   revalidatePath("/flarespace");
+
   if (post?.project_id) {
     revalidatePath(`/projects/${post.project_id}`);
   }
 
-  redirect(redirectTo);
+  return inlineOk();
 }
 
 async function ensureFlareAuthor(
@@ -307,21 +308,20 @@ async function ensureFlareCommentAuthor(
   return data;
 }
 
-export async function updateFlareComment(formData: FormData) {
+export async function updateFlareComment(formData: FormData): Promise<InlineActionResult> {
   const auth = await requireOnboarded();
   const commentId = readTrimmed(formData, "comment_id");
   const body = readTrimmed(formData, "body");
-  const redirectTo = readTrimmed(formData, "redirect_to") || "/flarespace";
 
   if (!commentId || !body) {
-    redirectWithError(redirectTo, "Write something before saving.");
+    return inlineError("Write something before saving.");
   }
 
   const supabase = await createClient();
   const comment = await ensureFlareCommentAuthor(supabase, commentId, auth.userId);
 
   if (!comment) {
-    redirectWithError(redirectTo, "You can only edit your own replies.");
+    return inlineError("You can only edit your own replies.");
   }
 
   const { error } = await supabase
@@ -330,41 +330,40 @@ export async function updateFlareComment(formData: FormData) {
     .eq("id", commentId);
 
   if (error) {
-    redirectWithError(redirectTo, error.message);
+    return inlineError(error.message);
   }
 
   revalidatePath("/");
   revalidatePath("/flarespace");
   revalidatePath(`/flarespace/${comment.flare_id}`);
 
-  redirect(redirectTo);
+  return inlineOk();
 }
 
-export async function deleteFlareComment(formData: FormData) {
+export async function deleteFlareComment(formData: FormData): Promise<InlineActionResult> {
   const auth = await requireOnboarded();
   const commentId = readTrimmed(formData, "comment_id");
-  const redirectTo = readTrimmed(formData, "redirect_to") || "/flarespace";
 
   if (!commentId) {
-    redirect(redirectTo);
+    return inlineError("That reply was not found.");
   }
 
   const supabase = await createClient();
   const comment = await ensureFlareCommentAuthor(supabase, commentId, auth.userId);
 
   if (!comment) {
-    redirectWithError(redirectTo, "You can only delete your own replies.");
+    return inlineError("You can only delete your own replies.");
   }
 
   const { error } = await supabase.from("flare_comments").delete().eq("id", commentId);
 
   if (error) {
-    redirectWithError(redirectTo, error.message);
+    return inlineError(error.message);
   }
 
   revalidatePath("/");
   revalidatePath("/flarespace");
   revalidatePath(`/flarespace/${comment.flare_id}`);
 
-  redirect(redirectTo);
+  return inlineOk();
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AuthorLink } from "@/components/avatar";
+import { authorLinkProps } from "@/lib/profiles/public-fields";
 import { ProjectOwnerMenu } from "@/components/project/project-owner-menu";
 import { ProjectPostUpdateForm } from "@/components/project/project-post-update-form";
 import { ProjectStageProgress } from "@/components/app-shell/project-stage-progress";
@@ -56,9 +57,11 @@ export function ProjectHeader({
       {project.owner ? (
         <div className="mt-4">
           <AuthorLink
-            userId={project.owner.id}
-            displayName={project.owner.display_name}
-            avatarUrl={project.owner.avatar_url}
+            {...authorLinkProps(project.owner.id, {
+              display_name: project.owner.display_name,
+              avatar_url: project.owner.avatar_url,
+              deleted: project.owner.deleted,
+            })}
           />
         </div>
       ) : null}

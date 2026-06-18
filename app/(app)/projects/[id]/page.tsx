@@ -44,7 +44,7 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
     notFound();
   }
 
-  const { project, timeline, commentsByPostId, markedCommentIds, reactionsContext } = data;
+  const { project, timeline, commentsByPostId, markedCommentIds, reactionsContext, bookmarksContext } = data;
   const isOwner = project.owner_id === auth.userId;
 
   const statusMessage = query.created
@@ -71,6 +71,7 @@ export default async function ProjectPage({ params, searchParams }: ProjectPageP
         commentsByPostId={commentsByPostId}
         markedCommentIds={markedCommentIds}
         reactionsContext={reactionsContext}
+        bookmarksContext={bookmarksContext}
         searchParams={query}
         helpfulError={helpfulError}
       />

@@ -1,17 +1,20 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { MentionBody } from "@/components/mentions/mention-body";
 import { MentionTextarea } from "@/components/mentions/mention-textarea";
-import { fieldClassName, focusRingClassName, primaryButtonClassName, secondaryButtonClassName } from "@/lib/ui/classes";
+import type { InlineActionResult } from "@/lib/actions/inline-result";
+import { refreshInPlace } from "@/lib/ui/refresh-in-place";
+import { fieldClassName, focusRingClassName, primaryButtonClassName, secondaryButtonClassName, errorTextClassName } from "@/lib/ui/classes";
 
 type EditableContentBodyProps = {
   body: string;
   isAuthor: boolean;
-  editAction: (formData: FormData) => void | Promise<void>;
-  deleteAction: (formData: FormData) => void | Promise<void>;
+  editAction: (formData: FormData) => void | Promise<void | InlineActionResult>;
+  deleteAction: (formData: FormData) => void | Promise<void | InlineActionResult>;
   hiddenFields: Record<string, string>;
   deleteTitle: string;
   deleteDescription: string;
@@ -36,8 +39,9 @@ export function EditableContentBody({
   const [editing, setEditing] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [draft, setDraft] = useState(body);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  const deleteFormRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
 
   if (!isAuthor) {
     return <MentionBody body={body} className={bodyClassName} />;
@@ -62,8 +66,16 @@ export function EditableContentBody({
     formData.set("body", draft.trim());
 
     startTransition(async () => {
-      await editAction(formData);
+      setActionError(null);
+      const result = await editAction(formData);
+
+      if (result && typeof result === "object" && "ok" in result && !result.ok) {
+        setActionError(result.error);
+        return;
+      }
+
       setEditing(false);
+      refreshInPlace(router);
     });
   }
 
@@ -72,12 +84,33 @@ export function EditableContentBody({
   function confirmDelete() {
     setConfirmOpen(false);
     setMenuOpen(false);
-    deleteFormRef.current?.requestSubmit();
+
+    const formData = new FormData();
+    for (const [key, value] of Object.entries(hiddenFields)) {
+      formData.set(key, value);
+    }
+
+    startTransition(async () => {
+      setActionError(null);
+      const result = await deleteAction(formData);
+
+      if (result && typeof result === "object" && "ok" in result && !result.ok) {
+        setActionError(result.error);
+        return;
+      }
+
+      refreshInPlace(router);
+    });
   }
 
   if (editing) {
     return (
       <div className="space-y-2">
+        {actionError ? (
+          <p className={errorTextClassName} role="alert">
+            {actionError}
+          </p>
+        ) : null}
         {multiline ? (
           <MentionTextarea
             value={draft}
@@ -163,12 +196,6 @@ export function EditableContentBody({
           </div>
         </div>
 
-        <form ref={deleteFormRef} action={deleteAction} className="hidden">
-          {Object.entries(hiddenFields).map(([key, value]) => (
-            <input key={key} type="hidden" name={key} value={value} />
-          ))}
-        </form>
-
         <ConfirmDialog
           open={confirmOpen}
           title={deleteTitle}
@@ -182,6 +209,11 @@ export function EditableContentBody({
 
   return (
     <>
+      {actionError ? (
+        <p className={`mb-2 ${errorTextClassName}`} role="alert">
+          {actionError}
+        </p>
+      ) : null}
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <MentionBody body={body} className={bodyClassName} />
@@ -225,12 +257,6 @@ export function EditableContentBody({
           ) : null}
         </div>
       </div>
-
-      <form ref={deleteFormRef} action={deleteAction} className="hidden">
-        {Object.entries(hiddenFields).map(([key, value]) => (
-          <input key={key} type="hidden" name={key} value={value} />
-        ))}
-      </form>
 
       <ConfirmDialog
         open={confirmOpen}

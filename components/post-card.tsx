@@ -4,6 +4,7 @@ import { deletePost, updatePost } from "@/app/(app)/actions/content";
 import { PostTypeBadge } from "@/components/post-type-badge";
 import { PostMedia } from "@/components/post-media";
 import { AuthorLink } from "@/components/avatar";
+import { authorLinkProps } from "@/lib/profiles/public-fields";
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { EditableContentBody } from "@/components/editable-content-body";
 import { MentionBody } from "@/components/mentions/mention-body";
@@ -34,9 +35,7 @@ export function PostCard({ post, embedded = false, hideProjectLink = false, curr
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <AuthorLink
-            userId={post.author_id}
-            displayName={profile?.display_name ?? null}
-            avatarUrl={profile?.avatar_url ?? null}
+            {...authorLinkProps(post.author_id, profile)}
           />
           <ContentTimestamp
             createdAt={post.created_at}

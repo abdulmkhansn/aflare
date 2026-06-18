@@ -11,11 +11,11 @@ export const metadata: Metadata = {
 };
 
 type LoginPageProps = {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; deleted?: string }>;
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { error } = await searchParams;
+  const { error, deleted } = await searchParams;
 
   return (
     <div className="flex min-h-full flex-col lg:min-h-screen lg:flex-row">
@@ -43,6 +43,15 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               New here? Creating an account is the same flow.
             </p>
           </header>
+
+          {deleted === "1" ? (
+            <div
+              className="mb-6 rounded-md border border-charcoal/10 bg-charcoal/5 px-3 py-2.5 text-sm text-charcoal"
+              role="status"
+            >
+              Your account was deleted. Thanks for building here.
+            </div>
+          ) : null}
 
           {error ? (
             <div

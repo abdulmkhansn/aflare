@@ -16,6 +16,7 @@ export type FlareTag = {
 export type FlareHelperProfile = {
   display_name: string | null;
   avatar_url: string | null;
+  deleted?: boolean | null;
 };
 
 export type FlareHelper = {
@@ -27,6 +28,8 @@ export type FlareHelper = {
 export type FlareAuthorProfile = {
   display_name: string | null;
   avatar_url: string | null;
+  deleted?: boolean | null;
+  verified_builder?: boolean | null;
 };
 
 export type FlareRow = {
@@ -54,6 +57,8 @@ export type FlareListItem = FlareRow;
 export type FlareCommentProfile = {
   display_name: string | null;
   avatar_url: string | null;
+  deleted?: boolean | null;
+  verified_builder?: boolean | null;
 };
 
 export type FlareComment = {
@@ -82,7 +87,7 @@ export const FLARE_SELECT = `
   updated_at,
   edited_at,
   resolved_at,
-  profiles:author_id ( display_name, avatar_url ),
+  profiles:author_id ( display_name, avatar_url, deleted, verified_builder ),
   flare_tags ( tag_id, tags ( id, label ) ),
   flare_helpers ( user_id, joined_at, profiles:user_id ( display_name, avatar_url ) )
 `;
@@ -95,7 +100,7 @@ export const FLARE_COMMENT_SELECT = `
   helpful_count,
   created_at,
   edited_at,
-  profiles:author_id ( display_name, avatar_url )
+  profiles:author_id ( display_name, avatar_url, deleted, verified_builder )
 `;
 
 export function resolveFlareAuthor(flare: FlareRow) {

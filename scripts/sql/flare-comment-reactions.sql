@@ -4,7 +4,7 @@
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'post_reaction') THEN
-    CREATE TYPE public.post_reaction AS ENUM ('shipped', 'been_there', 'respect', 'curious');
+    CREATE TYPE public.post_reaction AS ENUM ('respect', 'been_there', 'keep_going', 'made_me_think');
   END IF;
 END $$;
 

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-import type { PostReactionType } from "@/lib/reactions/types";
+import { normalizeReactionType, type PostReactionType } from "@/lib/reactions/types";
 import { POST_REACTION_TYPES } from "@/lib/reactions/types";
 import { requireOnboarded } from "@/utils/auth/session";
 import { createClient } from "@/utils/supabase/server";
@@ -56,7 +56,11 @@ export async function setPostSocialReaction(postId: string, reaction: string) {
     return { error: existingError.message };
   }
 
-  if (existing?.reaction === reaction) {
+  const existingReaction = existing?.reaction
+    ? normalizeReactionType(String(existing.reaction))
+    : null;
+
+  if (existingReaction === reaction) {
     const { error: deleteError } = await supabase
       .from("post_reactions")
       .delete()

@@ -16,6 +16,8 @@ import {
 import { FALLBACK_FEED_NOTE } from "@/lib/feed/constants";
 import { parseFeedFilter, FEED_FILTER_LABELS } from "@/lib/feed/feed-filters";
 import { getFeedPosts } from "@/lib/feed/get-feed-posts";
+import { collectBookmarkTargets } from "@/lib/bookmarks/collect-bookmark-targets";
+import { getBookmarksContext } from "@/lib/bookmarks/get-bookmarks";
 import { getPostReactionsForPosts } from "@/lib/reactions/get-post-reactions";
 import {
   emptyStateClassName,
@@ -52,10 +54,14 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
     .filter((item) => item.kind === "post")
     .map((item) => item.post.id);
 
-  const [{ commentsByPostId, markedCommentIds }, reactionsContext] = await Promise.all([
-    getCommentsForPosts(postIds, userId),
-    getPostReactionsForPosts(postIds, userId),
-  ]);
+  const bookmarkTargets = collectBookmarkTargets(items, items.filter((item) => item.kind === "post").map((item) => item.post));
+
+  const [{ commentsByPostId, markedCommentIds }, reactionsContext, bookmarksContext] =
+    await Promise.all([
+      getCommentsForPosts(postIds, userId),
+      getPostReactionsForPosts(postIds, userId),
+      getBookmarksContext(userId, bookmarkTargets),
+    ]);
 
   const showMoreHref = buildShowMoreHref("/", batchLimit, {
     posted: params.posted,
@@ -129,7 +135,13 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
           ) : null}
           {items.map((item) => {
             if (item.kind === "flare") {
-              return <FlareFeedCard key={`flare-${item.id}`} flare={item.flare} />;
+              return (
+                <FlareFeedCard
+                  key={`flare-${item.id}`}
+                  flare={item.flare}
+                  isBookmarked={bookmarksContext.flareIds.has(item.flare.id)}
+                />
+              );
             }
 
             const commentStatus = parseCommentStatusForPost(params, item.post.id);
@@ -143,6 +155,7 @@ export async function FeedView({ userId, searchParams }: FeedViewProps) {
                 currentUserId={userId}
                 redirectTo="/"
                 reactionsContext={reactionsContext}
+                bookmarksContext={bookmarksContext}
                 commentPosted={commentStatus.commentPosted}
                 commentError={commentStatus.commentError}
               />

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { joinFlareHelper, leaveFlareHelper } from "@/app/(app)/actions/flares";
 import { Avatar } from "@/components/avatar";
+import { isDeletedProfile, profileAvatarUrl, profileDisplayName } from "@/lib/profiles/public-fields";
 import { resolveFlareHelpers, type FlareRow } from "@/lib/flares/types";
 import { focusRingClassName, secondaryButtonClassName } from "@/lib/ui/classes";
 
@@ -39,7 +40,20 @@ export function FlareHelpersSection({
             const profile = Array.isArray(helper.profiles)
               ? helper.profiles[0]
               : helper.profiles;
-            const name = profile?.display_name?.trim() || "Unknown builder";
+            const name = profileDisplayName(profile);
+            const deleted = isDeletedProfile(profile);
+
+            if (deleted) {
+              return (
+                <span
+                  key={helper.user_id}
+                  title={name}
+                  className="inline-flex rounded-full"
+                >
+                  <Avatar displayName={name} avatarUrl={null} size="sm" deleted />
+                </span>
+              );
+            }
 
             return (
               <Link
@@ -50,7 +64,7 @@ export function FlareHelpersSection({
               >
                 <Avatar
                   displayName={profile?.display_name ?? null}
-                  avatarUrl={profile?.avatar_url ?? null}
+                  avatarUrl={profileAvatarUrl(profile)}
                   size="sm"
                 />
               </Link>

@@ -3,14 +3,10 @@ import { createClient } from "@/utils/supabase/server";
 
 import {
   emptyReactionCounts,
-  POST_REACTION_TYPES,
+  normalizeReactionType,
   type PostReactionType,
   type PostReactionsContext,
 } from "./types";
-
-function isPostReactionType(value: string): value is PostReactionType {
-  return POST_REACTION_TYPES.includes(value as PostReactionType);
-}
 
 export async function getPostReactionsForPosts(
   postIds: string[],
@@ -52,16 +48,18 @@ export async function getPostReactionsForPosts(
   }
 
   for (const row of reactions ?? []) {
-    if (!isPostReactionType(row.reaction)) {
+    const reaction = normalizeReactionType(row.reaction);
+
+    if (!reaction) {
       continue;
     }
 
     const counts = countsByPostId.get(row.post_id) ?? emptyReactionCounts();
-    counts[row.reaction] += 1;
+    counts[reaction] += 1;
     countsByPostId.set(row.post_id, counts);
 
     if (row.user_id === currentUserId) {
-      userReactionByPostId.set(row.post_id, row.reaction);
+      userReactionByPostId.set(row.post_id, reaction);
     }
   }
 

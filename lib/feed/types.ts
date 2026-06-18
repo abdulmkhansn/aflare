@@ -18,10 +18,14 @@ export type FeedPost = {
     | {
         display_name: string | null;
         avatar_url: string | null;
+        deleted?: boolean | null;
+        verified_builder?: boolean | null;
       }
     | {
         display_name: string | null;
         avatar_url: string | null;
+        deleted?: boolean | null;
+        verified_builder?: boolean | null;
       }[]
     | null;
   projects:
@@ -65,7 +69,7 @@ export const REPOSTED_POST_SELECT = `
   article_id,
   reposted_post_id,
   structured_fields,
-  profiles:author_id ( display_name, avatar_url ),
+  profiles:author_id ( display_name, avatar_url, deleted, verified_builder ),
   projects:project_id ( id, name ),
   articles:article_id (
     id,
@@ -89,7 +93,7 @@ export const FEED_POST_SELECT = `
   article_id,
   reposted_post_id,
   structured_fields,
-  profiles:author_id ( display_name, avatar_url ),
+  profiles:author_id ( display_name, avatar_url, deleted, verified_builder ),
   projects:project_id ( id, name ),
   articles:article_id (
     id,

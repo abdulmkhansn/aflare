@@ -10,8 +10,12 @@ export const SOCIAL_POST_REACTIONS: {
   emoji: string;
   label: string;
 }[] = [
-  { type: "shipped", emoji: "🚀", label: "Shipped it!" },
-  { type: "been_there", emoji: "💜", label: "Been there" },
-  { type: "respect", emoji: "🤝", label: "Respect" },
-  { type: "curious", emoji: "👀", label: "Curious" },
+  { type: "respect", emoji: "👏", label: "Respect" },
+  { type: "been_there", emoji: "🙌", label: "Been there" },
+  { type: "keep_going", emoji: "🔥", label: "Keep going" },
+  { type: "made_me_think", emoji: "💡", label: "Made me think" },
 ];
+
+export function getSocialReactionMeta(type: PostReactionType) {
+  return SOCIAL_POST_REACTIONS.find((item) => item.type === type) ?? SOCIAL_POST_REACTIONS[0];
+}

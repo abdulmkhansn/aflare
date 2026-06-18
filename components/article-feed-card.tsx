@@ -3,6 +3,8 @@ import Image from "next/image";
 import { IconFileText, IconFileTypePdf } from "@tabler/icons-react";
 
 import { AuthorLink } from "@/components/avatar";
+import { authorLinkProps } from "@/lib/profiles/public-fields";
+import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
 import { MentionBody } from "@/components/mentions/mention-body";
 import type { FeedPost } from "@/lib/feed/types";
 import { resolveFeedPostRelations } from "@/lib/feed/types";
@@ -13,9 +15,15 @@ import { focusRingClassName } from "@/lib/ui/classes";
 
 type ArticleFeedCardProps = {
   post: FeedPost;
+  isBookmarked?: boolean;
+  bookmarkTarget?: { targetType: "post" | "article"; targetId: string } | null;
 };
 
-export function ArticleFeedCard({ post }: ArticleFeedCardProps) {
+export function ArticleFeedCard({
+  post,
+  isBookmarked = false,
+  bookmarkTarget,
+}: ArticleFeedCardProps) {
   const { profile } = resolveFeedPostRelations(post);
   const article = resolveFeedArticle(post);
 
@@ -61,11 +69,7 @@ export function ArticleFeedCard({ post }: ArticleFeedCardProps) {
       <div className="space-y-4 p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <AuthorLink
-              userId={post.author_id}
-              displayName={profile?.display_name ?? null}
-              avatarUrl={profile?.avatar_url ?? null}
-            />
+            <AuthorLink {...authorLinkProps(post.author_id, profile)} />
             <time className="mt-1 block text-xs text-fg-muted" dateTime={post.created_at}>
               {formatRelativeTime(post.created_at)}
             </time>
@@ -94,12 +98,22 @@ export function ArticleFeedCard({ post }: ArticleFeedCardProps) {
           ) : null}
         </div>
 
-        <Link
-          href={`/articles/${article.id}`}
-          className={`inline-flex text-sm font-medium text-teal hover:underline ${focusRingClassName}`}
-        >
-          Read article
-        </Link>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Link
+            href={`/articles/${article.id}`}
+            className={`inline-flex text-sm font-medium text-teal hover:underline ${focusRingClassName}`}
+          >
+            Read article
+          </Link>
+
+          {bookmarkTarget ? (
+            <BookmarkControl
+              targetType={bookmarkTarget.targetType}
+              targetId={bookmarkTarget.targetId}
+              isSaved={isBookmarked}
+            />
+          ) : null}
+        </div>
       </div>
     </article>
   );

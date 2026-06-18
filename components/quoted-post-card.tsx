@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { AuthorLink } from "@/components/avatar";
+import { authorLinkProps, profileDisplayName } from "@/lib/profiles/public-fields";
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { MentionBody } from "@/components/mentions/mention-body";
 import { PostMedia } from "@/components/post-media";
@@ -27,11 +28,7 @@ export function QuotedPostCard({ post }: QuotedPostCardProps) {
 
     return (
       <div className="rounded-lg border border-border-subtle bg-[var(--hover-subtle)] p-3">
-        <AuthorLink
-          userId={post.author_id}
-          displayName={profile?.display_name ?? null}
-          avatarUrl={profile?.avatar_url ?? null}
-        />
+        <AuthorLink {...authorLinkProps(post.author_id, profile)} />
         <p className="mt-2 text-sm font-medium text-fg">{article?.title ?? "Article"}</p>
         {article?.excerpt ? (
           <p className="mt-1 text-sm leading-relaxed text-fg-muted">{article.excerpt}</p>
@@ -47,11 +44,7 @@ export function QuotedPostCard({ post }: QuotedPostCardProps) {
     <div className="rounded-lg border border-border-subtle bg-[var(--hover-subtle)] p-3">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <AuthorLink
-            userId={post.author_id}
-            displayName={profile?.display_name ?? null}
-            avatarUrl={profile?.avatar_url ?? null}
-          />
+          <AuthorLink {...authorLinkProps(post.author_id, profile)} />
           <ContentTimestamp
             createdAt={post.created_at}
             editedAt={post.edited_at}

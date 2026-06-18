@@ -1,5 +1,6 @@
 import { PostWithComments } from "@/components/post-with-comments";
 import { TimelineFlareEntry } from "@/components/project/timeline-flare-entry";
+import type { BookmarksContext } from "@/lib/bookmarks/types";
 import { TimelineStageMarker } from "@/components/project/timeline-stage-marker";
 import {
   parseCommentStatusForPost,
@@ -19,6 +20,7 @@ type ProjectTimelineProps = {
   commentsByPostId: Map<string, Comment[]>;
   markedCommentIds: Set<string>;
   reactionsContext: PostReactionsContext;
+  bookmarksContext: BookmarksContext;
   searchParams: CommentSearchParams & { helpfulError?: string };
   helpfulError?: string | null;
 };
@@ -41,6 +43,7 @@ export function ProjectTimeline({
   commentsByPostId,
   markedCommentIds,
   reactionsContext,
+  bookmarksContext,
   searchParams,
   helpfulError,
 }: ProjectTimelineProps) {
@@ -85,7 +88,12 @@ export function ProjectTimeline({
                     <TimelineStageMarker event={entry.event} />
                   ) : null}
 
-                  {entry.kind === "flare" ? <TimelineFlareEntry flare={entry.flare} /> : null}
+                  {entry.kind === "flare" ? (
+                    <TimelineFlareEntry
+                      flare={entry.flare}
+                      isBookmarked={bookmarksContext.flareIds.has(entry.flare.id)}
+                    />
+                  ) : null}
 
                   {entry.kind === "post" ? (
                     <PostWithComments
@@ -95,6 +103,7 @@ export function ProjectTimeline({
                       currentUserId={currentUserId}
                       redirectTo={redirectTo}
                       reactionsContext={reactionsContext}
+                      bookmarksContext={bookmarksContext}
                       commentPosted={commentStatus?.commentPosted}
                       commentError={commentStatus?.commentError}
                       hideProjectLink

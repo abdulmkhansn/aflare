@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { ArticleReader } from "@/components/article-reader";
 import { getArticle, isArticleMarkedHelpful } from "@/lib/articles/get-article";
+import { isTargetBookmarked } from "@/lib/bookmarks/get-bookmarks";
 import { parseHelpfulError } from "@/lib/comments/parse-comment-params";
 import { pageTitle } from "@/lib/app/brand";
 import { requireOnboarded } from "@/utils/auth/session";
@@ -34,13 +35,17 @@ export default async function ArticlePage({ params, searchParams }: ArticlePageP
     notFound();
   }
 
-  const isMarkedHelpful = await isArticleMarkedHelpful(article.id, auth.userId);
+  const [isMarkedHelpful, isBookmarked] = await Promise.all([
+    isArticleMarkedHelpful(article.id, auth.userId),
+    isTargetBookmarked(auth.userId, "article", article.id),
+  ]);
 
   return (
     <ArticleReader
       article={article}
       currentUserId={auth.userId}
       isMarkedHelpful={isMarkedHelpful}
+      isBookmarked={isBookmarked}
       helpfulError={helpfulError}
     />
   );

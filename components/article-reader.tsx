@@ -2,7 +2,9 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ArticleHelpfulButton } from "@/components/article-helpful-button";
+import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
 import { AuthorLink } from "@/components/avatar";
+import { authorLinkProps } from "@/lib/profiles/public-fields";
 import {
   parseArticleBody,
   resolveArticleAuthor,
@@ -20,6 +22,7 @@ type ArticleReaderProps = {
   article: ArticleWithAuthor;
   currentUserId: string;
   isMarkedHelpful: boolean;
+  isBookmarked: boolean;
   helpfulError?: string;
 };
 
@@ -27,6 +30,7 @@ export function ArticleReader({
   article,
   currentUserId,
   isMarkedHelpful,
+  isBookmarked,
   helpfulError,
 }: ArticleReaderProps) {
   const author = resolveArticleAuthor(article);
@@ -41,11 +45,7 @@ export function ArticleReader({
         </h1>
 
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-          <AuthorLink
-            userId={article.author_id}
-            displayName={author?.display_name ?? null}
-            avatarUrl={author?.avatar_url ?? null}
-          />
+          <AuthorLink {...authorLinkProps(article.author_id, author)} />
           <time className="text-sm text-fg-muted" dateTime={article.created_at}>
             {formatRelativeTime(article.created_at)}
           </time>
@@ -108,14 +108,22 @@ export function ArticleReader({
           </p>
         ) : null}
 
-        {!isOwnArticle ? (
-          <ArticleHelpfulButton
-            articleId={article.id}
-            helpfulCount={article.helpful_count ?? 0}
-            isMarked={isMarkedHelpful}
-            redirectTo={`/articles/${article.id}`}
+        <div className="flex flex-wrap items-center gap-2">
+          {!isOwnArticle ? (
+            <ArticleHelpfulButton
+              articleId={article.id}
+              helpfulCount={article.helpful_count ?? 0}
+              isMarked={isMarkedHelpful}
+              redirectTo={`/articles/${article.id}`}
+            />
+          ) : null}
+
+          <BookmarkControl
+            targetType="article"
+            targetId={article.id}
+            isSaved={isBookmarked}
           />
-        ) : null}
+        </div>
 
         <Link href="/" className={inlineLinkClassName}>
           Back to feed

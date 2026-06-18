@@ -5,6 +5,8 @@ import { PostReactionBar } from "@/components/post-reaction-bar";
 import { RepostPostCard, isRepostFeedPost } from "@/components/repost-post-card";
 import { SharePostCardShell } from "@/components/share-post-card-shell";
 import { ArticleFeedCard } from "@/components/article-feed-card";
+import type { BookmarksContext } from "@/lib/bookmarks/types";
+import { getPostBookmarkTarget, isPostBookmarked } from "@/lib/bookmarks/get-bookmark-state";
 import type { Comment } from "@/lib/comments/types";
 import type { FeedPost } from "@/lib/feed/types";
 import { getPostReactionBarProps } from "@/lib/reactions/get-post-reaction-bar-props";
@@ -19,6 +21,7 @@ type PostWithCommentsProps = {
   currentUserId: string;
   redirectTo: string;
   reactionsContext: PostReactionsContext;
+  bookmarksContext: BookmarksContext;
   commentPosted?: boolean;
   commentError?: string;
   hideProjectLink?: boolean;
@@ -32,6 +35,7 @@ export function PostWithComments({
   currentUserId,
   redirectTo,
   reactionsContext,
+  bookmarksContext,
   commentPosted,
   commentError,
   hideProjectLink = false,
@@ -41,7 +45,21 @@ export function PostWithComments({
   const kind = resolvePostKind(post);
 
   if (kind === "article") {
-    return <ArticleFeedCard post={post} />;
+    const bookmarkTarget = getPostBookmarkTarget(post);
+
+    return (
+      <ArticleFeedCard
+        post={post}
+        isBookmarked={
+          bookmarkTarget
+            ? bookmarkTarget.targetType === "article"
+              ? bookmarksContext.articleIds.has(bookmarkTarget.targetId)
+              : bookmarksContext.postIds.has(bookmarkTarget.targetId)
+            : false
+        }
+        bookmarkTarget={bookmarkTarget}
+      />
+    );
   }
 
   if (isRepostFeedPost(post)) {
@@ -53,6 +71,7 @@ export function PostWithComments({
         currentUserId={currentUserId}
         redirectTo={redirectTo}
         reactionsContext={reactionsContext}
+        bookmarksContext={bookmarksContext}
         commentPosted={commentPosted}
         commentError={commentError}
         collapseComments={collapseComments}
@@ -62,6 +81,8 @@ export function PostWithComments({
 
   const reactionProps = getPostReactionBarProps(post.id, post.author_id, reactionsContext);
   const showRepost = canRepostPost(post, currentUserId);
+  const bookmarkTarget = getPostBookmarkTarget(post);
+  const isBookmarked = isPostBookmarked(post, bookmarksContext);
 
   const inner = (
     <>
@@ -77,6 +98,9 @@ export function PostWithComments({
         currentUserId={currentUserId}
         redirectTo={redirectTo}
         canRepost={showRepost}
+        bookmarkTargetType={bookmarkTarget?.targetType}
+        bookmarkTargetId={bookmarkTarget?.targetId}
+        isBookmarked={isBookmarked}
         {...reactionProps}
       />
       <PostComments

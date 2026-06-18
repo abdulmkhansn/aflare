@@ -67,6 +67,9 @@ export function UserMenu({ userId, displayName, avatarUrl }: UserMenuProps) {
           <Link href={`/u/${userId}/edit`} onClick={closeMenu} className={menuLinkClassName()}>
             Edit profile
           </Link>
+          <Link href="/saved" onClick={closeMenu} className={menuLinkClassName()}>
+            Saved
+          </Link>
           <Link href="/settings" onClick={closeMenu} className={menuLinkClassName()}>
             Settings
           </Link>

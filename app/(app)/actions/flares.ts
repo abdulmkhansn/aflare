@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { createMentionNotifications } from "@/lib/mentions/create-mention-notifications";
+import { inlineError, inlineOk, type InlineActionResult } from "@/lib/actions/inline-result";
 import {
   hasStructuredMedia,
   type PostStructuredFields,
@@ -290,18 +291,17 @@ export async function leaveFlareHelper(formData: FormData) {
   redirect(redirectTo);
 }
 
-export async function createFlareComment(formData: FormData) {
+export async function createFlareComment(formData: FormData): Promise<InlineActionResult> {
   const auth = await requireOnboarded();
   const flareId = readTrimmed(formData, "flare_id");
   const body = readTrimmed(formData, "body");
-  const redirectTo = readTrimmed(formData, "redirect_to") || `/flarespace/${flareId}`;
 
   if (!flareId) {
-    flareErrorRedirect("/flarespace", "That flare was not found.");
+    return inlineError("That flare was not found.");
   }
 
   if (!body) {
-    redirect(`${redirectTo}?commentError=${encodeURIComponent("Write a reply before posting.")}`);
+    return inlineError("Write a reply before posting.");
   }
 
   const supabase = await createClient();
@@ -313,13 +313,11 @@ export async function createFlareComment(formData: FormData) {
     .maybeSingle();
 
   if (flareError || !flare) {
-    redirect(`${redirectTo}?commentError=${encodeURIComponent("That flare was not found.")}`);
+    return inlineError("That flare was not found.");
   }
 
   if (flare.status === "resolved") {
-    redirect(
-      `${redirectTo}?commentError=${encodeURIComponent("This flare is resolved. Reopen it to keep the thread going.")}`
-    );
+    return inlineError("This flare is resolved. Reopen it to keep the thread going.");
   }
 
   const { data: comment, error: insertError } = await supabase
@@ -333,7 +331,7 @@ export async function createFlareComment(formData: FormData) {
     .single();
 
   if (insertError || !comment) {
-    redirect(`${redirectTo}?commentError=${encodeURIComponent(insertError?.message ?? "Could not post that reply.")}`);
+    return inlineError(insertError?.message ?? "Could not post that reply.");
   }
 
   await createMentionNotifications(body, {
@@ -344,15 +342,12 @@ export async function createFlareComment(formData: FormData) {
 
   await addHelperIfMissing(supabase, flareId, auth.userId);
 
-  let nextRedirect = `${redirectTo}?toast=reply_posted`;
-
   if (flare.author_id !== auth.userId) {
-    const { isNew } = await recordMilestone(supabase, auth.userId, "first_flare_reply");
-    nextRedirect = withCelebrationParam(nextRedirect, isNew, "first_flare_reply");
+    await recordMilestone(supabase, auth.userId, "first_flare_reply");
   }
 
   revalidateFlarePaths(flareId);
-  redirect(nextRedirect);
+  return inlineOk();
 }
 
 export async function resolveFlare(formData: FormData) {

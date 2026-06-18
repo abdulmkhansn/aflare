@@ -1,6 +1,8 @@
 import Link from "next/link";
 
 import { AuthorLink } from "@/components/avatar";
+import { authorLinkProps, profileDisplayName } from "@/lib/profiles/public-fields";
+import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { EditableFlareAsk } from "@/components/editable-flare-ask";
 import { FlareCommentsSection } from "@/components/flare-comments-section";
@@ -26,6 +28,7 @@ type FlareDetailViewProps = {
   detail: FlareDetail;
   currentUserId: string;
   redirectTo: string;
+  isBookmarked: boolean;
   statusMessages: {
     commentError?: string;
     helpfulError?: string;
@@ -37,6 +40,7 @@ export function FlareDetailView({
   detail,
   currentUserId,
   redirectTo,
+  isBookmarked,
   statusMessages,
 }: FlareDetailViewProps) {
   const { flare, comments, markedCommentIds, reactionsContext, isAuthor, isHelper } = detail;
@@ -56,11 +60,7 @@ export function FlareDetailView({
       <article className={cardClassName}>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <AuthorLink
-              userId={flare.author_id}
-              displayName={author?.display_name ?? null}
-              avatarUrl={author?.avatar_url ?? null}
-            />
+            <AuthorLink {...authorLinkProps(flare.author_id, author)} />
             <ContentTimestamp
               createdAt={flare.created_at}
               editedAt={flare.edited_at}
@@ -103,6 +103,10 @@ export function FlareDetailView({
             />
           </div>
         ) : null}
+
+        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border-subtle pt-4">
+          <BookmarkControl targetType="flare" targetId={flare.id} isSaved={isBookmarked} />
+        </div>
       </article>
 
       <FlareHelpersSection

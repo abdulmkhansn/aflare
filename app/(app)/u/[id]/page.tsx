@@ -4,12 +4,24 @@ import { notFound } from "next/navigation";
 
 import { FollowButton } from "@/components/follow-button";
 import { MessageButton } from "@/components/message-button";
+import { FollowStats } from "@/components/profile/follow-stats";
 import { SafetyMenu } from "@/components/safety-menu";
 import { Avatar } from "@/components/avatar";
 import { ProjectStageBadge } from "@/components/project-stage-badge";
 import { ContributionFacets } from "@/components/recognition/contribution-facets";
 import { ProfileMoments } from "@/components/recognition/profile-moments";
+import { VerifiedBuilderBadge } from "@/components/verification/verified-builder-badge";
+import { VerifyBuilderSection } from "@/components/verification/verify-builder-section";
 import { pageTitle } from "@/lib/app/brand";
+import { isGitHubVerifyConfigured } from "@/lib/github/verify-config";
+import { getFollowList } from "@/lib/profiles/get-follow-list";
+import { getFollowStats } from "@/lib/profiles/get-follow-stats";
+import { getProfileForPage } from "@/lib/profiles/get-profile-for-page";
+import {
+  isDeletedProfile,
+  profileDisplayName,
+  profileAvatarUrl,
+} from "@/lib/profiles/public-fields";
 import { getProfileRecognition } from "@/lib/recognition/get-profile-recognition";
 import { formatTagLabel } from "@/lib/tags/format-tag-label";
 import { hasBlockedUser, isBlockedBetween } from "@/lib/messages/blocks";
@@ -21,7 +33,6 @@ import {
   pageTitleClassName,
   sectionTitleClassName,
   tagPillClassName,
-  verifiedBadgeClassName,
   statusTextClassName,
   secondaryButtonClassName,
 } from "@/lib/ui/classes";
@@ -35,6 +46,9 @@ type ProfilePageProps = {
     blocked?: string;
     unblocked?: string;
     reported?: string;
+    verified?: string;
+    disconnected?: string;
+    verify_error?: string;
   }>;
 };
 
@@ -43,9 +57,13 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
   const supabase = await createClient();
   const { data: profile } = await supabase
     .from("profiles")
-    .select("display_name")
+    .select("display_name, deleted")
     .eq("id", id)
     .maybeSingle();
+
+  if (isDeletedProfile(profile)) {
+    return { title: pageTitle("Profile") };
+  }
 
   const name = profile?.display_name?.trim();
 
@@ -57,24 +75,67 @@ export async function generateMetadata({ params }: ProfilePageProps): Promise<Me
 export default async function ProfilePage({ params, searchParams }: ProfilePageProps) {
   const auth = await requireOnboarded();
   const { id } = await params;
-  const { error, blocked, unblocked, reported } = await searchParams;
+  const { error, blocked, unblocked, reported, verified, disconnected, verify_error: verifyError } =
+    await searchParams;
   const supabase = await createClient();
   const isOwnProfile = auth.userId === id;
 
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select(
-      "id, display_name, bio, avatar_url, verified_builder, github_username"
-    )
-    .eq("id", id)
-    .maybeSingle();
+  const { profile, loadError } = await getProfileForPage(id);
 
-  if (profileError || !profile) {
+  if (loadError) {
+    return (
+      <div className="space-y-4">
+        <h1 className={pageTitleClassName}>Profile</h1>
+        <p className={errorTextClassName} role="alert">
+          Could not load this profile right now. Try again in a moment.
+        </p>
+      </div>
+    );
+  }
+
+  if (!profile) {
     notFound();
   }
 
-  const [{ data: profileTags }, { data: projects }, { data: followRow }, blockedBetween, hasBlocked, recognition] =
-    await Promise.all([
+  const deleted = isDeletedProfile(profile);
+
+  if (deleted) {
+    return (
+      <div className="space-y-6">
+        <header className={cardClassName}>
+          <div className="flex min-w-0 items-start gap-4">
+            <Avatar displayName={profileDisplayName(profile)} avatarUrl={null} size="md" deleted />
+            <div className="min-w-0">
+              <h1 className={pageTitleClassName}>{profileDisplayName(profile)}</h1>
+              <p className="mt-2 text-sm leading-relaxed text-fg-muted">
+                This builder is no longer here.
+              </p>
+            </div>
+          </div>
+        </header>
+
+        <section className="space-y-4">
+          <h2 className={sectionTitleClassName}>Projects</h2>
+          <div className={emptyStateClassName}>
+            This builder is no longer here.
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  const [
+    { data: profileTags },
+    { data: projects },
+    { data: followRow },
+    blockedBetween,
+    hasBlocked,
+    recognition,
+    followStats,
+    followerEntries,
+    followingEntries,
+    { data: myFollows },
+  ] = await Promise.all([
     supabase
       .from("profile_tags")
       .select("kind, tag_id, tags ( id, label )")
@@ -95,7 +156,14 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
     isOwnProfile ? Promise.resolve(false) : isBlockedBetween(auth.userId, id),
     isOwnProfile ? Promise.resolve(false) : hasBlockedUser(auth.userId, id),
     getProfileRecognition(id),
+    getFollowStats(id),
+    getFollowList(id, "followers"),
+    getFollowList(id, "following"),
+    supabase.from("follows").select("following_id").eq("follower_id", auth.userId),
   ]);
+
+  const followingIds = myFollows?.map((row) => row.following_id) ?? [];
+  const displayName = profileDisplayName(profile);
 
   const brings =
     profileTags
@@ -108,8 +176,6 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
       ?.filter((row) => row.kind === "open_to")
       .map((row) => (Array.isArray(row.tags) ? row.tags[0] : row.tags))
       .filter(Boolean) ?? [];
-
-  const displayName = profile.display_name?.trim() || "Unknown builder";
 
   const statusMessage = reported
     ? "Reported. Our team will review."
@@ -126,26 +192,36 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
           <div className="flex min-w-0 items-start gap-4">
             <Avatar
               displayName={profile.display_name}
-              avatarUrl={profile.avatar_url}
+              avatarUrl={profileAvatarUrl(profile)}
               size="md"
             />
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className={pageTitleClassName}>{displayName}</h1>
-                {profile.verified_builder ? (
-                  <span className={verifiedBadgeClassName}>Verified builder</span>
-                ) : null}
+                {profile.verified_builder ? <VerifiedBuilderBadge /> : null}
               </div>
               {profile.bio ? (
                 <p className="mt-2 text-sm leading-relaxed text-fg-muted">{profile.bio}</p>
               ) : null}
+              <FollowStats
+                currentUserId={auth.userId}
+                followerCount={followStats.followerCount}
+                followingCount={followStats.followingCount}
+                followerEntries={followerEntries}
+                followingEntries={followingEntries}
+                followingIds={followingIds}
+              />
             </div>
           </div>
 
           {!isOwnProfile ? (
             <div className="flex flex-wrap items-center gap-2">
               {!blockedBetween ? <MessageButton otherUserId={id} /> : null}
-              <FollowButton profileId={id} isFollowing={Boolean(followRow)} />
+              <FollowButton
+                profileId={id}
+                isFollowing={Boolean(followRow)}
+                redirectTo={`/u/${id}`}
+              />
               <SafetyMenu
                 otherUserId={id}
                 isBlocked={hasBlocked}
@@ -204,6 +280,19 @@ export default async function ProfilePage({ params, searchParams }: ProfilePageP
           </div>
         )}
       </header>
+
+      {isOwnProfile ? (
+        <VerifyBuilderSection
+          verified={Boolean(profile.verified_builder)}
+          githubUsername={profile.github_username}
+          verifiedAt={profile.verified_at ?? null}
+          returnTo={`/u/${id}`}
+          configured={isGitHubVerifyConfigured()}
+          verifiedMessage={verified === "1"}
+          disconnectedMessage={disconnected === "1"}
+          errorMessage={verifyError ?? null}
+        />
+      ) : null}
 
       <ContributionFacets facets={recognition.facets} />
 

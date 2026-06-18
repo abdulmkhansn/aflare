@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useOptimistic, useTransition } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 
 import { setPostSocialReaction } from "@/app/(app)/actions/post-reactions";
 import { togglePostHelpful } from "@/app/(app)/actions/helpful-marks";
@@ -13,8 +13,11 @@ import {
   helpfulButtonClass,
 } from "@/components/reactions/social-reaction-controls";
 import { PostRepostControl } from "@/components/post-repost-control";
+import { BookmarkControl } from "@/components/bookmarks/bookmark-control";
+import type { BookmarkTargetType } from "@/lib/bookmarks/types";
 import { THIS_HELPED_REACTION } from "@/lib/reactions/constants";
 import type { PostReactionType, ReactionCounts } from "@/lib/reactions/types";
+import { refreshInPlace } from "@/lib/ui/refresh-in-place";
 
 type PostReactionBarProps = {
   postId: string;
@@ -27,6 +30,9 @@ type PostReactionBarProps = {
   redirectTo: string;
   hideHelpfulMark?: boolean;
   canRepost?: boolean;
+  bookmarkTargetType?: BookmarkTargetType;
+  bookmarkTargetId?: string;
+  isBookmarked?: boolean;
 };
 
 type OptimisticState = {
@@ -45,9 +51,15 @@ export function PostReactionBar({
   redirectTo,
   hideHelpfulMark = false,
   canRepost = false,
+  bookmarkTargetType,
+  bookmarkTargetId,
+  isBookmarked = false,
 }: PostReactionBarProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [helpfulError, setHelpfulError] = useState<string | null>(null);
+  const [optimisticHelpfulMarked, setOptimisticHelpfulMarked] = useOptimistic(isHelpfulMarked);
+  const [optimisticHelpfulCount, setOptimisticHelpfulCount] = useOptimistic(helpfulCount);
 
   const [optimistic, setOptimistic] = useOptimistic<OptimisticState, Partial<OptimisticState>>(
     {
@@ -74,11 +86,37 @@ export function PostReactionBar({
       const result = await setPostSocialReaction(postId, reaction);
 
       if (result.error) {
-        router.refresh();
+        refreshInPlace(router);
         return;
       }
 
-      router.refresh();
+      refreshInPlace(router);
+    });
+  }
+
+  function toggleHelpful() {
+    startTransition(async () => {
+      setHelpfulError(null);
+      const nextMarked = !optimisticHelpfulMarked;
+      setOptimisticHelpfulMarked(nextMarked);
+      setOptimisticHelpfulCount(
+        nextMarked ? optimisticHelpfulCount + 1 : Math.max(0, optimisticHelpfulCount - 1)
+      );
+
+      const formData = new FormData();
+      formData.set("post_id", postId);
+      formData.set("is_marked", isHelpfulMarked ? "1" : "0");
+      formData.set("redirect_to", redirectTo);
+
+      const result = await togglePostHelpful(formData);
+
+      if (!result.ok) {
+        setHelpfulError(result.error);
+        refreshInPlace(router);
+        return;
+      }
+
+      refreshInPlace(router);
     });
   }
 
@@ -86,13 +124,16 @@ export function PostReactionBar({
     <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
       <div className="flex flex-wrap items-center gap-2">
         {!hideHelpfulMark && !isOwnPost ? (
-          <form action={togglePostHelpful}>
-            <input type="hidden" name="post_id" value={postId} />
-            <input type="hidden" name="is_marked" value={isHelpfulMarked ? "1" : "0"} />
-            <input type="hidden" name="redirect_to" value={redirectTo} />
+          <div>
+            {helpfulError ? (
+              <p className="mb-1 text-xs text-red-600" role="alert">
+                {helpfulError}
+              </p>
+            ) : null}
             <button
-              type="submit"
-              className={helpfulButtonClass(isHelpfulMarked)}
+              type="button"
+              onClick={toggleHelpful}
+              className={helpfulButtonClass(optimisticHelpfulMarked)}
               disabled={isPending}
               aria-label={THIS_HELPED_REACTION.label}
               title={THIS_HELPED_REACTION.label}
@@ -100,10 +141,10 @@ export function PostReactionBar({
               <span aria-hidden="true">{THIS_HELPED_REACTION.emoji}</span>
               <span>{THIS_HELPED_REACTION.label}</span>
               <span aria-hidden="true">·</span>
-              <span>{helpfulCount}</span>
+              <span>{optimisticHelpfulCount}</span>
               <ReactionTooltip label={THIS_HELPED_REACTION.label} groupName="helpful" />
             </button>
-          </form>
+          </div>
         ) : null}
 
         {canRepost ? (
@@ -112,9 +153,19 @@ export function PostReactionBar({
 
         <SocialReactionPicker
           userReaction={optimistic.userReaction}
+          reactionCounts={optimistic.reactionCounts}
           disabled={isPending}
           onPick={pickSocialReaction}
         />
+
+        {bookmarkTargetType && bookmarkTargetId ? (
+          <BookmarkControl
+            targetType={bookmarkTargetType}
+            targetId={bookmarkTargetId}
+            isSaved={isBookmarked}
+            disabled={isPending}
+          />
+        ) : null}
       </div>
 
       <ReactionCluster counts={optimistic.reactionCounts} />

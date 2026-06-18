@@ -1,3 +1,6 @@
+import type { BookmarksContext } from "@/lib/bookmarks/types";
+import { collectBookmarkTargetsFromPosts } from "@/lib/bookmarks/collect-bookmark-targets";
+import { getBookmarksContext } from "@/lib/bookmarks/get-bookmarks";
 import { getCommentsForPosts } from "@/lib/comments/get-comments-for-posts";
 import { FEED_POST_SELECT, type FeedPost } from "@/lib/feed/types";
 import { getPostReactionsForPosts } from "@/lib/reactions/get-post-reactions";
@@ -17,6 +20,7 @@ export type ProjectOwnerProfile = {
   id: string;
   display_name: string | null;
   avatar_url: string | null;
+  deleted?: boolean | null;
 };
 
 export type ProjectPageProject = {
@@ -36,6 +40,7 @@ export type ProjectPageData = {
   commentsByPostId: Awaited<ReturnType<typeof getCommentsForPosts>>["commentsByPostId"];
   markedCommentIds: Set<string>;
   reactionsContext: Awaited<ReturnType<typeof getPostReactionsForPosts>>;
+  bookmarksContext: BookmarksContext;
 };
 
 export async function getProjectPageData(
@@ -54,7 +59,7 @@ export async function getProjectPageData(
       stage,
       abstract_description,
       owner_id,
-      profiles:owner_id ( id, display_name, avatar_url )
+      profiles:owner_id ( id, display_name, avatar_url, deleted )
     `
     )
     .eq("id", projectId)
@@ -99,11 +104,18 @@ export async function getProjectPageData(
 
   const feedPosts = (posts ?? []) as FeedPost[];
   const postIds = feedPosts.map((post) => post.id);
+  const timelineFlareIds = (flares ?? []).map((flare) => flare.id);
+  const bookmarkTargets = {
+    ...collectBookmarkTargetsFromPosts(feedPosts),
+    flareIds: timelineFlareIds,
+  };
 
-  const [{ commentsByPostId, markedCommentIds }, reactionsContext] = await Promise.all([
-    getCommentsForPosts(postIds, currentUserId),
-    getPostReactionsForPosts(postIds, currentUserId),
-  ]);
+  const [{ commentsByPostId, markedCommentIds }, reactionsContext, bookmarksContext] =
+    await Promise.all([
+      getCommentsForPosts(postIds, currentUserId),
+      getPostReactionsForPosts(postIds, currentUserId),
+      getBookmarksContext(currentUserId, bookmarkTargets),
+    ]);
 
   const timeline = mergeProjectTimeline(
     feedPosts,
@@ -124,6 +136,7 @@ export async function getProjectPageData(
             id: ownerProfile.id,
             display_name: ownerProfile.display_name,
             avatar_url: ownerProfile.avatar_url,
+            deleted: ownerProfile.deleted,
           }
         : null,
       tags,
@@ -132,5 +145,6 @@ export async function getProjectPageData(
     commentsByPostId,
     markedCommentIds,
     reactionsContext,
+    bookmarksContext,
   };
 }

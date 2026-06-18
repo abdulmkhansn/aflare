@@ -5,6 +5,7 @@ import { FlareDetailView } from "@/components/flare-detail-view";
 import { PageHeader } from "@/components/page-header";
 import { pageTitle } from "@/lib/app/brand";
 import { parseHelpfulError } from "@/lib/comments/parse-comment-params";
+import { isTargetBookmarked } from "@/lib/bookmarks/get-bookmarks";
 import { getFlareDetail } from "@/lib/flares/get-flare-detail";
 import { flareExcerpt } from "@/lib/flares/types";
 import { requireOnboarded } from "@/utils/auth/session";
@@ -33,6 +34,8 @@ export default async function FlareDetailPage({ params, searchParams }: FlareDet
     notFound();
   }
 
+  const isBookmarked = await isTargetBookmarked(auth.userId, "flare", id);
+
   const title = detail.flare.title?.trim() || flareExcerpt(detail.flare, 60);
 
   return (
@@ -43,6 +46,7 @@ export default async function FlareDetailPage({ params, searchParams }: FlareDet
         detail={detail}
         currentUserId={auth.userId}
         redirectTo={redirectTo}
+        isBookmarked={isBookmarked}
         statusMessages={{
           commentError: query.commentError,
           helpfulError: parseHelpfulError(query),

@@ -84,13 +84,13 @@ export const ARTICLE_SELECT = `
   category,
   helpful_count,
   created_at,
-  profiles:author_id ( display_name, avatar_url )
+  profiles:author_id ( display_name, avatar_url, deleted, verified_builder )
 `;
 
 export type ArticleWithAuthor = ArticleRow & {
   profiles:
-    | { display_name: string | null; avatar_url: string | null }
-    | { display_name: string | null; avatar_url: string | null }[]
+    | { display_name: string | null; avatar_url: string | null; deleted?: boolean | null; verified_builder?: boolean | null }
+    | { display_name: string | null; avatar_url: string | null; deleted?: boolean | null; verified_builder?: boolean | null }[]
     | null;
 };
 

@@ -1,6 +1,8 @@
 export type CommentProfile = {
   display_name: string | null;
   avatar_url: string | null;
+  deleted?: boolean | null;
+  verified_builder?: boolean | null;
 };
 
 export type Comment = {
@@ -26,5 +28,5 @@ export const COMMENT_SELECT = `
   helpful_count,
   created_at,
   edited_at,
-  profiles:author_id ( display_name, avatar_url )
+  profiles:author_id ( display_name, avatar_url, deleted, verified_builder )
 `;

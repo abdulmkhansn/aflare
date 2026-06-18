@@ -1,5 +1,6 @@
 import { deletePost, updatePost } from "@/app/(app)/actions/content";
 import { AuthorLink } from "@/components/avatar";
+import { authorLinkProps, profileDisplayName } from "@/lib/profiles/public-fields";
 import { ContentTimestamp } from "@/components/content-timestamp";
 import { EditableContentBody } from "@/components/editable-content-body";
 import { MentionBody } from "@/components/mentions/mention-body";
@@ -7,6 +8,8 @@ import { PostComments } from "@/components/post-comments";
 import { PostReactionBar } from "@/components/post-reaction-bar";
 import { QuotedPostCard } from "@/components/quoted-post-card";
 import { SharePostCardShell } from "@/components/share-post-card-shell";
+import type { BookmarksContext } from "@/lib/bookmarks/types";
+import { getPostBookmarkTarget, isPostBookmarked } from "@/lib/bookmarks/get-bookmark-state";
 import type { Comment } from "@/lib/comments/types";
 import type { FeedPost } from "@/lib/feed/types";
 import { resolveFeedPostRelations } from "@/lib/feed/types";
@@ -27,6 +30,7 @@ type RepostPostCardProps = {
   currentUserId: string;
   redirectTo: string;
   reactionsContext: PostReactionsContext;
+  bookmarksContext: BookmarksContext;
   commentPosted?: boolean;
   commentError?: string;
   collapseComments?: boolean;
@@ -39,16 +43,19 @@ export function RepostPostCard({
   currentUserId,
   redirectTo,
   reactionsContext,
+  bookmarksContext,
   commentPosted,
   commentError,
   collapseComments = false,
 }: RepostPostCardProps) {
   const { profile } = resolveFeedPostRelations(post);
-  const displayName = profile?.display_name?.trim() || "Someone";
+  const displayName = profileDisplayName(profile, "Someone");
   const original = resolveRepostedPost(post);
   const unavailable = isRepostOriginalUnavailable(post);
   const isAuthor = post.author_id === currentUserId;
   const reactionProps = getPostReactionBarProps(post.id, post.author_id, reactionsContext);
+  const bookmarkTarget = getPostBookmarkTarget(post);
+  const isBookmarked = isPostBookmarked(post, bookmarksContext);
   const quote = post.body?.trim() ?? "";
 
   return (
@@ -56,11 +63,7 @@ export function RepostPostCard({
       <article id={`post-${post.id}`} className="p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <AuthorLink
-              userId={post.author_id}
-              displayName={profile?.display_name ?? null}
-              avatarUrl={profile?.avatar_url ?? null}
-            />
+            <AuthorLink {...authorLinkProps(post.author_id, profile)} />
             <p className="mt-1 text-xs font-medium text-fg-muted">{repostHeaderLabel(displayName)}</p>
             <ContentTimestamp
               createdAt={post.created_at}
@@ -121,6 +124,9 @@ export function RepostPostCard({
           currentUserId={currentUserId}
           redirectTo={redirectTo}
           hideHelpfulMark
+          bookmarkTargetType={bookmarkTarget?.targetType}
+          bookmarkTargetId={bookmarkTarget?.targetId}
+          isBookmarked={isBookmarked}
           {...reactionProps}
         />
 

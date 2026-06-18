@@ -7,6 +7,7 @@ import { BuildJourneyRail } from "@/components/app-shell/build-journey-rail";
 import { MobileNav } from "@/components/app-shell/mobile-nav";
 import { RightRail } from "@/components/app-shell/right-rail";
 import { TransientUrlToast } from "@/components/transient-url-toast";
+import { ScrollRestore } from "@/components/scroll-restore";
 import type { BuildJourneyData, ShellSidebarData, ShellUser } from "@/lib/app/get-shell-data";
 import type { UserMilestone } from "@/lib/milestones/types";
 import type { AppNotification } from "@/lib/notifications/types";
@@ -44,6 +45,7 @@ export function AppShell({
       />
 
       <Suspense fallback={null}>
+        <ScrollRestore />
         <TransientUrlToast pendingMilestones={pendingMilestones} />
       </Suspense>
 

@@ -16,6 +16,7 @@ import {
   parseFlareView,
 } from "@/lib/flares/flare-filters";
 import { filterFlareTags } from "@/lib/flares/flare-tag-labels";
+import { getBookmarksContext } from "@/lib/bookmarks/get-bookmarks";
 import { getFlarespaceLists } from "@/lib/flares/get-flares";
 import { formatTagLabel } from "@/lib/tags/format-tag-label";
 import {
@@ -83,6 +84,10 @@ export default async function FlarespacePage({ searchParams }: FlarespacePagePro
   const flares =
     view === "mine" ? yourFlares : view === "helping" ? helpingFlares : openFlares;
 
+  const bookmarksContext = await getBookmarksContext(auth.userId, {
+    flareIds: flares.map((flare) => flare.id),
+  });
+
   const emptyCopy =
     view === "mine"
       ? "You have not sent up a flare yet. Use the box above when you are stuck on something."
@@ -134,7 +139,11 @@ export default async function FlarespacePage({ searchParams }: FlarespacePagePro
           ) : (
             <>
               {flares.map((flare) => (
-                <FlareCard key={`${view}-${flare.id}`} flare={flare} />
+                <FlareCard
+                  key={`${view}-${flare.id}`}
+                  flare={flare}
+                  isBookmarked={bookmarksContext.flareIds.has(flare.id)}
+                />
               ))}
               {view === "open" && hasMoreOpen ? <ShowMoreButton href={showMoreHref} /> : null}
             </>
